@@ -175,11 +175,15 @@ public:
 			}
 			catch (DataException de){
 				setEof();
+				return Token(Token::END, data.sourcePosition);
 				throw LexerException("Eof already occured!");
 			}
 
+
+
 			getWhitespaces();
 			
+
 			if(Alphabet::is<Alphabet::NUMBER_CHAR>(currentChar())){
 				result = tryAndGetNumeric();
 				if(!result.typeEqulasTo(Token::NONE)){
@@ -187,10 +191,13 @@ public:
 				}
 			}
 
+	//		cout << "Nothing strange!\n\n";
+
 
 
 			if(data.eof()){
 				setEof();
+				cout << "Returning end\n";
 				return(Token (Token::END, data.sourcePosition));
 			}
 			throw LexerException("Nothing recognized!");
@@ -218,7 +225,7 @@ public:
 	}
 
 	void getNextToken(){
-		
+		//Nicify!
 				try {
 					currentToken = getToken();
 				}
@@ -226,6 +233,7 @@ public:
 					recover();
 					return;
 				}
+
 
 		//		if(!currentToken.typeEqulasTo(Token::NONE)){
 					addToOutput(currentToken);
@@ -240,10 +248,12 @@ public:
 		}
 		
 		while (!eof() && index >= this->size){
+	//		cout << "blabla\n\n";
 			getNextToken();
 		}	
-	//	cout << "Trying to get token at " << index << "\n";
+		cout << "Trying to get token at " << index << "\n";
 
+	//	cout << "Hurrah!\n";
 		if(eof() && index >= this->size){
 			throw LexerException("Invalid index of token");
 		}

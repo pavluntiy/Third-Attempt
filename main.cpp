@@ -10,9 +10,15 @@ int main () {
 	Lexer lexer(cin);
 	int i = 0;
 		try{
+
 			while(!lexer.eof()){
-				cout << lexer[i];
-				cout.flush(); 
+				try{
+					cout << lexer[i];
+					cout.flush(); 
+				}	
+				catch(DataException de){
+					cout << "Data exception: " << de.what() << '\n';
+				}
 				++i;
 			}
 		}

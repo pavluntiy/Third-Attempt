@@ -31,38 +31,47 @@ public:
 		wasEof = false;
 		ready = false;
 		currentPosition = -1;
-		previousPosition = -1;
+		previousPosition = 0;
 		currentChar = '\n';
 	}
 
 	void pop(){
 		if(str.size() > 0){
+			sourcePosition.linePosition++;
 			this->str.pop_back();
 			this->size--;
 		}	
 	}
 
-	// void push(char c){
-	// 	this->str.push_back(c);
-	// 	this->size++;
-	// }
+	void push(char c){
+		this->str.push_back(c);
+		this->size++;
+	}
 
 	void recover (){
-		if(previousPosition >= this->str.size()){
-			cout << "Trash!: " << previousPosition <<  "\n";
+		if(previousPosition >= this->size){
+	//		cout << "Trash!: " << previousPosition <<  "\n";
 			throw DataException("Invalid resetting of position!");
 		}
 
-		while(this->str.size() >= previousPosition){
+		while(this->size > previousPosition){
 			this->pop();
+			// if(previousPosition == -1){
+			// 	break;
+			// }
 		}
 
-		cout << "Size: " << this->str.size() << " \n";
+	//	cout << "Size: " << this->size << " \n";
 
-		cout << "Restored to " << previousPosition<< "\n";
+	//	cout << "Restored to " << previousPosition<< "\n";
 		this->currentPosition = previousPosition ;
+
+		if(currentPosition == 0){
+			makeReady();
+		}
 		currentChar = this->charAt(this->currentPosition);
 
+	//	cout << "Current char : " << currentChar << endl;
 	}
 	
 	int getSize(){
@@ -82,20 +91,21 @@ public:
 	}
 
 	char charAt(int index){
+	//	cout << index << endl;
 		if(wasEof && index >= size){
 			throw DataException("Invalid index of input");
 		}
 
-		if(index >= this->str.size()){
-			while (!eof() && index >= this->str.size()){
+		if(index >= this->size){
+			while (!eof() && index >= this->size){
 				char c = in.get();
-				this->str.push_back(c);
-				this->size++;
+				this->push(c);
 			}
 		}
 
 		return str[index];
 	}
+
 	char operator [] (int index){
 
 		return this->charAt(index);
@@ -121,8 +131,8 @@ public:
 	void pushCharToStream(char c = '\n'){
 
 //		cout << "Pushed to stream!\n";
-		this->str.push_back(c);
-		this->size++;
+		this->push(c);
+	//	this->size++;
 	//	this->currentChar = *(end(str) - 1);
 	}
 
@@ -144,9 +154,9 @@ public:
 	}
 
 	void lock(){
-		cout << "Size of str: " << this->size << "\n";
-		cout << "Locked on postion " << currentPosition << "\n";
-	//	this->previousSourcePosition = sourcePosition;
+	//	cout << "Size of str: " << this->size << "\n";
+	//	cout << "Locked on postion " << currentPosition << "\n";
+		this->previousSourcePosition = sourcePosition;
 		this->previousPosition = currentPosition;
 	//	cout << "current char : " << currentChar << "\n";
 	}
@@ -174,14 +184,16 @@ public:
 		
 		currentPosition++; 
 		
-		
-		
+			
+	//	cout << "Consuming... ";
 		if (wasEof){
 			currentChar = EOF;
 		}
 		else {
 			currentChar = this->charAt(currentPosition); 
 		}
+	//	cout << "got character: " << currentChar << endl;
+
 	}
 
 	bool get(std::string text){
