@@ -28,13 +28,47 @@ public:
 	{
 		size = 0;
 		wasEOF = false;
-		currentPosition = -1;
-		currentChar = '\0';
+		currentPosition = 0;
+		currentChar = '\n';
+	}
+
+	void pop(){
+		if(str.size() > 0){
+			this->str.pop_back();
+			this->size--;
+		}	
+	}
+
+	void restorePosition (int position){
+		if(position >= size){
+			throw DataException("Invalid resetting of position!");
+		}
+
+		while(position <= this->size){
+			this->pop();
+		}
+
+		cout << "size: " << this->size << " \n";
+
+		cout << position;
+		this->currentPosition = position;
+
 	}
 	
+	int getSize(){
+		return this->size;
+	}
 	bool eof(){
 		this->wasEOF = this->wasEOF || this->in.eof();
 		return this->wasEOF;
+	}
+
+	Position getSourcePosition(){
+		return this->sourcePosition;
+	}
+
+	int getPosition (){
+		return this->currentPosition;
 	}
 
 	char charAt(int index){
@@ -67,15 +101,30 @@ public:
 
 	}
 
-	void wait(){
+	void makeReady(){
+		this->currentPosition = 0;
+		ignore(this->charAt(currentPosition + 1));
+		this->pushCharToStream();
+	}
+
+	void pushCharToStream(char c = '\n'){
+		this->str.push_back(c);
+		this->size++;
+		this->currentChar = str[size - 1];
+	}
+
+	void isReady(){
 		if(eof()){
+			throw DataException("Stream is closed!");
 			return;
 		}
 		if(this->currentPosition == -1){
 			this->consume();
 			return;
 		}
+	//	cout << "adrtkekqerqwdf\n";
 		ignore(this->charAt(currentPosition + 1));
+		return;
 	}
 
 	void setBackup(){

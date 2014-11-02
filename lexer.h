@@ -15,6 +15,7 @@ public:
 	vector<Token> output;
 	Token currentToken;
 	int size;
+	int lastSuccessTokenEnd = 0;
 
 	Lexer(istream &in = cin):
 	data(in)
@@ -120,7 +121,7 @@ public:
 			data.consume();
 		}
 
-		data.setBackup();
+	//	data.setBackup();
 
 	/*	result = tryAndGetHexadecimal(zeroFound);
 		if (!result.typeEqulasTo(Token::NONE)){
@@ -146,15 +147,27 @@ public:
 		return Token(Token::NONE);
 	}
 
-	Token getToken(){
-			Token result;
-			data.wait();
-			while(Alphabet::is<Alphabet::WHITESPACE>(data.currentChar) 
+	void getWhitespaces(){
+		while(Alphabet::is<Alphabet::WHITESPACE>(data.currentChar) 
 				|| Alphabet::is<Alphabet::NEWLINE>(data.currentChar) 
 			){
 				data.consume();
 			}
+	}
 
+
+	Token getToken(){
+			Token result;
+			try{
+				data.isReady();
+			}
+			catch (DataException de){
+				this->wasEof = true;
+				throw LexerException("Eof already occured!");
+			}
+
+			getWhitespaces();
+			
 			if(Alphabet::is<Alphabet::NUMBER_CHAR>(data.currentChar)){
 				result = tryAndGetNumeric();
 				if(!result.typeEqulasTo(Token::NONE)){
@@ -176,32 +189,66 @@ public:
 		return this->wasEof;
 	}
 
+	void recover(string message = ""){
+
+
+
+		if(message != ""){
+			addToOutput(Token(Token::ERROR, message));
+
+		}
+
+		data.restorePosition(lastSuccessTokenEnd);
+		cout << "Restored!: ";
+		cout << data.currentChar << '\n';
+
+	}
+
+	void addToOutput (const Token &token){
+		this->output.push_back(token);
+		this->size++;
+		this->lastSuccessTokenEnd = data.getPosition() - 1;
+		cout << "Added: " << data.getSize() << data.getSourcePosition().toString() << '\n';
+	}
+
 	void getNextToken(){
 		if (!data.eof()){	
-				currentToken = getToken();
+			cout << "Data isnt eof\n";
+				try {
+					currentToken = getToken();
+				}
+				catch (LexerException le) {
+					recover();
+					return;
+				}
+
 				if(!currentToken.typeEqulasTo(Token::NONE)){
-					output.push_back(currentToken);
-					this->size++;
+					addToOutput(currentToken);
 				}	
 		}
 		else{
-			output.push_back(Token (Token::END, data.sourcePosition));
+			cout << "Hurrah!\n";
+			addToOutput(Token (Token::END, data.sourcePosition));
 			this->wasEof = true;
-			this->size++;
 		}
 
 	}
 
 	Token tokenAt(int index){
 		
+		if(eof() && index >= this->size){
+			throw LexerException("Invalid index of token");
+		}
+		
 		while (!eof() && index >= this->size){
 			getNextToken();
-		}
-	
+		}	
+		cout << "Trying to get token at " << index << "\n";
 
 		if(eof() && index >= this->size){
 			throw LexerException("Invalid index of token");
 		}
+		
 
 		return output[index];
 	}

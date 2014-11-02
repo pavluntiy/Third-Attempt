@@ -12,6 +12,7 @@ int main () {
 		try{
 			while(!lexer.eof()){
 				cout << lexer[i];
+				cout.flush();
 				++i;
 			}
 		}

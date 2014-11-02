@@ -18,7 +18,8 @@ public:
 		FLOAT,
 		CHAR,
 		STRING,
-		OPERATOR
+		OPERATOR,
+		ERROR
 	};
 
 private:	
@@ -52,6 +53,7 @@ public:
 			case Type::CHAR: return "CHAR"; break;
 			case Type::STRING: return "STRING"; break;
 			case Type::OPERATOR: return "OPERATOR"; break;
+			case Type::ERROR: return "ERROR"; break;
 		}
 		return "NONE";
 	}
