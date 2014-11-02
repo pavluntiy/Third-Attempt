@@ -25,24 +25,36 @@ public:
 		output.push_back(Token(Token::BEGIN));
 	}
 
+	char currentChar(){
+		if(this->data.eof()){
+			setEof();
+			return '\n';
+		}
+		return this->data.currentChar;
+	}
+
+	void setEof(){
+		this->wasEof = true;
+	}
+
 	Token tryAndGetOctal(bool zeroFound, string buffer){
 		if(!zeroFound){
 			return Token();
 		}
 		Position startPosition = data.sourcePosition;
 
-		while(Alphabet::is<Alphabet::ZERO>(data.currentChar)){
+		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
 			data.consume();
 		}
 
-		if(Alphabet::is<Alphabet::OCTAL_DIGIT>(data.currentChar)){
-			while(Alphabet::is<Alphabet::DECIMAL_DIGIT>(data.currentChar)  
-				|| Alphabet::is<Alphabet::UNDERSCORE>(data.currentChar)
+		if(Alphabet::is<Alphabet::OCTAL_DIGIT>(currentChar())){
+			while(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())  
+				|| Alphabet::is<Alphabet::UNDERSCORE>(currentChar())
 			){
 				 
 
-				if(!Alphabet::is<Alphabet::UNDERSCORE>(data.currentChar)){
-					buffer += data.currentChar;
+				if(!Alphabet::is<Alphabet::UNDERSCORE>(currentChar())){
+					buffer += currentChar();
 				}
 					
 				data.consume();
@@ -55,7 +67,7 @@ public:
 			return Token();
 		}
 
-		if(data.currentChar == '.'){
+		if(currentChar() == '.'){
 				 	data.restore();
 				 	return Token();
 		}
@@ -68,27 +80,27 @@ public:
 
 
 
-		while(Alphabet::is<Alphabet::ZERO>(data.currentChar)){
+		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
 			data.consume();
 		}
 
 		bool isFloat = false;
-		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(data.currentChar) || data.currentChar == '.'){
-			while(Alphabet::is<Alphabet::DECIMAL_DIGIT>(data.currentChar) 
-				|| (data.currentChar == '.' && !data.find("..") )
-				|| Alphabet::is<Alphabet::DECIMAL_DIGIT>(data.currentChar)
-				|| Alphabet::is<Alphabet::UNDERSCORE>(data.currentChar)
+		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) || currentChar() == '.'){
+			while(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) 
+				|| (currentChar() == '.' && !data.find("..") )
+				|| Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())
+				|| Alphabet::is<Alphabet::UNDERSCORE>(currentChar())
 			){	
 
-				if(data.currentChar == '.'){
+				if(currentChar() == '.'){
 					if(isFloat){
 						throw LexerException("FLOAT with excessive dot!");
 					}
 					isFloat = true;
 				}
 
-				if(!Alphabet::is<Alphabet::UNDERSCORE>(data.currentChar)){
-					buffer += data.currentChar;
+				if(!Alphabet::is<Alphabet::UNDERSCORE>(currentChar())){
+					buffer += currentChar();
 				}
 					
 				data.consume();
@@ -105,19 +117,19 @@ public:
 	}
 
 	Token tryAndGetNumeric(){
-		data.setBackup();
+		data.lock();
 		Token result;
 		bool zeroFound = false;
 
 		string buffer = "";
-		if(Alphabet::is<Alphabet::SIGN>(data.currentChar)){
-			buffer += data.currentChar;
+		if(Alphabet::is<Alphabet::SIGN>(currentChar())){
+			buffer += currentChar();
 			data.consume();
 		}
 
-		if (Alphabet::is<Alphabet::ZERO>(data.currentChar)){
+		if (Alphabet::is<Alphabet::ZERO>(currentChar())){
 			zeroFound = true;
-			buffer += data.currentChar;
+			buffer += currentChar();
 			data.consume();
 		}
 
@@ -148,8 +160,8 @@ public:
 	}
 
 	void getWhitespaces(){
-		while(Alphabet::is<Alphabet::WHITESPACE>(data.currentChar) 
-				|| Alphabet::is<Alphabet::NEWLINE>(data.currentChar) 
+		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) 
+				|| Alphabet::is<Alphabet::NEWLINE>(currentChar()) 
 			){
 				data.consume();
 			}
@@ -162,13 +174,13 @@ public:
 				data.isReady();
 			}
 			catch (DataException de){
-				this->wasEof = true;
+				setEof();
 				throw LexerException("Eof already occured!");
 			}
 
 			getWhitespaces();
 			
-			if(Alphabet::is<Alphabet::NUMBER_CHAR>(data.currentChar)){
+			if(Alphabet::is<Alphabet::NUMBER_CHAR>(currentChar())){
 				result = tryAndGetNumeric();
 				if(!result.typeEqulasTo(Token::NONE)){
 					return result;
@@ -178,8 +190,8 @@ public:
 
 
 			if(data.eof()){
-				this->wasEof = true;
-				return Token();
+				setEof();
+				return(Token (Token::END, data.sourcePosition));
 			}
 			throw LexerException("Nothing recognized!");
 			return Token();
@@ -189,31 +201,24 @@ public:
 		return this->wasEof;
 	}
 
-	void recover(string message = ""){
+	void recover(){
 
-
-
-		if(message != ""){
-			addToOutput(Token(Token::ERROR, message));
-
-		}
-
-		data.restorePosition(lastSuccessTokenEnd);
-		cout << "Restored!: ";
-		cout << data.currentChar << '\n';
+		data.recover();
+		cout << currentChar() << '\n';
 
 	}
 
 	void addToOutput (const Token &token){
 		this->output.push_back(token);
 		this->size++;
-		this->lastSuccessTokenEnd = data.getPosition() - 1;
-		cout << "Added: " << data.getSize() << data.getSourcePosition().toString() << '\n';
+	//	this->lastSuccessTokenEnd = data.getPosition() - 1;
+	//	cout << "Added: " << data.getSize() << data.getSourcePosition().toString() << '\n';
+		cout << "Last succeeded token at position " << data.getPosition() << '\n';
+		data.lock();
 	}
 
 	void getNextToken(){
-		if (!data.eof()){	
-			cout << "Data isnt eof\n";
+		
 				try {
 					currentToken = getToken();
 				}
@@ -222,20 +227,14 @@ public:
 					return;
 				}
 
-				if(!currentToken.typeEqulasTo(Token::NONE)){
+		//		if(!currentToken.typeEqulasTo(Token::NONE)){
 					addToOutput(currentToken);
-				}	
-		}
-		else{
-			cout << "Hurrah!\n";
-			addToOutput(Token (Token::END, data.sourcePosition));
-			this->wasEof = true;
-		}
+		//		}	
 
 	}
 
 	Token tokenAt(int index){
-		
+	
 		if(eof() && index >= this->size){
 			throw LexerException("Invalid index of token");
 		}
@@ -243,7 +242,7 @@ public:
 		while (!eof() && index >= this->size){
 			getNextToken();
 		}	
-		cout << "Trying to get token at " << index << "\n";
+	//	cout << "Trying to get token at " << index << "\n";
 
 		if(eof() && index >= this->size){
 			throw LexerException("Invalid index of token");
