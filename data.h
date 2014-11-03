@@ -14,9 +14,11 @@ class Data{
 	int size;
 	bool wasEof;
 	bool ready;
+	bool errorOccured;
 
 	
 	int spacesInTab;
+	string badCharacters;
 
 
 public:
@@ -33,43 +35,69 @@ public:
 		currentPosition = -1;
 		previousPosition = 0;
 		currentChar = '\n';
+		badCharacters = "";
+		errorOccured = false;
 	}
 
-	void pop(){
-		if(str.size() > 0){
-			sourcePosition.linePosition++;
-			this->str.pop_back();
-			this->size--;
-		}	
+	bool wasError(){
+		return this->errorOccured;
 	}
+	string getErrorReport(){
+		this->errorOccured = false;
+		string tmp = this->badCharacters;
+		this->badCharacters = "";
+		return tmp;
+	}
+
+	char pop(){
+		if(str.size() == 0){
+			return '\0';
+		}
+		char tmp = '\0';
+		sourcePosition.linePosition++;
+		tmp = *(end(str) - 1);
+		this->str.pop_back();
+		this->size--;
+		return tmp;	
+	}	
 
 	void push(char c){
 		this->str.push_back(c);
 		this->size++;
 	}
 
+
 	void recover (){
-		if(previousPosition >= this->size){
-	//		cout << "Trash!: " << previousPosition <<  "\n";
-			throw DataException("Invalid resetting of position!");
+	//	this->errorOccured = true;
+
+		while(!eof() && !Alphabet::is<Alphabet::NEWLINE>(this->currentChar)){
+			badCharacters += currentChar;
+			consume();
 		}
 
-		while(this->size > previousPosition){
-			this->pop();
-			// if(previousPosition == -1){
-			// 	break;
-			// }
-		}
 
-	//	cout << "Size: " << this->size << " \n";
+	// 	cout << "Bad character: " << currentChar << endl;
+	// 	if(previousPosition >= this->size){
+	// //		cout << "Trash!: " << previousPosition <<  "\n";
+	// 		throw DataException("Invalid resetting of position!");
+	// 	}
 
-	//	cout << "Restored to " << previousPosition<< "\n";
-		this->currentPosition = previousPosition ;
+	// 	while(this->size > previousPosition){
+	// 		badCharacters.push_back(this->pop());
+	// 		// if(previousPosition == -1){
+	// 		// 	break;
+	// 		// }
+	// 	}
 
-		if(currentPosition == 0){
-			makeReady();
-		}
-		currentChar = this->charAt(this->currentPosition);
+	// //	cout << "Size: " << this->size << " \n";
+
+	// //	cout << "Restored to " << previousPosition<< "\n";
+	// 	this->currentPosition = previousPosition ;
+
+	// 	if(currentPosition == 0){
+	// 		makeReady();
+	// 	}
+	// 	currentChar = this->charAt(this->currentPosition);
 
 	//	cout << "Current char : " << currentChar << endl;
 	}
@@ -168,6 +196,9 @@ public:
 
 	}
 
+	string dataDump(){
+		return this->str;
+	}
 	void consume(){
 
 		if (Alphabet::is<Alphabet::NEWLINE>(currentChar)){

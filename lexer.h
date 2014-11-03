@@ -41,9 +41,10 @@ public:
 		if(!zeroFound){
 			return Token();
 		}
-		Position startPosition = data.sourcePosition;
+	//	Position startPosition = data.sourcePosition;
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
+	//		cout << "#1\n";
 			data.consume();
 		}
 
@@ -56,7 +57,8 @@ public:
 				if(!Alphabet::is<Alphabet::UNDERSCORE>(currentChar())){
 					buffer += currentChar();
 				}
-					
+				
+	//			cout << "#2\n";
 				data.consume();
 
 			}
@@ -81,6 +83,7 @@ public:
 
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
+		//	cout << "#3\n";
 			data.consume();
 		}
 
@@ -102,7 +105,8 @@ public:
 				if(!Alphabet::is<Alphabet::UNDERSCORE>(currentChar())){
 					buffer += currentChar();
 				}
-					
+
+		//		cout << "#4\n";
 				data.consume();
 
 			}
@@ -124,12 +128,14 @@ public:
 		string buffer = "";
 		if(Alphabet::is<Alphabet::SIGN>(currentChar())){
 			buffer += currentChar();
+	//		cout << "#5\n";
 			data.consume();
 		}
 
 		if (Alphabet::is<Alphabet::ZERO>(currentChar())){
 			zeroFound = true;
 			buffer += currentChar();
+	//		cout << "#6\n";
 			data.consume();
 		}
 
@@ -163,6 +169,7 @@ public:
 		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) 
 				|| Alphabet::is<Alphabet::NEWLINE>(currentChar()) 
 			){
+	//			cout << "#7\n";
 				data.consume();
 			}
 	}
@@ -181,7 +188,14 @@ public:
 
 
 
-			getWhitespaces();
+			try {
+				getWhitespaces();
+			}
+			catch (DataException de){
+				setEof();
+			//	cout << data.dataDump();
+				return(Token (Token::END, data.sourcePosition));
+			}
 			
 
 			if(Alphabet::is<Alphabet::NUMBER_CHAR>(currentChar())){
@@ -197,8 +211,10 @@ public:
 
 			if(data.eof()){
 				setEof();
-				cout << "Returning end\n";
+			//	cout << "Returning end\n";
+			//	cout << data.dataDump();
 				return(Token (Token::END, data.sourcePosition));
+
 			}
 			throw LexerException("Nothing recognized!");
 			return Token();
@@ -211,7 +227,8 @@ public:
 	void recover(){
 
 		data.recover();
-		cout << currentChar() << '\n';
+	//	data.consume();
+	//	cout << currentChar() << '\n';
 
 	}
 
@@ -220,7 +237,7 @@ public:
 		this->size++;
 	//	this->lastSuccessTokenEnd = data.getPosition() - 1;
 	//	cout << "Added: " << data.getSize() << data.getSourcePosition().toString() << '\n';
-		cout << "Last succeeded token at position " << data.getPosition() << '\n';
+	//	cout << "Last succeeded token at position " << data.getPosition() << '\n';
 		data.lock();
 	}
 
@@ -231,12 +248,14 @@ public:
 				}
 				catch (LexerException le) {
 					recover();
+					addToOutput(Token(Token::ERROR, data.getErrorReport(), "", data.previousSourcePosition));
+			//		addToOutput(Token(Token::ERROR, le.what()));
 					return;
 				}
 
-
 		//		if(!currentToken.typeEqulasTo(Token::NONE)){
-					addToOutput(currentToken);
+					
+				addToOutput(currentToken);
 		//		}	
 
 	}
@@ -251,12 +270,12 @@ public:
 	//		cout << "blabla\n\n";
 			getNextToken();
 		}	
-		cout << "Trying to get token at " << index << "\n";
+	//	cout << "Trying to get token at " << index << "\n";
 
 	//	cout << "Hurrah!\n";
-		if(eof() && index >= this->size){
-			throw LexerException("Invalid index of token");
-		}
+		// if(eof() && index >= this->size){
+		// 	throw LexerException("Invalid index of token");
+		// }
 		
 
 		return output[index];
