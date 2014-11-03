@@ -7,12 +7,26 @@
 
 using namespace std;
 
-int main () {
-	Lexer lexer(cin);
+int main (int argc, char **argv) {
+
+	// istream *in;
+	// ostream *out;
+	// ostream *err;
+
+	// if(argc == 0){
+	// 	in = &cin;
+	// 	out = &cout;
+	// 	err = &cerr;
+	// }
+
+	ifstream fin("input.in");
+
+
+	Lexer lexer(fin);
 	int i = 0;
 		try{
 
-			while(!lexer.eof()){
+			while(!lexer.closed()){
 				try{
 					cout << lexer[i];
 					cout.flush(); 
@@ -24,7 +38,7 @@ int main () {
 			}
 		}
 		catch (LexerException e){
-			cout << e.what() << '\n';
+			cerr << e.what() << '\n';
 		}
 	return 0;
 }

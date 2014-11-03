@@ -19,7 +19,10 @@ public:
 		CHAR,
 		STRING,
 		OPERATOR,
-		ERROR
+		ERROR,
+		NAME,
+		DIRECTIVE,
+		COMMENT
 	};
 
 private:	
@@ -55,6 +58,9 @@ public:
 			case Type::STRING: return "STRING"; break;
 			case Type::OPERATOR: return "OPERATOR"; break;
 			case Type::ERROR: return "ERROR"; break;
+			case Type::NAME: return "NAME"; break;
+			case Type::DIRECTIVE: return "DIRECTIVE"; break;
+			case Type::COMMENT: return "COMMENT"; break;
 		}
 		return "NONE";
 	}

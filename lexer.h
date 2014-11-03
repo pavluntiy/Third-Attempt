@@ -36,6 +36,18 @@ public:
 
 	void setEof(){
 		this->wasEof = true;
+//		this->addToOutput(Token (Token::END, data.sourcePosition));
+	}
+
+	bool closed(){
+		static bool previousTokenWasLast = false;
+		if(!previousTokenWasLast && eof()){
+			previousTokenWasLast = true;
+			return false;
+		}
+
+		return eof();
+
 	}
 
 	string getSuffix(){
@@ -390,6 +402,42 @@ public:
 		return Token(Token::NEWLINE, "", "invisible", data.previousSourcePosition);
 	}
 
+	Token tryAndGetWord(){
+		string buffer = "";
+
+		while(Alphabet::is<Alphabet::LETTER>(currentChar()) || Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())){
+			buffer += currentChar();
+			data.consume();
+		}
+
+
+		return Token(Token::NAME, buffer, "", data.previousSourcePosition);
+	}
+
+	Token tryAndGetOneLineComment (){
+		string buffer = "//";
+		data.get("//");
+
+		while(!Alphabet::is<Alphabet::NEWLINE>(currentChar())){
+			buffer += currentChar();
+			data.consume();
+		}
+
+
+		return Token(Token::COMMENT, buffer, "", data.previousSourcePosition);
+	}
+
+	Token tryAndGetDirective(){
+		std::string buffer = "";
+		buffer += '#';
+		data.consume();
+		while (!Alphabet::is<Alphabet::NEWLINE>(currentChar()) && !data.find("//") && !data.find("/*")){
+			buffer += currentChar();
+			data.consume();
+		}
+		return Token(Token::DIRECTIVE, buffer, "", data.previousSourcePosition);
+	}
+
 
 	Token getToken(){
 			Token result;
@@ -421,6 +469,7 @@ public:
 				catch(DataException de){
 					setEof();
 				//	cout << data.dataDump();
+				//	cout << "asdfasdfasdf";
 					return(Token (Token::END, data.sourcePosition));
 				}
 			}
@@ -466,6 +515,45 @@ public:
 				}
 			}
 
+			if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+				try{
+					result = tryAndGetWord();
+					return result;
+				}
+				catch (LexerException le){
+
+					if(le.getType() != MyException::Type::DEFAULT){
+						throw le;
+					}
+				}
+			}
+
+			if(currentChar() == '#'){
+				try{
+					result = tryAndGetDirective();
+					return result;
+				}
+				catch (LexerException le){
+
+					if(le.getType() != MyException::Type::DEFAULT){
+						throw le;
+					}
+				}
+			}
+
+			if(data.find("//")){
+				try{
+					result = tryAndGetOneLineComment();
+					return result;
+				}
+				catch (LexerException le){
+
+					if(le.getType() != MyException::Type::DEFAULT){
+						throw le;
+					}
+				}
+			}
+
 
 
 
@@ -477,6 +565,7 @@ public:
 				setEof();
 			//	cout << "Returning end\n";
 			//	cout << data.dataDump();
+			//	cout << "opqwerqweqweq";
 				return(Token (Token::END, data.sourcePosition));
 
 			}
@@ -541,11 +630,16 @@ public:
 			getNextToken();
 		}	
 	//	cout << "Trying to get token at " << index << "\n";
-
+	//	cout << currentToken;
 	//	cout << "Hurrah!\n";
 		// if(eof() && index >= this->size){
 		// 	throw LexerException("Invalid index of token");
 		// }
+
+		if(eof()){
+			addToOutput(Token (Token::END, data.sourcePosition));
+		}
+
 		
 
 		return output[index];
