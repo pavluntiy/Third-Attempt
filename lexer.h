@@ -209,7 +209,7 @@ public:
 		}
 
 		if(buffer.size() == 1 && Alphabet::is<Alphabet::SIGN>(buffer[0])){
-			throw LexerException("Orphan sign!", MyException::Type::NOTICE);
+			throw LexerException("Orphan sign!");
 		}
 
 		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
@@ -302,6 +302,7 @@ public:
 				return result;
 			}
 			catch(LexerException le){
+				data.restore();
 				if(le.getType() !=  MyException::Type::DEFAULT){
 				throw le;
 				}
@@ -316,6 +317,7 @@ public:
 				return result;
 			}
 			catch(LexerException le){
+				data.restore();
 				if(le.getType() !=  MyException::Type::DEFAULT){
 				throw le;
 				}
@@ -328,6 +330,7 @@ public:
 				return result;
 			}
 			catch(LexerException le){
+				data.restore();
 				if(le.getType() !=  MyException::Type::DEFAULT){
 					throw le;
 				}
@@ -340,6 +343,7 @@ public:
 			return result;
 		}
 		catch(LexerException le){
+			data.restore();
 			if(le.getType() !=  MyException::Type::DEFAULT){
 				throw le;
 			}
@@ -439,6 +443,82 @@ public:
 	}
 
 
+	Token getSlashVariants(){
+			data.consume();
+			if (currentChar() == '/'){
+				data.consume();
+				return Token(Token::OPERATOR, "//", "", data.previousSourcePosition);
+			}
+			else if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "/=", "", data.previousSourcePosition);
+			}
+			else {
+				return Token(Token::OPERATOR, "/", "", data.previousSourcePosition);
+			}
+	}
+
+	Token getPlusVariants (){
+		data.consume();
+		if ( currentChar() == '+' ){
+				data.consume();
+				return Token(Token::OPERATOR, "++", "", data.previousSourcePosition); 
+		}
+		else if ( currentChar() == '=' ){
+				data.consume();
+				return Token(Token::OPERATOR, "+=", "", data.previousSourcePosition);
+		}
+		else {
+			return Token(Token::OPERATOR, "+", "", data.previousSourcePosition);
+		}
+	}
+
+	Token getMinusVariants (){
+		data.consume();
+		if ( currentChar() == '-' ){
+				data.consume();
+				return Token(Token::OPERATOR, "--", "", data.previousSourcePosition); 
+		}
+		else if ( currentChar() == '=' ){
+				data.consume();
+				return Token(Token::OPERATOR, "-=", "", data.previousSourcePosition);
+		}
+		else {
+			return Token(Token::OPERATOR, "-", "", data.previousSourcePosition);
+		}
+	}
+
+	Token getStarVariants(){
+		data.consume();
+		if ( currentChar() == '*' ){
+			data.consume();
+			return Token(Token::OPERATOR, "**", "", data.previousSourcePosition); 
+		}
+		else if ( currentChar() == '=' ){
+			data.consume();
+			return Token(Token::OPERATOR, "*=", "", data.previousSourcePosition); 
+		}
+		else {
+			return Token(Token::OPERATOR, "*", "", data.previousSourcePosition); 
+		}
+
+	}
+
+	Token tryAndGetOperator(){
+
+		switch (currentChar()){
+			case '/': return getSlashVariants(); break;
+			case '+': return getPlusVariants(); break;
+			case '-': return getMinusVariants(); break;
+			case '*': return getStarVariants(); break;
+		}
+
+		throw LexerException("Nothing found!");
+
+
+	}
+
+
 	Token getToken(){
 			Token result;
 			try{
@@ -446,7 +526,7 @@ public:
 			}
 			catch (DataException de){
 				setEof();
-				return Token(Token::END, data.sourcePosition);
+			//	return Token(Token::END, data.sourcePosition);
 				throw LexerException("Eof already occured!");
 			}
 
@@ -482,7 +562,6 @@ public:
 					return result;
 				}
 				catch (LexerException le){
-
 					if(le.getType() != MyException::Type::DEFAULT){
 						throw le;
 					}
@@ -554,8 +633,15 @@ public:
 				}
 			}
 
-
-
+			try{
+				result = tryAndGetOperator();
+				return result;
+			}
+			catch (LexerException le){
+				if(le.getType() != MyException::Type::DEFAULT){
+					throw le;
+				}
+			}
 
 	//		cout << "Nothing strange!\n\n";
 
@@ -566,7 +652,7 @@ public:
 			//	cout << "Returning end\n";
 			//	cout << data.dataDump();
 			//	cout << "opqwerqweqweq";
-				return(Token (Token::END, data.sourcePosition));
+			//	return(Token (Token::END, data.sourcePosition));
 
 			}
 			throw LexerException("Unknown characters ", MyException::Type::NOTICE);
@@ -583,6 +669,7 @@ public:
 			output[i].setType(Token::NONE);
 		}
 		
+	//	cout << "Blablab" << endl;
 		data.recover();
 	//	data.consume();
 	//	cout << currentChar() << '\n';
@@ -626,6 +713,7 @@ public:
 		}
 		
 		while (!eof() && index >= this->size){
+	//	while(index >= this->size){
 	//		cout << "blabla\n\n";
 			getNextToken();
 		}	
@@ -636,9 +724,9 @@ public:
 		// 	throw LexerException("Invalid index of token");
 		// }
 
-		if(eof()){
-			addToOutput(Token (Token::END, data.sourcePosition));
-		}
+		// if(eof()){
+		// 	addToOutput(Token (Token::END, data.sourcePosition));
+		// }
 
 		
 

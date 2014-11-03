@@ -22,11 +22,12 @@ int main (int argc, char **argv) {
 	ifstream fin("input.in");
 
 
-	Lexer lexer(fin);
+	Lexer lexer(cin);
 	int i = 0;
 		try{
 
-			while(!lexer.closed()){
+			while(!lexer.eof()){
+			//while(true){
 				try{
 					cout << lexer[i];
 					cout.flush(); 
