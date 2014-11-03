@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include "manager.h"
 #include "lexer.h"
 
 using namespace std;

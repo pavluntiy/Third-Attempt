@@ -1,17 +1,14 @@
 #ifndef DATA_EXCEPTION
 #define DATA_EXCEPTION
 
-#include <exception>
+#include "my_exception.h"
 #include <string>
 
-class DataException : public std::exception {
-	std::string error;
+class DataException : public MyException {
 public:
-	DataException (std::string error){
-		this->error = error;
-	}
-	std::string what(){
-		return this->error;
+	DataException (std::string error, Type type = Type::DEFAULT):
+	MyException(error, type)
+	{
 	}
 };
 

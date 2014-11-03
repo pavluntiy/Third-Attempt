@@ -126,7 +126,7 @@ public:
 
 		if(index >= this->size){
 			while (!eof() && index >= this->size){
-				char c = in.get();
+				char c = static_cast<char>(in.get());
 				this->push(c);
 			}
 		}
@@ -229,8 +229,9 @@ public:
 
 	bool get(std::string text){
 		for (int i = 0; i < (int) text.size(); i++){
-			if (text[i] != this->charAt(currentPosition + i));
+			if (text[i] != this->charAt(currentPosition + i)){
 				return false;
+			}
 		}
 
 		for (int i = 0; i < (int) text.size(); i++){
@@ -259,8 +260,9 @@ public:
 
 	bool find(std::string text){
 		for (int i = 0; i < (int) text.size(); i++){
-			if (text[i] != this->charAt(currentPosition + i));
+			if (text[i] != this->charAt(currentPosition + i)){
 				return false;
+			}
 		}
 		return true;
 	}

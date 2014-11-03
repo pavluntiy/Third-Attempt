@@ -23,6 +23,7 @@ public:
 		this->wasEof = false;
 		this->size = 1;
 		output.push_back(Token(Token::BEGIN));
+		currentToken = output[0];
 	}
 
 	char currentChar(){
@@ -37,19 +38,34 @@ public:
 		this->wasEof = true;
 	}
 
+	string getSuffix(){
+
+			string buffer = "";
+			buffer += currentChar();
+			data.consume();
+
+			while(
+				Alphabet::is<Alphabet::LATIN_LETTER>(currentChar()) ||
+				Alphabet::is<Alphabet::UNDERSCORE>(currentChar()) ||
+				Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())
+			){
+				buffer += currentChar();
+				data.consume();
+			}
+			return buffer;
+	}
+
 	Token tryAndGetOctal(bool zeroFound, string buffer){
 		if(!zeroFound){
-			return Token();
+			throw LexerException("No octal found!");
 		}
-	//	Position startPosition = data.sourcePosition;
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
-	//		cout << "#1\n";
 			data.consume();
 		}
 
 		if(Alphabet::is<Alphabet::OCTAL_DIGIT>(currentChar())){
-			while(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())  
+			while(Alphabet::is<Alphabet::OCTAL_DIGIT>(currentChar())  
 				|| Alphabet::is<Alphabet::UNDERSCORE>(currentChar())
 			){
 				 
@@ -58,27 +74,91 @@ public:
 					buffer += currentChar();
 				}
 				
-	//			cout << "#2\n";
 				data.consume();
 
 			}
 		}
 
+
+		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) || Alphabet::is<Alphabet::HEXADECIMAL_DIGIT>(currentChar())){
+			throw LexerException("Nonoctal digits in octal number!", MyException::Type::NOTICE);
+		}
+
 		if(buffer == "0"){
 			data.restore();
-			return Token();
+			throw LexerException("No octal found!");
 		}
 
 		if(currentChar() == '.'){
 				 	data.restore();
-				 	return Token();
+				 	throw LexerException("No fractions are allowed for octal", MyException::Type::NOTICE);
+		}
+
+
+		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
+		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
+		// }
+		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+			buffer += getSuffix();		
 		}
 
 		return Token(Token::INT, buffer, "octal", data.previousSourcePosition);
 
 	}
 
-	Token tryAndGetDecimal(bool zeroFound, string buffer){
+	Token tryAndGetHexadecimal(string buffer){
+
+		int zeroes = 0;
+		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
+			++zeroes;
+			data.consume();
+		}
+
+		if(Alphabet::is<Alphabet::HEXADECIMAL_DIGIT>(currentChar())){
+			while(Alphabet::is<Alphabet::HEXADECIMAL_DIGIT>(currentChar())  
+				|| Alphabet::is<Alphabet::UNDERSCORE>(currentChar())
+			){
+				 
+
+				if(!Alphabet::is<Alphabet::UNDERSCORE>(currentChar())){
+					buffer += currentChar();
+				}
+				
+				data.consume();
+
+			}
+		}
+
+		if(buffer == "0x" || buffer == "0X"){
+			if(!zeroes){
+				data.restore();
+				throw LexerException("No hexadecimal found!");
+			}
+			else{
+				buffer += '0';
+			}
+		}
+
+
+
+		if(currentChar() == '.'){
+				 	data.restore();
+				 	throw LexerException("No fractions are allowed for hexadecimal", MyException::Type::NOTICE);
+		}
+
+
+		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
+		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
+		// }
+		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+			buffer += getSuffix();		
+		}
+
+		return Token(Token::INT, buffer, "hexadecimal", data.previousSourcePosition);
+
+	}
+
+	Token tryAndGetDecimal(string buffer){
 
 
 
@@ -97,7 +177,7 @@ public:
 
 				if(currentChar() == '.'){
 					if(isFloat){
-						throw LexerException("FLOAT with excessive dot!");
+						throw LexerException("FLOAT with excessive dot!",  MyException::Type::NOTICE);
 					}
 					isFloat = true;
 				}
@@ -116,9 +196,73 @@ public:
 			return Token(Token::FLOAT, buffer, "decimal", data.previousSourcePosition);
 		}
 
+		if(buffer.size() == 1 && Alphabet::is<Alphabet::SIGN>(buffer[0])){
+			throw LexerException("Orphan sign!", MyException::Type::NOTICE);
+		}
+
+		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
+		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
+		// }
+		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+			buffer += getSuffix();		
+		}
+
 		return Token(Token::INT, buffer, "decimal", data.previousSourcePosition);
 
 	}
+
+	Token tryAndGetBinary(string buffer){
+
+		int zeroes = 0;
+		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
+			++zeroes;
+			data.consume();
+		}
+
+		if(Alphabet::is<Alphabet::BINARY_DIGIT>(currentChar())){
+			while(Alphabet::is<Alphabet::BINARY_DIGIT>(currentChar())  
+				|| Alphabet::is<Alphabet::UNDERSCORE>(currentChar())
+			){
+				 
+
+				if(!Alphabet::is<Alphabet::UNDERSCORE>(currentChar())){
+					buffer += currentChar();
+				}
+				
+				data.consume();
+
+			}
+		}
+
+		if(buffer == "0b" || buffer == "0B"){
+			if(!zeroes){
+				data.restore();
+				throw LexerException("No binary found!");
+			}
+			else{
+				buffer += '0';
+			}
+		}
+
+
+
+		if(currentChar() == '.'){
+				 	data.restore();
+				 	throw LexerException("No fractions are allowed for binary", MyException::Type::NOTICE);
+		}
+
+
+		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
+		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
+		// }
+		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+			buffer += getSuffix();		
+		}
+
+		return Token(Token::INT, buffer, "binar", data.previousSourcePosition);
+
+	}
+
 
 	Token tryAndGetNumeric(){
 		data.lock();
@@ -128,50 +272,122 @@ public:
 		string buffer = "";
 		if(Alphabet::is<Alphabet::SIGN>(currentChar())){
 			buffer += currentChar();
-	//		cout << "#5\n";
 			data.consume();
 		}
 
 		if (Alphabet::is<Alphabet::ZERO>(currentChar())){
 			zeroFound = true;
 			buffer += currentChar();
-	//		cout << "#6\n";
 			data.consume();
 		}
 
-	//	data.setBackup();
 
-	/*	result = tryAndGetHexadecimal(zeroFound);
-		if (!result.typeEqulasTo(Token::NONE)){
-			return result;
+		if(zeroFound && (currentChar() == 'x' || currentChar() == 'X')){
+			buffer += currentChar();
+			data.consume();
+			try{
+				result = tryAndGetHexadecimal(buffer);
+				return result;
+			}
+			catch(LexerException le){
+				if(le.getType() !=  MyException::Type::DEFAULT){
+				throw le;
+				}
+			}
 		}
 
-		numeric = tryAndGetBinar(zeroFound);
-		if (!result.typeEqulasTo(Token::NONE)){
-			return result;
+		if(zeroFound && (currentChar() == 'b' || currentChar() == 'B')){
+			buffer += currentChar();
+			data.consume();
+			try{
+				result = tryAndGetBinary(buffer);
+				return result;
+			}
+			catch(LexerException le){
+				if(le.getType() !=  MyException::Type::DEFAULT){
+				throw le;
+				}
+			}
 		}
-	*/
-		result = tryAndGetOctal(zeroFound, buffer);
-		if (!result.typeEqulasTo(Token::NONE)){
-			return result;
-		}
+	
+		if(zeroFound){
+			try{
+				result = tryAndGetOctal(zeroFound, buffer);
+				return result;
+			}
+			catch(LexerException le){
+				if(le.getType() !=  MyException::Type::DEFAULT){
+					throw le;
+				}
+
+			}
+		}	
 		
-
-		result = tryAndGetDecimal(zeroFound, buffer);
-		if (!result.typeEqulasTo(Token::NONE)){
+		try{
+			result = tryAndGetDecimal( buffer);
 			return result;
 		}
+		catch(LexerException le){
+			if(le.getType() !=  MyException::Type::DEFAULT){
+				throw le;
+			}
+		}
 
+		throw LexerException ("No numeric found!");
 		return Token(Token::NONE);
 	}
 
+	Token tryAndGetChar(){
+
+		string buffer = "";
+		buffer += currentChar();
+		data.consume();
+
+		while(currentChar() != '\''){
+			buffer += currentChar();
+			data.consume();
+		}
+		buffer += '\'';
+		data.consume();
+
+		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+			buffer += getSuffix();		
+		}
+
+
+		return Token(Token::CHAR, buffer, "", data.previousSourcePosition);
+	}
+
+	Token tryAndGetString(){
+
+		string buffer = "";
+		buffer += currentChar();
+		data.consume();
+
+		while(currentChar() != '\"'){
+			buffer += currentChar();
+			data.consume();
+		}
+		buffer += '\"';
+		data.consume();
+
+		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
+			buffer += getSuffix();		
+		}
+		return Token(Token::STRING, buffer, "", data.previousSourcePosition);
+	}
+
 	void getWhitespaces(){
-		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) 
-				|| Alphabet::is<Alphabet::NEWLINE>(currentChar()) 
-			){
-	//			cout << "#7\n";
+		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) && !Alphabet::is<Alphabet::NEWLINE>(currentChar())) {
 				data.consume();
 			}
+	}
+
+	Token getNewLine(){
+		while(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
+			data.consume();
+		}
+		return Token(Token::NEWLINE, "", "invisible", data.previousSourcePosition);
 	}
 
 
@@ -196,14 +412,62 @@ public:
 			//	cout << data.dataDump();
 				return(Token (Token::END, data.sourcePosition));
 			}
+
+			if(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
+				try {
+					result = getNewLine();
+					return result;
+				}
+				catch(DataException de){
+					setEof();
+				//	cout << data.dataDump();
+					return(Token (Token::END, data.sourcePosition));
+				}
+			}
+
 			
 
 			if(Alphabet::is<Alphabet::NUMBER_CHAR>(currentChar())){
-				result = tryAndGetNumeric();
-				if(!result.typeEqulasTo(Token::NONE)){
+				try{
+					result = tryAndGetNumeric();
 					return result;
 				}
+				catch (LexerException le){
+
+					if(le.getType() != MyException::Type::DEFAULT){
+						throw le;
+					}
+				}
 			}
+
+			if(currentChar() == '\''){
+				try{
+					result = tryAndGetChar();
+					return result;
+				}
+				catch (LexerException le){
+
+					if(le.getType() != MyException::Type::DEFAULT){
+						throw le;
+					}
+				}
+			}
+
+			if(currentChar() == '\"'){
+				try{
+					result = tryAndGetString();
+					return result;
+				}
+				catch (LexerException le){
+
+					if(le.getType() != MyException::Type::DEFAULT){
+						throw le;
+					}
+				}
+			}
+
+
+
 
 	//		cout << "Nothing strange!\n\n";
 
@@ -216,7 +480,7 @@ public:
 				return(Token (Token::END, data.sourcePosition));
 
 			}
-			throw LexerException("Nothing recognized!");
+			throw LexerException("Unknown characters ", MyException::Type::NOTICE);
 			return Token();
 	}
 
@@ -226,13 +490,19 @@ public:
 
 	void recover(){
 
+		for(int i = this->size - 1; i > 1 && !output[i].typeEqulasTo(Token::NEWLINE); --i){
+			output[i].setType(Token::NONE);
+		}
+		
 		data.recover();
 	//	data.consume();
 	//	cout << currentChar() << '\n';
 
 	}
 
+
 	void addToOutput (const Token &token){
+		this->currentToken = token;
 		this->output.push_back(token);
 		this->size++;
 	//	this->lastSuccessTokenEnd = data.getPosition() - 1;
@@ -248,7 +518,7 @@ public:
 				}
 				catch (LexerException le) {
 					recover();
-					addToOutput(Token(Token::ERROR, data.getErrorReport(), "", data.previousSourcePosition));
+					addToOutput(Token(Token::ERROR, le.what() + ": " + data.getErrorReport(), "", data.previousSourcePosition));
 			//		addToOutput(Token(Token::ERROR, le.what()));
 					return;
 				}

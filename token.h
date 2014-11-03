@@ -10,7 +10,7 @@ class Token {
 
 public:	
 	enum  Type {
-		
+		NEWLINE,
 		BEGIN,
 		END,
 		NONE,
@@ -45,6 +45,7 @@ public:
 	string typeToString()
 	const{
 		switch (this->type){
+			case Type::NEWLINE: return "NEWLINE"; break;
 			case Type::BEGIN: return "BEGIN"; break;
 			case Type::END: return "END"; break;
 			case Type::NONE: return "NONE"; break;
@@ -78,11 +79,22 @@ public:
 		return str;
 	}
 
+	bool isInvisible()
+	const{
+		return this->note == "invisible";
+	}
+
+	void setType(Token::Type type){
+		this->type = type;
+	}
+
 
 
 };
  ostream& operator << (ostream &cout, const Token &token){
- 	cout << token.toString() << '\n';
+ 	if(!token.isInvisible()){
+ 		cout << token.toString() << '\n';
+ 	}
  	return cout;
  }
 
