@@ -3,6 +3,7 @@
 
 #include "token.h"
 #include "lexer_exception.h"
+#include "notice_exception.h"
 #include "data.h"
 #include "alphabet.h"
 #include <vector>
@@ -64,11 +65,12 @@ public:
 				buffer += currentChar();
 				data.consume();
 			}
-			return buffer;
+			return " ::: " + buffer;
 	}
 
 	Token tryAndGetOctal(bool zeroFound, string buffer){
 		if(!zeroFound){
+			data.restore();
 			throw LexerException("No octal found!");
 		}
 
@@ -93,17 +95,16 @@ public:
 
 
 		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) || Alphabet::is<Alphabet::HEXADECIMAL_DIGIT>(currentChar())){
-			throw LexerException("Nonoctal digits in octal number!", MyException::Type::NOTICE);
+			throw LexerException("Nonoctal digits in octal number!");
 		}
 
 		if(buffer == "0"){
 			data.restore();
-			throw LexerException("No octal found!");
+			throw NoticeException("No octal found!");
 		}
 
 		if(currentChar() == '.'){
-				 	data.restore();
-				 	throw LexerException("No fractions are allowed for octal", MyException::Type::NOTICE);
+				 	throw LexerException("No fractions are allowed for octal");
 		}
 
 
@@ -114,7 +115,7 @@ public:
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "octal", data.previousSourcePosition);
+		return Token(Token::INT, buffer, "octal", data.getPreviousSourcePosition());
 
 	}
 
@@ -144,7 +145,7 @@ public:
 		if(buffer == "0x" || buffer == "0X"){
 			if(!zeroes){
 				data.restore();
-				throw LexerException("No hexadecimal found!");
+				throw LexerException("Unfinished hexadecimal found!");
 			}
 			else{
 				buffer += '0';
@@ -155,7 +156,7 @@ public:
 
 		if(currentChar() == '.'){
 				 	data.restore();
-				 	throw LexerException("No fractions are allowed for hexadecimal", MyException::Type::NOTICE);
+				 	throw LexerException("No fractions are allowed for hexadecimal");
 		}
 
 
@@ -166,7 +167,7 @@ public:
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "hexadecimal", data.previousSourcePosition);
+		return Token(Token::INT, buffer, "hexadecimal", data.getPreviousSourcePosition());
 
 	}
 
@@ -189,7 +190,8 @@ public:
 
 				if(currentChar() == '.'){
 					if(isFloat){
-						throw LexerException("FLOAT with excessive dot!",  MyException::Type::NOTICE);
+					//	data.restore();
+						throw LexerException("FLOAT with excessive dot!");
 					}
 					isFloat = true;
 				}
@@ -205,11 +207,11 @@ public:
 		}
 
 		if (isFloat){
-			return Token(Token::FLOAT, buffer, "decimal", data.previousSourcePosition);
+			return Token(Token::FLOAT, buffer, "decimal", data.getPreviousSourcePosition());
 		}
 
 		if(buffer.size() == 1 && Alphabet::is<Alphabet::SIGN>(buffer[0])){
-			throw LexerException("Orphan sign!");
+			throw NoticeException("Orphan sign!");
 		}
 
 		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
@@ -219,7 +221,7 @@ public:
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "decimal", data.previousSourcePosition);
+		return Token(Token::INT, buffer, "decimal", data.getPreviousSourcePosition());
 
 	}
 
@@ -260,7 +262,7 @@ public:
 
 		if(currentChar() == '.'){
 				 	data.restore();
-				 	throw LexerException("No fractions are allowed for binary", MyException::Type::NOTICE);
+				 	throw LexerException("No fractions are allowed for binary");
 		}
 
 
@@ -271,7 +273,7 @@ public:
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "binar", data.previousSourcePosition);
+		return Token(Token::INT, buffer, "binar", data.getPreviousSourcePosition());
 
 	}
 
@@ -301,11 +303,8 @@ public:
 				result = tryAndGetHexadecimal(buffer);
 				return result;
 			}
-			catch(LexerException le){
+			catch(NoticeException le){
 				data.restore();
-				if(le.getType() !=  MyException::Type::DEFAULT){
-				throw le;
-				}
 			}
 		}
 
@@ -316,11 +315,8 @@ public:
 				result = tryAndGetBinary(buffer);
 				return result;
 			}
-			catch(LexerException le){
+			catch(NoticeException le){
 				data.restore();
-				if(le.getType() !=  MyException::Type::DEFAULT){
-				throw le;
-				}
 			}
 		}
 	
@@ -329,12 +325,8 @@ public:
 				result = tryAndGetOctal(zeroFound, buffer);
 				return result;
 			}
-			catch(LexerException le){
+			catch(NoticeException le){
 				data.restore();
-				if(le.getType() !=  MyException::Type::DEFAULT){
-					throw le;
-				}
-
 			}
 		}	
 		
@@ -342,14 +334,11 @@ public:
 			result = tryAndGetDecimal( buffer);
 			return result;
 		}
-		catch(LexerException le){
+		catch(NoticeException le){
 			data.restore();
-			if(le.getType() !=  MyException::Type::DEFAULT){
-				throw le;
-			}
 		}
 
-		throw LexerException ("No numeric found!");
+		throw NoticeException ("No numeric found!");
 		return Token(Token::NONE);
 	}
 
@@ -371,10 +360,14 @@ public:
 		}
 
 
-		return Token(Token::CHAR, buffer, "", data.previousSourcePosition);
+		return Token(Token::CHAR, buffer, "", data.getPreviousSourcePosition());
 	}
 
 	Token tryAndGetString(){
+
+		if(currentChar() != '\"'){
+			throw NoticeException("No '\"' found!");
+		}
 
 		string buffer = "";
 		buffer += currentChar();
@@ -390,7 +383,8 @@ public:
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
-		return Token(Token::STRING, buffer, "", data.previousSourcePosition);
+
+		return Token(Token::STRING, buffer, "", data.getPreviousSourcePosition());
 	}
 
 	void getWhitespaces(){
@@ -403,10 +397,13 @@ public:
 		while(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
 			data.consume();
 		}
-		return Token(Token::NEWLINE, "", "invisible", data.previousSourcePosition);
+		return Token(Token::NEWLINE, "", "invisible", data.getPreviousSourcePosition());
 	}
 
 	Token tryAndGetWord(){
+		if(!Alphabet::is<Alphabet::LETTER>(currentChar())){
+			throw NoticeException("No letter found!");
+		}
 		string buffer = "";
 
 		while(Alphabet::is<Alphabet::LETTER>(currentChar()) || Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())){
@@ -415,10 +412,14 @@ public:
 		}
 
 
-		return Token(Token::NAME, buffer, "", data.previousSourcePosition);
+		return Token(Token::NAME, buffer, "", data.getPreviousSourcePosition());
 	}
 
 	Token tryAndGetOneLineComment (){
+		if(!data.find("//")){
+			throw NoticeException("No '//' found!");
+		}
+
 		string buffer = "//";
 		data.get("//");
 
@@ -428,84 +429,100 @@ public:
 		}
 
 
-		return Token(Token::COMMENT, buffer, "", data.previousSourcePosition);
+		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
 	}
 
 	Token tryAndGetDirective(){
-		std::string buffer = "";
-		buffer += '#';
+		if(currentChar() != '#'){
+			throw NoticeException("No '#' found!");
+		}
+
+		std::string buffer = "#";
 		data.consume();
 		while (!Alphabet::is<Alphabet::NEWLINE>(currentChar()) && !data.find("//") && !data.find("/*")){
 			buffer += currentChar();
 			data.consume();
 		}
-		return Token(Token::DIRECTIVE, buffer, "", data.previousSourcePosition);
+		return Token(Token::DIRECTIVE, buffer, "", data.getPreviousSourcePosition());
 	}
 
 
 	Token getSlashVariants(){
+			if(currentChar() != '/'){
+				throw NoticeException("No '/' found!");
+			}
 			data.consume();
 			if (currentChar() == '/'){
 				data.consume();
-				return Token(Token::OPERATOR, "//", "", data.previousSourcePosition);
+				return Token(Token::OPERATOR, "//", "", data.getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
 				data.consume();
-				return Token(Token::OPERATOR, "/=", "", data.previousSourcePosition);
+				return Token(Token::OPERATOR, "/=", "", data.getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "/", "", data.previousSourcePosition);
+				return Token(Token::OPERATOR, "/", "", data.getPreviousSourcePosition());
 			}
 	}
 
 	Token getPlusVariants (){
+		if(currentChar() != '+'){
+			throw NoticeException("No '*' found!");
+		}
 		data.consume();
 		if ( currentChar() == '+' ){
 				data.consume();
-				return Token(Token::OPERATOR, "++", "", data.previousSourcePosition); 
+				return Token(Token::OPERATOR, "++", "", data.getPreviousSourcePosition()); 
 		}
 		else if ( currentChar() == '=' ){
 				data.consume();
-				return Token(Token::OPERATOR, "+=", "", data.previousSourcePosition);
+				return Token(Token::OPERATOR, "+=", "", data.getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, "+", "", data.previousSourcePosition);
+			return Token(Token::OPERATOR, "+", "", data.getPreviousSourcePosition());
 		}
 	}
 
 	Token getMinusVariants (){
+		if(currentChar() != '-'){
+			throw NoticeException("No '-' found!");
+		}
 		data.consume();
 		if ( currentChar() == '-' ){
 				data.consume();
-				return Token(Token::OPERATOR, "--", "", data.previousSourcePosition); 
+				return Token(Token::OPERATOR, "--", "", data.getPreviousSourcePosition()); 
 		}
 		else if ( currentChar() == '=' ){
 				data.consume();
-				return Token(Token::OPERATOR, "-=", "", data.previousSourcePosition);
+				return Token(Token::OPERATOR, "-=", "", data.getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, "-", "", data.previousSourcePosition);
+			return Token(Token::OPERATOR, "-", "", data.getPreviousSourcePosition());
 		}
 	}
 
 	Token getStarVariants(){
+		if(currentChar() != '*'){
+			throw NoticeException("No '*' found!");
+		}
 		data.consume();
 		if ( currentChar() == '*' ){
 			data.consume();
-			return Token(Token::OPERATOR, "**", "", data.previousSourcePosition); 
+			return Token(Token::OPERATOR, "**", "", data.getPreviousSourcePosition()); 
 		}
 		else if ( currentChar() == '=' ){
 			data.consume();
-			return Token(Token::OPERATOR, "*=", "", data.previousSourcePosition); 
+			return Token(Token::OPERATOR, "*=", "", data.getPreviousSourcePosition()); 
 		}
 		else {
-			return Token(Token::OPERATOR, "*", "", data.previousSourcePosition); 
+			return Token(Token::OPERATOR, "*", "", data.getPreviousSourcePosition()); 
 		}
 
 	}
 
 	Token tryAndGetOperator(){
 
+		data.lock();
 		switch (currentChar()){
 			case '/': return getSlashVariants(); break;
 			case '+': return getPlusVariants(); break;
@@ -513,7 +530,8 @@ public:
 			case '*': return getStarVariants(); break;
 		}
 
-		throw LexerException("Nothing found!");
+		data.restore();
+		throw NoticeException("Nothing found!");
 
 
 	}
@@ -561,10 +579,7 @@ public:
 					result = tryAndGetNumeric();
 					return result;
 				}
-				catch (LexerException le){
-					if(le.getType() != MyException::Type::DEFAULT){
-						throw le;
-					}
+				catch (NoticeException le){
 				}
 			}
 
@@ -573,11 +588,7 @@ public:
 					result = tryAndGetChar();
 					return result;
 				}
-				catch (LexerException le){
-
-					if(le.getType() != MyException::Type::DEFAULT){
-						throw le;
-					}
+				catch (NoticeException le){
 				}
 			}
 
@@ -586,11 +597,8 @@ public:
 					result = tryAndGetString();
 					return result;
 				}
-				catch (LexerException le){
+				catch (NoticeException le){
 
-					if(le.getType() != MyException::Type::DEFAULT){
-						throw le;
-					}
 				}
 			}
 
@@ -599,11 +607,7 @@ public:
 					result = tryAndGetWord();
 					return result;
 				}
-				catch (LexerException le){
-
-					if(le.getType() != MyException::Type::DEFAULT){
-						throw le;
-					}
+				catch (NoticeException le){
 				}
 			}
 
@@ -612,11 +616,7 @@ public:
 					result = tryAndGetDirective();
 					return result;
 				}
-				catch (LexerException le){
-
-					if(le.getType() != MyException::Type::DEFAULT){
-						throw le;
-					}
+				catch (NoticeException le){
 				}
 			}
 
@@ -625,11 +625,7 @@ public:
 					result = tryAndGetOneLineComment();
 					return result;
 				}
-				catch (LexerException le){
-
-					if(le.getType() != MyException::Type::DEFAULT){
-						throw le;
-					}
+				catch (NoticeException le){
 				}
 			}
 
@@ -637,10 +633,7 @@ public:
 				result = tryAndGetOperator();
 				return result;
 			}
-			catch (LexerException le){
-				if(le.getType() != MyException::Type::DEFAULT){
-					throw le;
-				}
+			catch (NoticeException le){
 			}
 
 	//		cout << "Nothing strange!\n\n";
@@ -655,7 +648,8 @@ public:
 			//	return(Token (Token::END, data.sourcePosition));
 
 			}
-			throw LexerException("Unknown characters ", MyException::Type::NOTICE);
+			data.restore();
+			throw LexerException("Unknown characters ");
 			return Token();
 	}
 
@@ -694,7 +688,7 @@ public:
 				}
 				catch (LexerException le) {
 					recover();
-					addToOutput(Token(Token::ERROR, le.what() + ": " + data.getErrorReport(), "", data.previousSourcePosition));
+					addToOutput(Token(Token::ERROR, le.what() + ": " + data.getErrorReport(), "", data.getPreviousSourcePosition()));
 			//		addToOutput(Token(Token::ERROR, le.what()));
 					return;
 				}

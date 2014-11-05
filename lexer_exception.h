@@ -1,3 +1,6 @@
+#ifndef LEXER_EXCEPTION
+#define LEXER_EXCEPTION
+
 #include "my_exception.h"
 #include <string>
 
@@ -8,3 +11,5 @@ public:
 	{
 	}
 };
+
+#endif

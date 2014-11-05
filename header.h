@@ -21,6 +21,6 @@ template <typename T>
 void ignore(T arg){
 	volatile T tmp = arg;
 	arg = tmp;
-};
+}
 
 #endif

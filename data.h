@@ -6,6 +6,7 @@
 #include "data_exception.h"
 #include "alphabet.h"
 #include "header.h"
+#include <stack>
 
 class Data{
 
@@ -24,8 +25,10 @@ class Data{
 public:
 
 	char currentChar;
-	Position sourcePosition, previousSourcePosition;
-	int currentPosition, previousPosition;
+	Position sourcePosition;// previousSourcePosition;
+	int currentPosition; //previousPosition;
+	stack<Position> previousSourcePosition;
+	stack<int> previousPosition;
 	Data(istream &in = cin):
 	in(in.rdbuf())
 	{
@@ -33,7 +36,8 @@ public:
 		wasEof = false;
 		ready = false;
 		currentPosition = -1;
-		previousPosition = 0;
+	//	previousPosition = 0;
+		previousPosition.push(0);
 		currentChar = '\n';
 		badCharacters = "";
 		errorOccured = false;
@@ -184,16 +188,29 @@ public:
 	void lock(){
 	//	cout << "Size of str: " << this->size << "\n";
 	//	cout << "Locked on postion " << currentPosition << "\n";
-		this->previousSourcePosition = sourcePosition;
-		this->previousPosition = currentPosition;
+		this->previousSourcePosition.push(sourcePosition);
+		this->previousPosition.push(currentPosition);
 	//	cout << "current char : " << currentChar << "\n";
 	}
 
 	void restore(){
-		this->currentPosition = this->previousPosition;
+		if(this->previousPosition.size() > 0){
+			this->currentPosition = this->previousPosition.top();
+			this->previousPosition.pop();
+		}
+		else{
+			this->currentPosition = 0;
+		}
 	//	this->sourcePosition = this->previousSourcePosition;
 		this->currentChar = this->charAt(currentPosition);
 
+	}
+
+	Position getPreviousSourcePosition(){
+		if(this->previousSourcePosition.size() == 0){
+			return Position();
+		}
+		return this->previousSourcePosition.top();
 	}
 
 	string dataDump(){
