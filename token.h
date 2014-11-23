@@ -21,8 +21,16 @@ public:
 		OPERATOR,
 		ERROR,
 		NAME,
+		KEYWORD,
+		SEMICOLON,
 		DIRECTIVE,
-		COMMENT
+		COMMENT,
+		BRACE_LEFT,
+		BRACE_RIGHT,
+		CURL_LEFT,
+		CURL_RIGHT,
+		BRACKET_LEFT,
+		BRACKET_RIGHT
 	};
 
 private:	
@@ -59,8 +67,16 @@ public:
 			case Type::OPERATOR: return "OPERATOR"; break;
 			case Type::ERROR: return "ERROR"; break;
 			case Type::NAME: return "NAME"; break;
+			case Type::KEYWORD: return "KEYWORD"; break;
+			case Type::SEMICOLON: return "SEMICOLON"; break;
 			case Type::DIRECTIVE: return "DIRECTIVE"; break;
 			case Type::COMMENT: return "COMMENT"; break;
+			case Type::BRACKET_LEFT: return "BRACKET_LEFT"; break;
+			case Type::BRACKET_RIGHT: return "BRACKET_RIGHT"; break;
+			case Type::CURL_LEFT: return "BRACKET_LEFT"; break;
+			case Type::CURL_RIGHT: return "BRACKET_RIGHT"; break;
+			case Type::BRACE_LEFT: return "BRACKET_LEFT"; break;
+			case Type::BRACE_RIGHT: return "BRACKET_RIGHT"; break;
 		}
 		return "NONE";
 	}

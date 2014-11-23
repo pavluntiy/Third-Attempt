@@ -27,6 +27,15 @@ public:
 		currentToken = output[0];
 	}
 
+	// Lexer(Data &&data):
+	// data(move(data))
+	// {
+	// 	this->wasEof = false;
+	// 	this->size = 1;
+	// 	output.push_back(Token(Token::BEGIN));
+	// 	currentToken = output[0];
+	// }
+
 	char currentChar(){
 		if(this->data.eof()){
 			setEof();
@@ -176,9 +185,11 @@ public:
 
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
-		//	cout << "#3\n";
+	//		cout << "#3\n";
 			data.consume();
 		}
+
+	//	cout << "Current char == " << data.currentChar << " ********\n";
 
 		bool isFloat = false;
 		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) || currentChar() == '.'){
@@ -220,6 +231,8 @@ public:
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
+
+	//	cout << "---> " << data.currentPosition  << " :|: " << data.currentChar << '\n';
 
 		return Token(Token::INT, buffer, "decimal", data.getPreviousSourcePosition());
 
@@ -326,12 +339,15 @@ public:
 				return result;
 			}
 			catch(NoticeException le){
-				data.restore();
+			//	cout << "asdfasdfasdfasfasdf\n";
+			//	data.restore();
 			}
+
 		}	
 		
 		try{
-			result = tryAndGetDecimal( buffer);
+	//		cout << ">>>>>>>>>>>>>>>>>>>>>> " << data.currentPosition << '\n';
+			result = tryAndGetDecimal(buffer);
 			return result;
 		}
 		catch(NoticeException le){
@@ -432,6 +448,26 @@ public:
 		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
 	}
 
+	Token tryAndGetMultyLineComment (){
+		if(!data.find("/*")){
+			throw NoticeException("No '/*' found!");
+		}
+
+		string buffer = "/*";
+		data.get("/*");
+
+		while(!data.find("*/")){
+			buffer += currentChar();
+			data.consume();
+		}
+
+		buffer += "*/";
+		data.get("*/");
+
+
+		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
+	}
+
 	Token tryAndGetDirective(){
 		if(currentChar() != '#'){
 			throw NoticeException("No '#' found!");
@@ -520,14 +556,271 @@ public:
 
 	}
 
+	Token getProcentVariants(){
+
+		if(currentChar() != '%'){
+				throw NoticeException("No '%' found!");
+			}
+			data.consume();
+			if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "%=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "%", "", data.getPreviousSourcePosition());
+			}
+	}
+
+	Token getCircumflexVariants(){
+		if(currentChar() != '^'){
+				throw NoticeException("No '^' found!");
+			}
+			data.consume();
+			if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "^=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "^", "", data.getPreviousSourcePosition());
+			}
+	}
+
+	Token getWaveVariants(){
+		if(currentChar() != '~'){
+				throw NoticeException("No '~' found!");
+			}
+			data.consume();
+			if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "~=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "~", "", data.getPreviousSourcePosition());
+			}
+	}
+
+	Token getBraceLeft(){
+		data.consume();
+		return Token(Token::BRACE_LEFT, data.getPreviousSourcePosition());
+	}
+
+	Token getBraceRight(){
+		data.consume();
+		return Token(Token::BRACE_RIGHT, data.getPreviousSourcePosition());
+	}
+
+	Token getBracketLeft(){
+		data.consume();
+		return Token(Token::BRACKET_LEFT, data.getPreviousSourcePosition());
+	}
+
+	Token getBracketRight(){
+		data.consume();
+		return Token(Token::BRACKET_RIGHT, data.getPreviousSourcePosition());
+	}
+
+	Token getCurlLeft(){
+		data.consume();
+		return Token(Token::CURL_LEFT, data.getPreviousSourcePosition());
+	}
+
+	Token getCurlRight(){
+		data.consume();
+		return Token(Token::CURL_RIGHT, data.getPreviousSourcePosition());
+	}
+
+	Token getDotVariants(){
+		data.consume();
+		if (currentChar() == '.'){
+			data.consume();
+			return Token(Token::OPERATOR, "..", "", data.getPreviousSourcePosition());
+		}
+		else {
+			return Token(Token::OPERATOR, ".", "", data.getPreviousSourcePosition());
+		}	
+	}
+
+	Token getComaVariants(){
+		data.consume();
+		return Token(Token::OPERATOR, ",", "", data.getPreviousSourcePosition());	
+	}
+
+	Token  getLessVariants(){
+		data.consume();
+		if(currentChar() == '='){
+			data.consume();
+			return Token(Token::OPERATOR, "<=", "", data.getPreviousSourcePosition());
+		}
+		else if (currentChar() == '<'){
+			data.consume();
+			return Token(Token::OPERATOR, "<<", "", data.getPreviousSourcePosition());
+		}
+		else {
+			return Token(Token::OPERATOR, "<", "", data.getPreviousSourcePosition());
+		}	
+	}
+
+	Token  getGreaterVariants(){
+		data.consume();
+		if(currentChar() == '='){
+			data.consume();
+			return Token(Token::OPERATOR, ">=", "", data.getPreviousSourcePosition());
+		}
+		else if (currentChar() == '>'){
+			data.consume();
+			if(currentChar() == '>'){
+				data.consume();
+				return Token(Token::OPERATOR, ">>>", "", data.getPreviousSourcePosition());
+			}
+			return Token(Token::OPERATOR, ">>", "", data.getPreviousSourcePosition());
+		}
+		else {
+			return Token(Token::OPERATOR, ">", "", data.getPreviousSourcePosition());
+		}	
+	}
+
+
+
+	Token getEqualsVariants(){
+
+			data.consume();
+			if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "==", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "=", "", data.getPreviousSourcePosition());
+			}
+	}
+
+	Token getAmpersandVariants(){
+
+			data.consume();
+			if (currentChar() == '&'){
+				data.consume();
+				return Token(Token::OPERATOR, "&&", "", data.getPreviousSourcePosition());
+			}
+			else if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "&=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "&", "", data.getPreviousSourcePosition());
+			}
+	}
+
+	Token getDashVariants(){
+
+			data.consume();
+			if (currentChar() == '|'){
+				data.consume();
+				return Token(Token::OPERATOR, "||", "", data.getPreviousSourcePosition());
+			}
+			else if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "|=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "|", "", data.getPreviousSourcePosition());
+			}
+	}
+
+	Token getAtVariants(){
+		data.consume();
+		return Token(Token::OPERATOR, "@", "", data.getPreviousSourcePosition());
+	}
+
+	Token getDollarVariants(){
+		data.consume();
+		return Token(Token::OPERATOR, "$", "", data.getPreviousSourcePosition());
+	}
+
+
+	Token getQuestionVariants(){
+		data.consume();
+		return Token(Token::OPERATOR, "?", "", data.getPreviousSourcePosition());
+	}
+
+	Token getColonVariants(){
+		data.consume();
+			if (currentChar() == ':'){
+				data.consume();
+				if(currentChar() == '='){
+					data.consume();
+					return Token(Token::OPERATOR, "::=", "", data.getPreviousSourcePosition());
+				}
+				data.consume();
+				return Token(Token::OPERATOR, "::", "", data.getPreviousSourcePosition());
+			}
+			else if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, ":=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, ":", "", data.getPreviousSourcePosition());
+			}
+		
+	}
+
+	Token getExclamationVariants(){
+
+		data.consume();
+		if (currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "!=", "", data.getPreviousSourcePosition());
+			}
+			else {
+				return Token(Token::OPERATOR, "!", "", data.getPreviousSourcePosition());
+		}
+	}
+
+
+
+
+
+
+
 	Token tryAndGetOperator(){
 
 		data.lock();
 		switch (currentChar()){
 			case '/': return getSlashVariants(); break;
+			case '%': return getProcentVariants(); break;
 			case '+': return getPlusVariants(); break;
 			case '-': return getMinusVariants(); break;
 			case '*': return getStarVariants(); break;
+
+			case '^': return getCircumflexVariants(); break;
+			case '~': return getWaveVariants(); break;
+
+			case '(': return getBraceLeft(); break;
+			case ')': return getBraceRight(); break;
+			
+			case '[': return getBracketLeft(); break;
+			case ']': return getBracketRight(); break; 
+
+			case '{': return getCurlLeft(); break;
+			case '}': return getCurlRight(); break;
+
+			case '.': return getDotVariants(); break;
+			case ',': return getComaVariants(); break;
+
+			case '>': return getGreaterVariants(); break;
+			case '<': return getLessVariants(); break;
+
+			case '=': return getEqualsVariants(); break;
+
+			case '&': return getAmpersandVariants(); break;
+			case '|': return getDashVariants(); break;
+
+			case '@': return getAtVariants(); break;
+			case ':': return getColonVariants(); break;
+
+			case '$': return getDollarVariants(); break;
+
+			case '?' : return getQuestionVariants(); break;
+			case '!' : return getExclamationVariants(); break;
+
 		}
 
 		data.restore();
@@ -629,6 +922,20 @@ public:
 				}
 			}
 
+			if(data.find("/*")){
+				try{
+					result = tryAndGetMultyLineComment();
+					return result;
+				}
+				catch (NoticeException le){
+				}
+			}
+
+			if(currentChar() == ';'){
+				data.consume();
+				return Token(Token::SEMICOLON, data.sourcePosition);
+			}
+
 			try{
 				result = tryAndGetOperator();
 				return result;
@@ -636,7 +943,7 @@ public:
 			catch (NoticeException le){
 			}
 
-	//		cout << "Nothing strange!\n\n";
+			cout << "Nothing strange!\n\n";
 
 
 

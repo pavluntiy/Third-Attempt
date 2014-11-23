@@ -43,6 +43,19 @@ public:
 		errorOccured = false;
 	}
 
+	// Data(Data &&other){
+	// 	in(move(other.in));
+	// 	size = 0;
+	// 	wasEof = false;
+	// 	ready = false;
+	// 	currentPosition = -1;
+	// //	previousPosition = 0;
+	// 	previousPosition.push(0);
+	// 	currentChar = '\n';
+	// 	badCharacters = "";
+	// 	errorOccured = false;
+	// }
+
 	bool wasError(){
 		return this->errorOccured;
 	}
