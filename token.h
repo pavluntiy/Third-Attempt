@@ -75,8 +75,8 @@ public:
 			case Type::BRACKET_RIGHT: return "BRACKET_RIGHT"; break;
 			case Type::CURL_LEFT: return "BRACKET_LEFT"; break;
 			case Type::CURL_RIGHT: return "BRACKET_RIGHT"; break;
-			case Type::BRACE_LEFT: return "BRACKET_LEFT"; break;
-			case Type::BRACE_RIGHT: return "BRACKET_RIGHT"; break;
+			case Type::BRACE_LEFT: return "BRACE_LEFT"; break;
+			case Type::BRACE_RIGHT: return "BRACE_RIGHT"; break;
 		}
 		return "NONE";
 	}

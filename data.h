@@ -10,7 +10,7 @@
 
 class Data{
 
-	istream in;
+	istream &in;
 	string str;
 	int size;
 	bool wasEof;
@@ -30,7 +30,7 @@ public:
 	stack<Position> previousSourcePosition;
 	stack<int> previousPosition;
 	Data(istream &in = cin):
-	in(in.rdbuf())
+	in(in)
 	{
 		size = 0;
 		wasEof = false;

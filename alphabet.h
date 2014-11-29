@@ -42,7 +42,7 @@ namespace Alphabet{
 
 
 	template<> bool is<NUMBER_CHAR>(char c){
-		return is<SIGN>(c) || is<DECIMAL_DIGIT>(c);
+		return is<DECIMAL_DIGIT>(c);
 	}
 
 	template <> bool is<HEXADECIMAL_DIGIT>(char c){

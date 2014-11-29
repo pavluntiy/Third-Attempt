@@ -297,10 +297,10 @@ public:
 		bool zeroFound = false;
 
 		string buffer = "";
-		if(Alphabet::is<Alphabet::SIGN>(currentChar())){
-			buffer += currentChar();
-			data.consume();
-		}
+		// if(Alphabet::is<Alphabet::SIGN>(currentChar())){
+		// 	buffer += currentChar();
+		// 	data.consume();
+		// }
 
 		if (Alphabet::is<Alphabet::ZERO>(currentChar())){
 			zeroFound = true;
@@ -346,7 +346,7 @@ public:
 		}	
 		
 		try{
-	//		cout << ">>>>>>>>>>>>>>>>>>>>>> " << data.currentPosition << '\n';
+		//	cout << ">>>>>>>>>>>>>>>>>>>>>> " << data.currentPosition << '\n';
 			result = tryAndGetDecimal(buffer);
 			return result;
 		}
@@ -364,7 +364,9 @@ public:
 		buffer += currentChar();
 		data.consume();
 
-		while(currentChar() != '\''){
+		bool screenCharFound = false;
+		while(currentChar() != '\'' || screenCharFound){
+			screenCharFound = (currentChar() == '\\') && !screenCharFound;
 			buffer += currentChar();
 			data.consume();
 		}
@@ -381,15 +383,17 @@ public:
 
 	Token tryAndGetString(){
 
-		if(currentChar() != '\"'){
-			throw NoticeException("No '\"' found!");
-		}
+		// if(currentChar() != '\"'){
+		// 	throw NoticeException("No '\"' found!");
+		// }
 
 		string buffer = "";
 		buffer += currentChar();
 		data.consume();
 
-		while(currentChar() != '\"'){
+		bool screenCharFound = false;
+		while(currentChar() != '\"' || screenCharFound){
+			screenCharFound = (currentChar() == '\\') && !screenCharFound;
 			buffer += currentChar();
 			data.consume();
 		}
@@ -432,9 +436,9 @@ public:
 	}
 
 	Token tryAndGetOneLineComment (){
-		if(!data.find("//")){
-			throw NoticeException("No '//' found!");
-		}
+		// if(!data.find("//")){
+		// 	throw NoticeException("No '//' found!");
+		// }
 
 		string buffer = "//";
 		data.get("//");
@@ -449,9 +453,9 @@ public:
 	}
 
 	Token tryAndGetMultyLineComment (){
-		if(!data.find("/*")){
-			throw NoticeException("No '/*' found!");
-		}
+		// if(!data.find("/*")){
+		// 	throw NoticeException("No '/*' found!");
+		// }
 
 		string buffer = "/*";
 		data.get("/*");
@@ -469,9 +473,9 @@ public:
 	}
 
 	Token tryAndGetDirective(){
-		if(currentChar() != '#'){
-			throw NoticeException("No '#' found!");
-		}
+		// if(currentChar() != '#'){
+		// 	throw NoticeException("No '#' found!");
+		// }
 
 		std::string buffer = "#";
 		data.consume();
@@ -484,9 +488,9 @@ public:
 
 
 	Token getSlashVariants(){
-			if(currentChar() != '/'){
-				throw NoticeException("No '/' found!");
-			}
+			// if(currentChar() != '/'){
+			// 	throw NoticeException("No '/' found!");
+			// }
 			data.consume();
 			if (currentChar() == '/'){
 				data.consume();
@@ -502,9 +506,9 @@ public:
 	}
 
 	Token getPlusVariants (){
-		if(currentChar() != '+'){
-			throw NoticeException("No '*' found!");
-		}
+		// if(currentChar() != '+'){
+		// 	throw NoticeException("No '*' found!");
+		// }
 		data.consume();
 		if ( currentChar() == '+' ){
 				data.consume();
@@ -520,9 +524,9 @@ public:
 	}
 
 	Token getMinusVariants (){
-		if(currentChar() != '-'){
-			throw NoticeException("No '-' found!");
-		}
+		// if(currentChar() != '-'){
+		// 	throw NoticeException("No '-' found!");
+		// }
 		data.consume();
 		if ( currentChar() == '-' ){
 				data.consume();
@@ -532,15 +536,19 @@ public:
 				data.consume();
 				return Token(Token::OPERATOR, "-=", "", data.getPreviousSourcePosition());
 		}
+		else if (currentChar() == '>'){
+			data.consume();
+			return Token(Token::OPERATOR, "->", "", data.getPreviousSourcePosition());
+		}
 		else {
 			return Token(Token::OPERATOR, "-", "", data.getPreviousSourcePosition());
 		}
 	}
 
 	Token getStarVariants(){
-		if(currentChar() != '*'){
-			throw NoticeException("No '*' found!");
-		}
+		// if(currentChar() != '*'){
+		// 	throw NoticeException("No '*' found!");
+		// }
 		data.consume();
 		if ( currentChar() == '*' ){
 			data.consume();
@@ -558,9 +566,9 @@ public:
 
 	Token getProcentVariants(){
 
-		if(currentChar() != '%'){
-				throw NoticeException("No '%' found!");
-			}
+		// if(currentChar() != '%'){
+		// 		throw NoticeException("No '%' found!");
+		// 	}
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -572,9 +580,9 @@ public:
 	}
 
 	Token getCircumflexVariants(){
-		if(currentChar() != '^'){
-				throw NoticeException("No '^' found!");
-			}
+		// if(currentChar() != '^'){
+		// 		throw NoticeException("No '^' found!");
+		// 	}
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -586,9 +594,9 @@ public:
 	}
 
 	Token getWaveVariants(){
-		if(currentChar() != '~'){
-				throw NoticeException("No '~' found!");
-			}
+		// if(currentChar() != '~'){
+		// 		throw NoticeException("No '~' found!");
+		// 	}
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -633,6 +641,10 @@ public:
 		data.consume();
 		if (currentChar() == '.'){
 			data.consume();
+			if(currentChar() == '.'){
+				data.consume();
+				return Token(Token::OPERATOR, "...", "", data.getPreviousSourcePosition());
+			}
 			return Token(Token::OPERATOR, "..", "", data.getPreviousSourcePosition());
 		}
 		else {
@@ -943,7 +955,8 @@ public:
 			catch (NoticeException le){
 			}
 
-			cout << "Nothing strange!\n\n";
+			//cout << "Nothing strange!\n\n";
+
 
 
 
