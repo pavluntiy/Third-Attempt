@@ -18,6 +18,12 @@ public:
 	int size;
 	int lastSuccessTokenEnd = 0;
 
+	bool eofReported = false;
+
+	bool EofReported(){
+		return this->eofReported;
+	}
+
 	Lexer(istream &in = cin):
 	data(in)
 	{	
@@ -50,13 +56,8 @@ public:
 	}
 
 	bool closed(){
-		static bool previousTokenWasLast = false;
-		if(!previousTokenWasLast && eof()){
-			previousTokenWasLast = true;
-			return false;
-		}
-
-		return eof();
+		
+		return eof() && EofReported();
 
 	}
 
@@ -665,6 +666,10 @@ public:
 		}
 		else if (currentChar() == '<'){
 			data.consume();
+			if(currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, "<<=", "", data.getPreviousSourcePosition());
+			}
 			return Token(Token::OPERATOR, "<<", "", data.getPreviousSourcePosition());
 		}
 		else {
@@ -683,6 +688,10 @@ public:
 			if(currentChar() == '>'){
 				data.consume();
 				return Token(Token::OPERATOR, ">>>", "", data.getPreviousSourcePosition());
+			}
+			if(currentChar() == '='){
+				data.consume();
+				return Token(Token::OPERATOR, ">>=", "", data.getPreviousSourcePosition());
 			}
 			return Token(Token::OPERATOR, ">>", "", data.getPreviousSourcePosition());
 		}
@@ -761,7 +770,6 @@ public:
 					data.consume();
 					return Token(Token::OPERATOR, "::=", "", data.getPreviousSourcePosition());
 				}
-				data.consume();
 				return Token(Token::OPERATOR, "::", "", data.getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
@@ -861,7 +869,8 @@ public:
 			catch (DataException de){
 				setEof();
 			//	cout << data.dataDump();
-				return(Token (Token::END, data.sourcePosition));
+			//	return(Token (Token::END, data.sourcePosition));
+				throw NoticeException("Eof already occured!");
 			}
 
 			if(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
@@ -873,7 +882,8 @@ public:
 					setEof();
 				//	cout << data.dataDump();
 				//	cout << "asdfasdfasdf";
-					return(Token (Token::END, data.sourcePosition));
+				//	return(Token (Token::END, data.sourcePosition));
+					throw NoticeException("Eof already occured!");
 				}
 			}
 
@@ -1012,6 +1022,9 @@ public:
 			//		addToOutput(Token(Token::ERROR, le.what()));
 					return;
 				}
+				catch (NoticeException ne){
+					return;
+				}
 
 		//		if(!currentToken.typeEqulasTo(Token::NONE)){
 					
@@ -1020,10 +1033,21 @@ public:
 
 	}
 
+	void reportEof(void){
+		addToOutput(Token (Token::END, data.sourcePosition));
+		this->eofReported = true;
+	}
+
 	Token tokenAt(int index){
 	
 		if(eof() && index >= this->size){
-			throw LexerException("Invalid index of token");
+
+			if(index == this->size && !EofReported()){
+				reportEof();
+			}
+			else{
+				throw LexerException("Invalid index of token");
+			}
 		}
 		
 		while (!eof() && index >= this->size){
@@ -1041,7 +1065,9 @@ public:
 		// if(eof()){
 		// 	addToOutput(Token (Token::END, data.sourcePosition));
 		// }
-
+		if(index == this->size && !EofReported()){
+				reportEof();
+			}
 		
 
 		return output[index];

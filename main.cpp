@@ -38,7 +38,7 @@ int main (int argc, char **argv) {
 	int i = 0;
 		try{
 
-			while(!lexer.eof()){
+			while(!lexer.closed()){
 			//while(true){
 				try{
 					*out << lexer[i];
