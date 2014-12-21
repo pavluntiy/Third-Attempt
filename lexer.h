@@ -7,6 +7,7 @@
 #include "data.h"
 #include "alphabet.h"
 #include <vector>
+#include <set>
 
 class Lexer {
 public:
@@ -17,6 +18,7 @@ public:
 	Token currentToken;
 	int size;
 	int lastSuccessTokenEnd = 0;
+	set<string> keywords;
 
 	bool eofReported = false;
 
@@ -31,6 +33,13 @@ public:
 		this->size = 1;
 		output.push_back(Token(Token::BEGIN));
 		currentToken = output[0];
+
+		ifstream kw("keywords");
+		string keyword;
+		while(kw >> keyword){
+			keywords.insert(keyword);
+		}
+		kw.close();
 	}
 
 	// Lexer(Data &&data):
@@ -430,6 +439,9 @@ public:
 		while(Alphabet::is<Alphabet::LETTER>(currentChar()) || Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())){
 			buffer += currentChar();
 			data.consume();
+		}
+		if(keywords.count(buffer)){
+			return Token(Token::KEYWORD, buffer, "", data.getPreviousSourcePosition());
 		}
 
 
