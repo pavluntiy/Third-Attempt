@@ -4,6 +4,7 @@
 #include <string>
 #include "manager.h"
 #include "lexer.h"
+#include "parser.h"
 #include <memory>
 
 using namespace std;
@@ -53,5 +54,15 @@ int main (int argc, char **argv) {
 		catch (LexerException e){
 			*err << e.what() << '\n';
 		}
+
+	Parser parser(lexer);
+	try{
+		parser.buildTree();
+		parser.printTree(parser.getTree(), out);
+	}
+	catch (ParserException e){
+		*err << e.what() << '\n';
+	}
+
 	return 0;
 }

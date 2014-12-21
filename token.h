@@ -81,7 +81,7 @@ public:
 		return "NONE";
 	}
 
-	bool typeEqulasTo(Type type){
+	bool typeEqualsTo(Type type){
 		return this->type == type;
 	}
 
@@ -108,6 +108,14 @@ public:
 
 	void setType(Token::Type type){
 		this->type = type;
+	}
+
+	Type getType(){
+		return this->type;
+	}
+
+	string getText(){
+		return this->text;
 	}
 
 

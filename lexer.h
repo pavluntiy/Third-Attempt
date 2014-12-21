@@ -1001,7 +1001,7 @@ public:
 
 	void recover(){
 
-		for(int i = this->size - 1; i > 1 && !output[i].typeEqulasTo(Token::NEWLINE); --i){
+		for(int i = this->size - 1; i > 1 && !output[i].typeEqualsTo(Token::NEWLINE); --i){
 			output[i].setType(Token::NONE);
 		}
 		
@@ -1087,6 +1087,10 @@ public:
 
 	Token operator[](int index){
 		return this->tokenAt(index);
+	}
+
+	bool isValidIndex(int index){
+		return index < this->size && index >= 0;
 	}
 
 };
