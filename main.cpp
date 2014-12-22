@@ -56,6 +56,7 @@ int main (int argc, char **argv) {
 		}
 
 	Parser parser(lexer);
+//	Parser parser(lexer(*);
 	try{
 		parser.buildTree();
 		parser.printTree(parser.getTree(), out);
@@ -63,6 +64,8 @@ int main (int argc, char **argv) {
 	catch (ParserException e){
 		*err << e.what() << '\n';
 	}
+
+	parser.deleteTree();
 
 	return 0;
 }

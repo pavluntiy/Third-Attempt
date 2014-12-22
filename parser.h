@@ -984,13 +984,31 @@ Node *getNAME(){
 }
 
 Node *getFUNCARGS(){
-	try {
-		return getEXPRESSION();
-	}
-	catch (NoticeException ne){
+	Node  *tmp = nullptr, *result = nullptr;
 
+	result = new Node(Node::FUNCARGS);
+
+
+	try{
+		tmp = getASSIGNMENT();
 	}
-	throw NoticeException("No FUNCARGS found!");
+	catch(NoticeException ne){
+	//	throw NoticeException("No FUNCARGS found!");
+		return result;
+	};
+
+	result->addChild(tmp);
+
+	while(currentToken == Token(Token::OPERATOR, ",")){
+		consume();
+		tmp = getASSIGNMENT();
+		result->addChild(tmp);
+	}
+	
+	return result;
+
+
+	//throw NoticeException("No FUNCARGS found!");
 }
 
 Node *getFUNCCALS(Node *left){
@@ -999,7 +1017,10 @@ Node *getFUNCCALS(Node *left){
 		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 					lock();
 					consume();
-					right = getFUNCARGS();
+					try{
+						right = getFUNCARGS();
+					}
+					catch (NoticeException  ne){};
 					if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
 						throw ParserException("Missed BRACE_RIGHT at " + currentToken.getPosition().toString());
 					}
@@ -1301,6 +1322,22 @@ Node *getEXPRESSION(){
 
 void printTree(Node *tree, ostream *out){
 	dfs(tree, out);
+}
+
+void deleteTree(Node *tree){
+	if(tree == nullptr){
+		return;
+	}
+
+	vector<Node*> &children = tree->getChildren();
+	for(int i = 0; i < (int) children.size(); ++i){
+		deleteTree(children[i]);
+	}
+	delete tree;
+}
+
+void deleteTree(){
+	deleteTree(this->tree);
 }
 	
 Node *getTree(){

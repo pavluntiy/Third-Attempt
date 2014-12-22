@@ -81,8 +81,13 @@ public:
 		return "NONE";
 	}
 
-	bool typeEqualsTo(Type type){
+	bool typeEqualsTo(Type type)
+	const{
 		return this->type == type;
+	}
+
+	bool operator == (const Token &other){
+		return this->typeEqualsTo(other.getType()) && this->text == other.getText();
 	}
 
 	string toString()
@@ -114,11 +119,13 @@ public:
 		this->type = type;
 	}
 
-	Type getType(){
+	Type getType()
+	const{
 		return this->type;
 	}
 
-	string getText(){
+	string getText()
+	const{
 		return this->text;
 	}
 
