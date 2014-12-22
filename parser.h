@@ -186,7 +186,58 @@ Node *getEXPR10_OP(){
 	throw NoticeException("No EXPR10_OP found!");
 }
 
+Node *getEXPR8_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(currentToken.getText() == "**"){
+			result = new Node(Node::OPERATOR, "**");
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No EXPR8_OP found!");
+}
+
+Node *getEXPR8(){
+	Node *left = nullptr;
+	Node *op = nullptr;
+	Node *tmp = nullptr;
+
+	try{
+		left = getEXPR9();
+	}
+	catch (NoticeException ne){
+	}
+
+	try{
+		op = getEXPR8_OP();
+		op->addChild(left);
+		tmp = getEXPR8();
+		op->addChild(tmp);
+		return op;
+	}
+	catch(NoticeException ne){
+	}
+
+	if(left == nullptr){
+		throw NoticeException("No EXPR8 found!");
+	}
+	return left;
+}
+
 Node *getATOM(){
+
+	if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		consume();
+		Node *result = getEXPRESSION();
+		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			throw ParserException("Missing BRACE_RIGHT at " + currentToken.getPosition().toString());
+		}
+		consume();
+		return result;
+	}
 	try{
 		return getNAME();
 	}
@@ -222,7 +273,6 @@ Node *getFUNCARGS(){
 	catch (NoticeException ne){
 
 	}
-	//	cout << "asdf";
 	throw NoticeException("No FUNCARGS found!");
 }
 
@@ -259,7 +309,7 @@ Node *getACCESSARGS(){
 	catch (NoticeException ne){
 
 	}
-//	cout << "asdf";
+
 	throw NoticeException("No FUNCARGS found!");
 }
 
@@ -324,7 +374,7 @@ Node *getEXPR9_OP_SUFFIX(){
 		}
 	}
 
-	throw NoticeException("No EXPR10_OP_SUFFIX found!");
+	throw NoticeException("No EXPR9_OP_SUFFIX found!");
 }
 
 Node *getEXPR9_OP(){
@@ -520,22 +570,10 @@ Node *getVALUE(){
 	throw NoticeException("No VALUE found!");
 }
 
-Node *getEXPR8(){
-	lock();
-	try {
-		return getVALUE();
-	}
-	catch (NoticeException ne){
-
-	}
-
-	throw NoticeException("No getEXPR8 found!");
-}
-
 Node *getEXPRESSION(){
 	lock();
 	try {
-		return getEXPR9();
+		return getEXPR8();
 	}
 	catch (NoticeException ne){
 
