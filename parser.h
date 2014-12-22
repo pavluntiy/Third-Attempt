@@ -55,6 +55,23 @@ void dfs (Node *node, ostream *treeOut, string shift = ""){
 }
 
 
+void lock(){
+	this->history.push(currentPosition);
+}
+void recoil(){
+	if(this->history.empty()){
+		throw ParserException("Incorrect recoiling!");
+	}
+
+	this->currentPosition = this->history.top();
+	this->history.pop();
+	this->currentToken = this->lexer[this->currentPosition];
+}
+void memoize(Node::Type type, int position, bool success, int jump){
+	this->memo[make_pair(type, position)] = make_pair(success, jump);
+}
+
+
 void consume(){
 	++this->currentPosition;
 	if(this->lexer.isValidIndex(this->currentPosition)){	
@@ -88,7 +105,7 @@ Node *getEND(){
 		return new Node(Node::END);
 	}
 	else {
-		cout << currentToken;
+	//	cout << currentToken;
 		throw ParserException("No END found!");
 	}
 }
@@ -125,6 +142,71 @@ Node *getCHAR(){
 	}
 }
 
+Node *getEXPR10_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(currentToken.getText() == "."){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+		//	cout << currentToken.getText();
+			return result;
+		}
+
+		if(currentToken.getText() == "->"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+	}
+
+	throw NoticeException("No EXPR10_OP found!");
+}
+
+Node *getNAME(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::NAME)){
+		result = new Node(Node::NAME, currentToken.getText());
+		consume();
+		return result;
+	}
+	throw ParserException("No name found but grammar requires at " + currentToken.getPosition().toString());
+}
+
+Node *getEXPR10(Node *parent = nullptr){
+	lock();
+	Node *tmp = nullptr;
+	Node *left = nullptr, *right = nullptr;
+	Node *op = nullptr;
+	if(parent == nullptr){
+	//	cout << "ololo!";
+		if(currentToken.typeEqualsTo(Token::NAME)){
+			left = getNAME();
+			try{
+				op = getEXPR10_OP();
+				right = getNAME();
+				op->addChild(left);
+				op->addChild(right);
+				return getEXPR10(op);
+			}
+			catch(NoticeException ne){
+			}
+		//	cout << "ololo!";
+			return left;
+		}
+	}
+	else {
+			try{
+				op = getEXPR10_OP();
+				right = getNAME();
+				op->addChild(parent);
+				op->addChild(right);
+				return getEXPR10(op);
+			}
+			catch(NoticeException ne){
+			}
+			return parent;
+	}
+}
 
 Node *getVALUE(){
 //	Node *result = nullptr;
@@ -154,7 +236,7 @@ Node *getVALUE(){
 }
 
 Node *getEXPR8(){
-
+	lock();
 	try {
 		return getVALUE();
 	}
@@ -166,8 +248,9 @@ Node *getEXPR8(){
 }
 
 Node *getEXPRESSION(){
+	lock();
 	try {
-		return getEXPR8();
+		return getEXPR10();
 	}
 	catch (NoticeException ne){
 

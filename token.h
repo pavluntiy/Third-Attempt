@@ -101,6 +101,10 @@ public:
 		return str;
 	}
 
+	Position getPosition(){
+		return this->position;
+	}
+
 	bool isInvisible()
 	const{
 		return this->note == "invisible";
