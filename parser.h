@@ -96,6 +96,58 @@ void consume(){
 //	}
 }
 
+Node *getEXPR7_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(
+			currentToken.getText() == "/"
+			||
+			currentToken.getText() == "%"
+			||
+			currentToken.getText() == "*"
+		){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No EXPR7_OP found!");
+}
+Node *getEXPR7(Node *left = nullptr){
+
+		Node *op = nullptr, *right = nullptr;
+		if(left == nullptr){
+			try{
+				left = getEXPR8();
+			}
+			catch (NoticeException ne){
+				throw NoticeException("No EXPR7 found!");
+			}
+		}
+
+		try {
+			op = getEXPR7_OP();
+		}
+		catch (NoticeException ne){
+			return left;
+		}
+
+		try {
+			right = getEXPR8();
+			op->addChild(left);
+			op->addChild(right);
+			return getEXPR7(op);
+		}
+		catch (NoticeException ne){
+			throw ParserException("Operator for EXPR7 without operands at " + currentToken.getPosition().toString());
+		}
+
+		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
+
+}
+
 Node *getBEGIN(){
 	if(currentToken.typeEqualsTo(Token::BEGIN)){
 		consume();
@@ -573,7 +625,7 @@ Node *getVALUE(){
 Node *getEXPRESSION(){
 	lock();
 	try {
-		return getEXPR8();
+		return getEXPR7();
 	}
 	catch (NoticeException ne){
 
