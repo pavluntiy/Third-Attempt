@@ -24,6 +24,8 @@ public:
 		EXPR6,
 		EXPR7,
 		EXPR8,
+		EXPR9,
+		EXPR10,
 
 		BRACED,
 
@@ -99,6 +101,8 @@ public:
 			case Type::EXPR6 : return "EXPR6"; 
 			case Type::EXPR7 : return "EXPR7"; 
 			case Type::EXPR8 : return "EXPR8";
+			case Type::EXPR9 : return "EXPR9";
+			case Type::EXPR10 : return "EXPR10";
 
 			case Type::BRACED : return "BRACED";
 

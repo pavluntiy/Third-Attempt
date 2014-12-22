@@ -307,9 +307,136 @@ Node* getBRACED(Node *left = nullptr){
 	return left;
 }
 
+Node *getEXPR9_OP_SUFFIX(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(currentToken.getText() == "--"){
+			result = new Node(Node::OPERATOR, "_--");
+			consume();
+		//	cout << currentToken.getText();
+			return result;
+		}
+
+		if(currentToken.getText() == "++"){
+			result = new Node(Node::OPERATOR, "_++");
+			consume();
+			return result;
+		}
+	}
+
+	throw NoticeException("No EXPR10_OP_SUFFIX found!");
+}
+
+Node *getEXPR9_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(currentToken.getText() == "--"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+		//	cout << currentToken.getText();
+			return result;
+		}
+
+		if(currentToken.getText() == "++"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+		if(currentToken.getText() == "$"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+		if(currentToken.getText() == "@"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+		if(currentToken.getText() == "+"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+		if(currentToken.getText() == "-"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+		if(currentToken.getText() == "~"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+		if(currentToken.getText() == "!"){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+	}
+
+	throw NoticeException("No EXPR9_OP found!");
+}
+
+Node *getEXPR9_SUFFIX(Node *left = nullptr){
+	Node *op = nullptr;
+	Node *tmp = nullptr;
+
+	if(left == nullptr){
+		try{
+			left = getEXPR10();
+		}
+		catch (ParserException pe){
+			throw ParserException("Strange stuff at " + currentToken.getPosition().toString() + ";\n got " + currentToken.toString());
+		}
+	}
+
+	try{
+		op = getEXPR9_OP_SUFFIX();
+		tmp = getEXPR9_SUFFIX(left);
+		op->addChild(tmp);
+		return op;
+	}
+	catch(NoticeException ne){
+	}
+
+	return left;
+}
+
+Node *getEXPR9(){
+	Node *son= nullptr;
+	Node *op = nullptr;
+	try {
+		op = getEXPR9_OP();
+		son = getEXPR9();
+		op->addChild(son);
+	}
+	catch (NoticeException ne){
+
+	}
+
+	try {
+		return getEXPR9_SUFFIX();
+	}
+	catch (NoticeException ne){
+
+	}
+
+	if(op == nullptr){
+		throw NoticeException("No EXPR10 found!");
+	}
+
+	return op;
+}
+
 Node *getEXPR10(Node *left = nullptr){
 	lock();
-//	Node *tmp = nullptr;
+	//	Node *tmp = nullptr;
 	Node *right = nullptr;
 	Node *op = nullptr;
 	if(left == nullptr){
@@ -408,7 +535,7 @@ Node *getEXPR8(){
 Node *getEXPRESSION(){
 	lock();
 	try {
-		return getEXPR10();
+		return getEXPR9();
 	}
 	catch (NoticeException ne){
 
