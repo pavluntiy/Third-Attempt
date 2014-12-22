@@ -77,7 +77,14 @@ void consume(){
 	if(this->lexer.isValidIndex(this->currentPosition)){	
 		this->currentToken = this->lexer[this->currentPosition];
 		while(this->lexer.isValidIndex(this->currentPosition) && 
-				this->currentToken.isInvisible()
+				(
+					this->currentToken.isInvisible() 
+					||
+					this->currentToken.typeEqualsTo(Token::NONE)
+					||
+					this->currentToken.typeEqualsTo(Token::ERROR)
+
+				)
 			)
 		{
 			++this->currentPosition;
@@ -106,14 +113,16 @@ Node *getEND(){
 	}
 	else {
 	//	cout << currentToken;
-		throw ParserException("No END found!");
+		throw ParserException("No END found, got " + currentToken.toString() + " instead");
 	}
 }
 
 Node *getINT(){
+	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::INT)){
+		result = new Node(Node::INT, currentToken.getText());
 		consume();
-		return new Node(Node::INT, currentToken.getText());
+		return result;
 	}
 	else {
 		throw NoticeException("No INT found!");
@@ -122,9 +131,11 @@ Node *getINT(){
 
 
 Node *getFLOAT(){
+	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::FLOAT)){
+		result = new Node(Node::FLOAT, currentToken.getText());
 		consume();
-		return new Node(Node::FLOAT, currentToken.getText());
+		return result;
 	}
 	else {
 		throw NoticeException("No FLOAT found!");
@@ -132,10 +143,23 @@ Node *getFLOAT(){
 }
 
 Node *getCHAR(){
-
+	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::CHAR)){
+		result = new Node(Node::CHAR, currentToken.getText());
 		consume();
-		return new Node(Node::CHAR, currentToken.getText());
+		return result;
+	}
+	else {
+		throw NoticeException("No CHAR found!");
+	}
+}
+
+Node *getSTRING(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::STRING)){
+		result = new Node(Node::STRING, currentToken.getText());
+		consume();
+		return result;
 	}
 	else {
 		throw NoticeException("No CHAR found!");
@@ -172,15 +196,56 @@ Node *getNAME(){
 	throw ParserException("No name found but grammar requires at " + currentToken.getPosition().toString());
 }
 
-Node *getEXPR10(Node *parent = nullptr){
+Node *getFUNCARGS(){
+	try {
+		return getEXPRESSION();
+	}
+	catch (NoticeException ne){
+
+	}
+	cout << "asdf";
+	throw NoticeException("No FUNCARGS found!");
+}
+
+Node *getFUNCCALS(Node *left){
+
+		Node *tmp = nullptr, *right = nullptr;
+		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+					lock();
+					consume();
+					right = getFUNCARGS();
+					if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+						throw ParserException("Missed BRACE_RIGHT at " + currentToken.getPosition().toString());
+					}
+					consume();
+					tmp = new Node(Node::FUNCCALL);
+					tmp->addChild(left);
+					tmp->addChild(right);
+
+					try {
+						return getFUNCCALS(tmp);
+					}
+					catch(NoticeException ne){
+
+					}
+		}
+	
+		return left;
+}
+
+
+
+Node *getEXPR10(Node *left = nullptr){
 	lock();
 	Node *tmp = nullptr;
-	Node *left = nullptr, *right = nullptr;
+	Node *right = nullptr;
 	Node *op = nullptr;
-	if(parent == nullptr){
+	if(left == nullptr){
 	//	cout << "ololo!";
 		if(currentToken.typeEqualsTo(Token::NAME)){
 			left = getNAME();
+			left = getFUNCCALS(left);
+
 			try{
 				op = getEXPR10_OP();
 				right = getNAME();
@@ -190,22 +255,33 @@ Node *getEXPR10(Node *parent = nullptr){
 			}
 			catch(NoticeException ne){
 			}
-		//	cout << "ololo!";
+
 			return left;
 		}
 	}
-	else {
+	else {	
+			left = getFUNCCALS(left);
 			try{
 				op = getEXPR10_OP();
 				right = getNAME();
-				op->addChild(parent);
+				op->addChild(left);
 				op->addChild(right);
 				return getEXPR10(op);
 			}
 			catch(NoticeException ne){
+				return getFUNCCALS(left);
 			}
-			return parent;
+			return left;
 	}
+
+	try {
+		return getVALUE();
+	}
+	catch(NoticeException ne){
+
+	}
+
+	throw NoticeException("No EXPR10 found!");
 }
 
 Node *getVALUE(){
@@ -256,7 +332,8 @@ Node *getEXPRESSION(){
 
 	}
 
-	throw NoticeException("No EXPRESSION found!");	
+	return new Node(Node::EXPRESSION);
+//	throw NoticeException("No EXPRESSION found!");	
 }
 
 void printTree(Node *tree, ostream *out){
@@ -270,7 +347,12 @@ Node *getTree(){
 void buildTree(){
 	this->tree = new Node(Node::PROGRAM);
 	this->tree->addChild(getBEGIN());
-	this->tree->addChild(getEXPRESSION());
+	try {
+		this->tree->addChild(getEXPRESSION());
+	}
+	catch(NoticeException ne){
+
+	}
 	this->tree->addChild(getEND());
 }
 

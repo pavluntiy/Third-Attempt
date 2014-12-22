@@ -43,7 +43,10 @@ public:
 		NAME, 
 		VALUE, 
 		CONSTANT, 
-		ID
+		ID,
+
+		FUNCCALL,
+		FUNCARGS
 				
 	};
 
@@ -114,6 +117,9 @@ public:
 			case Type::VALUE: return "VALUE"; 
 			case Type::CONSTANT: return "CONSTANT";
 			case Type::ID: return "ID";
+			case Type::FUNCCALL: return "FUNCCALL";
+
+			case Type::FUNCARGS: return "FUNCARGS";
 		}
 		return "NONE";
 	}
