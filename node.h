@@ -46,7 +46,9 @@ public:
 		ID,
 
 		FUNCCALL,
-		FUNCARGS
+		FUNCARGS,
+		ACCESS,
+		ACCESSARGS
 				
 	};
 
@@ -120,6 +122,10 @@ public:
 			case Type::FUNCCALL: return "FUNCCALL";
 
 			case Type::FUNCARGS: return "FUNCARGS";
+			case Type::ACCESS: return "ACCESS";
+			case Type::ACCESSARGS: return "ACCESSARGS";
+
+
 		}
 		return "NONE";
 	}

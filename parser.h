@@ -186,6 +186,25 @@ Node *getEXPR10_OP(){
 	throw NoticeException("No EXPR10_OP found!");
 }
 
+Node *getATOM(){
+	try{
+		return getNAME();
+	}
+	catch(NoticeException ne){
+
+	}
+	//	cout << "YEAH!\n";
+	try{
+		return getVALUE();
+	}
+	catch(NoticeException ne){
+
+	}
+
+	throw NoticeException("No ATOM found at " + currentToken.getPosition().toString());
+
+}
+
 Node *getNAME(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::NAME)){
@@ -193,7 +212,7 @@ Node *getNAME(){
 		consume();
 		return result;
 	}
-	throw ParserException("No name found but grammar requires at " + currentToken.getPosition().toString());
+	throw NoticeException("No NAME");
 }
 
 Node *getFUNCARGS(){
@@ -203,7 +222,7 @@ Node *getFUNCARGS(){
 	catch (NoticeException ne){
 
 	}
-	cout << "asdf";
+	//	cout << "asdf";
 	throw NoticeException("No FUNCARGS found!");
 }
 
@@ -233,22 +252,75 @@ Node *getFUNCCALS(Node *left){
 		return left;
 }
 
+Node *getACCESSARGS(){
+	try {
+		return getEXPRESSION();
+	}
+	catch (NoticeException ne){
 
+	}
+//	cout << "asdf";
+	throw NoticeException("No FUNCARGS found!");
+}
+
+Node *getACCESSES(Node *left){
+
+		Node *tmp = nullptr, *right = nullptr;
+		if(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+					lock();
+					consume();
+					right = getACCESSARGS();
+					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
+						throw ParserException("Missed BRACKET_RIGHT at " + currentToken.getPosition().toString());
+					}
+					consume();
+					tmp = new Node(Node::ACCESS);
+					tmp->addChild(left);
+					tmp->addChild(right);
+
+					try {
+						return getACCESSES(tmp);
+					}
+					catch(NoticeException ne){
+
+					}
+		}
+	
+		return left;
+}
+
+Node* getBRACED(Node *left = nullptr){
+	//cout << "mimimi\n";
+	if(left == nullptr){
+		throw ParserException("Unexpected BRACE_LEFT or BRACKET_RIGHT at " + currentToken.getPosition().toString());
+	}
+
+	while(currentToken.typeEqualsTo(Token::BRACE_LEFT) || currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+			left = getFUNCCALS(left);
+		}
+		else {
+			left = getACCESSES(left);
+		}
+	}
+
+	return left;
+}
 
 Node *getEXPR10(Node *left = nullptr){
 	lock();
-	Node *tmp = nullptr;
+//	Node *tmp = nullptr;
 	Node *right = nullptr;
 	Node *op = nullptr;
 	if(left == nullptr){
 	//	cout << "ololo!";
-		if(currentToken.typeEqualsTo(Token::NAME)){
-			left = getNAME();
-			left = getFUNCCALS(left);
-
+		try{
+			left = getATOM();
+			left = getBRACED(left);
+			//cout << "Nya!\n";
 			try{
 				op = getEXPR10_OP();
-				right = getNAME();
+				right = getATOM();
 				op->addChild(left);
 				op->addChild(right);
 				return getEXPR10(op);
@@ -258,24 +330,27 @@ Node *getEXPR10(Node *left = nullptr){
 
 			return left;
 		}
+		catch(NoticeException ne){
+
+		}
 	}
 	else {	
-			left = getFUNCCALS(left);
+			left = getBRACED(left);
 			try{
 				op = getEXPR10_OP();
-				right = getNAME();
+				right = getATOM();
 				op->addChild(left);
 				op->addChild(right);
 				return getEXPR10(op);
 			}
 			catch(NoticeException ne){
-				return getFUNCCALS(left);
+				return getBRACED(left);
 			}
 			return left;
 	}
 
 	try {
-		return getVALUE();
+		return getATOM();
 	}
 	catch(NoticeException ne){
 
@@ -285,7 +360,7 @@ Node *getEXPR10(Node *left = nullptr){
 }
 
 Node *getVALUE(){
-//	Node *result = nullptr;
+ //	Node *result = nullptr;
 
 	try {
 		return getINT();
@@ -303,6 +378,13 @@ Node *getVALUE(){
 
 	try {
 		return getCHAR();
+	}
+	catch (NoticeException ne){
+
+	}
+
+	try {
+		return getSTRING();
 	}
 	catch (NoticeException ne){
 
@@ -331,9 +413,8 @@ Node *getEXPRESSION(){
 	catch (NoticeException ne){
 
 	}
-
+	//for empty one
 	return new Node(Node::EXPRESSION);
-//	throw NoticeException("No EXPRESSION found!");	
 }
 
 void printTree(Node *tree, ostream *out){
