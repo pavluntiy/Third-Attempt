@@ -731,6 +731,10 @@ public:
 			data.consume();
 			if (currentChar() == '&'){
 				data.consume();
+				if(currentChar() == '='){
+					data.consume();
+					return Token(Token::OPERATOR, "&&=", "", data.getPreviousSourcePosition());
+				}
 				return Token(Token::OPERATOR, "&&", "", data.getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
@@ -747,6 +751,10 @@ public:
 			data.consume();
 			if (currentChar() == '|'){
 				data.consume();
+				if(currentChar() == '='){
+					data.consume();
+					return Token(Token::OPERATOR, "||=", "", data.getPreviousSourcePosition());
+				}
 				return Token(Token::OPERATOR, "||", "", data.getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){

@@ -96,6 +96,319 @@ void consume(){
 //	}
 }
 
+Node *getCOMMA(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(
+			currentToken.getText() == ","
+		){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No COMMA found!");
+}
+
+Node *getCOMMA_EXPRESSION(Node *left = nullptr){
+
+		Node *op = nullptr, *right = nullptr;
+		if(left == nullptr){
+			try{
+				left = getASSIGNMENT();
+			}
+			catch (NoticeException ne){
+				throw NoticeException("No COMMA_EXPRESSION found!");
+			}
+		}
+
+		try {
+			op = getCOMMA();
+		}
+		catch (NoticeException ne){
+			return left;
+		}
+
+		try {
+			right = getASSIGNMENT();
+			op->addChild(left);
+			op->addChild(right);
+			return getCOMMA_EXPRESSION(op);
+		}
+		catch (NoticeException ne){
+			throw ParserException("Operator for COMMA_EXPRESSION without operands at " + currentToken.getPosition().toString());
+		}
+
+		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
+
+}
+
+Node *getASSIGNMENT_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(
+			currentToken.getText() == "="
+			||
+			currentToken.getText() == "*="
+			||
+			currentToken.getText() == "/="
+			||
+			currentToken.getText() == "%="
+			||
+			currentToken.getText() == "+="
+			||
+			currentToken.getText() == "-="
+			||
+			currentToken.getText() == ">>="
+			||
+			currentToken.getText() == ">>>="
+			||
+			currentToken.getText() == "<<="
+			||
+			currentToken.getText() == "&="
+			||
+			currentToken.getText() == "^="
+			||
+			currentToken.getText() == "|="
+			||
+			currentToken.getText() == "&&="
+			||
+			currentToken.getText() == "||="
+			||
+			currentToken.getText() == ":="
+		){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No EXPR8_OP found!");
+}
+
+Node *getASSIGNMENT(){
+	Node *left = nullptr;
+	Node *op = nullptr;
+	Node *tmp = nullptr;
+
+	try{
+		left = getTERNARY();
+	}
+	catch (NoticeException ne){
+	}
+
+	try{
+		op = getASSIGNMENT_OP();
+		op->addChild(left);
+		tmp = getASSIGNMENT();
+		op->addChild(tmp);
+		return op;
+	}
+	catch(NoticeException ne){
+	}
+
+	if(left == nullptr){
+		throw NoticeException("No ASSIGNMENT found!");
+	}
+	return left;
+}
+
+Node *getTERNARY(){
+	Node *op = nullptr;
+	Node *cond = nullptr, *first = nullptr, *second = nullptr;
+
+	try {
+		cond = getL_AND();
+	}
+	catch (NoticeException ne){}
+
+	if(cond == nullptr){
+		throw NoticeException("No TERNARY found!");
+	}
+
+
+	if(currentToken.typeEqualsTo(Token::OPERATOR) && currentToken.getText() == "?"){
+		consume();
+		op = new Node(Node::OPERATOR, "?");
+	}
+	else {
+		return cond;
+	}
+
+	first = getTERNARY();
+
+	if(currentToken.typeEqualsTo(Token::OPERATOR) && currentToken.getText() == ":"){
+		consume();
+	}
+	else{
+		throw ParserException("Unfinished TERNARY operator at " + currentToken.getPosition().toString());
+	}
+
+	second = getTERNARY();
+
+	op->addChild(cond);
+	op->addChild(first);
+	op->addChild(second);
+
+
+	
+	return op;
+}
+
+Node *getIS_IN_EXPRESSION_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::KEYWORD)){
+		if(
+			currentToken.getText() == "in"
+			||
+			currentToken.getText() == "is"
+		){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No IS_IN_EXPRESSION_OP found!");
+}
+
+Node *getIS_IN_EXPRESSION(Node *left = nullptr){
+
+		Node *op = nullptr, *right = nullptr;
+		if(left == nullptr){
+			try{
+				left = getSHIFT();
+			}
+			catch (NoticeException ne){
+				throw NoticeException("No IS_IN_EXPRESSION found!");
+			}
+		}
+
+		try {
+			op = getIS_IN_EXPRESSION_OP();
+		}
+		catch (NoticeException ne){
+			return left;
+		}
+
+		try {
+			right = getSHIFT();
+			op->addChild(left);
+			op->addChild(right);
+			return getIS_IN_EXPRESSION(op);
+		}
+		catch (NoticeException ne){
+			throw ParserException("Operator for IS_IN_EXPRESSION without operands at " + currentToken.getPosition().toString());
+		}
+
+		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
+
+}
+
+
+Node *getL_OR_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(
+			currentToken.getText() == "||"
+		){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No L_OR_OP found!");
+}
+
+Node *getL_OR(Node *left = nullptr){
+
+		Node *op = nullptr, *right = nullptr;
+		if(left == nullptr){
+			try{
+				left = getL_AND();
+			}
+			catch (NoticeException ne){
+				throw NoticeException("No L_OR found!");
+			}
+		}
+
+		try {
+			op = getL_OR_OP();
+		}
+		catch (NoticeException ne){
+			return left;
+		}
+
+		try {
+			right = getL_AND();
+			op->addChild(left);
+			op->addChild(right);
+			return getL_OR(op);
+		}
+		catch (NoticeException ne){
+			throw ParserException("Operator for L_AND without operands at " + currentToken.getPosition().toString());
+		}
+
+		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
+
+}
+
+
+Node *getL_AND_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(
+			currentToken.getText() == "&&"
+		){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+
+	}
+
+	throw NoticeException("No L_AND_OP found!");
+}
+
+Node *getL_AND(Node *left = nullptr){
+
+		Node *op = nullptr, *right = nullptr;
+		if(left == nullptr){
+			try{
+				left = getB_OR();
+			}
+			catch (NoticeException ne){
+				throw NoticeException("No L_AND found!");
+			}
+		}
+
+		try {
+			op = getL_AND_OP();
+		}
+		catch (NoticeException ne){
+			return left;
+		}
+
+		try {
+			right = getB_OR();
+			op->addChild(left);
+			op->addChild(right);
+			return getL_AND(op);
+		}
+		catch (NoticeException ne){
+			throw ParserException("Operator for L_AND without operands at " + currentToken.getPosition().toString());
+		}
+
+		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
+
+}
+
 Node *getCOMPARISION_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
@@ -172,7 +485,7 @@ Node *getDIFF_COMPARISION(Node *left = nullptr){
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
 			try{
-				left = getSHIFT();
+				left = getIS_IN_EXPRESSION();
 			}
 			catch (NoticeException ne){
 				throw NoticeException("No DIFF_COMPARISION found!");
@@ -187,7 +500,7 @@ Node *getDIFF_COMPARISION(Node *left = nullptr){
 		}
 
 		try {
-			right = getSHIFT();
+			right = getIS_IN_EXPRESSION();
 			op->addChild(left);
 			op->addChild(right);
 			return getDIFF_COMPARISION(op);
@@ -977,7 +1290,7 @@ Node *getVALUE(){
 Node *getEXPRESSION(){
 	lock();
 	try {
-		return getB_OR();
+		return getCOMMA_EXPRESSION();
 	}
 	catch (NoticeException ne){
 
