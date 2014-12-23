@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "manager.h"
+#include "tree_visitor.h"
 #include "lexer.h"
 #include "parser.h"
 #include <memory>
@@ -54,19 +54,24 @@ int main (int argc, char **argv) {
 	// 	catch (LexerException e){
 	// 		*err << e.what() << '\n';
 	// 	}
-
-	Parser parser(lexer);
+	TreeVisitor visitor (out);
+	Parser parser(lexer, visitor);
 //	Parser parser(Lexer(*in));
 	try{
 	//	parser.visitTree(out);
+	//	parser.buildTree();
+	//	parser.printTree(parser.getTree(), out);
 		parser.buildTree();
-		parser.printTree(parser.getTree(), out);
+		parser.pushTree();
+		visitor.printTree();
 	}
 	catch (ParserException e){
 		*err << e.what() << '\n';
 	}
 
-	parser.deleteTree();
+	//parser.deleteTree();
+	visitor.deleteTree();
+
 
 	return 0;
 }

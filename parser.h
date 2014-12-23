@@ -4,6 +4,7 @@
 #include "token.h"
 #include "node.h"
 #include "parser_exception.h"
+#include "tree_visitor.h"
 #include <vector>
 #include <set>
 #include <stack>
@@ -21,39 +22,17 @@ protected:
 	map<pair<Node::Type, int>, pair<bool, int> > memo;
 	int currentPosition;
 	Token currentToken;
+	TreeVisitor &visitor;
 
 
 
 public:
-	Parser (Lexer &lexer):
-		lexer(lexer)
+	Parser (Lexer &lexer, TreeVisitor &visitor):
+		lexer(lexer), visitor(visitor)
 	{
 		this->currentPosition = 0;
 		this->currentToken = this->lexer[0];
 	}
-
-
-void dfs (Node *node, ostream *treeOut, string shift = ""){
-	*treeOut << shift << "( " << node->typeToText();
-	if(node->getText() != ""){
-	 	*treeOut<< " \"" << node->getText() << "\"";
-	}
-	if(node->getChildren().size() > 0){
-	 	*treeOut << ", children num = "<< node->getChildren().size() << ":\n";
-	}
-		for(auto it : node->getChildren()){
-			dfs(it, treeOut, shift + ' ');
-		}
-	if(node->getChildren().size() > 0){
-	 	*treeOut << shift;
-	}
-	else {
-		*treeOut << ' ';
-	}
-	*treeOut   << ")\n";
-	
-}
-
 
 void lock(){
 	this->history.push(currentPosition);
@@ -1322,66 +1301,14 @@ Node *getEXPRESSION(){
 	return new Node(Node::EXPRESSION);
 }
 
-void printTree(Node *tree, ostream *out){
-	dfs(tree, out);
-}
 
-void deleteTree(Node *tree){
-	if(tree == nullptr){
-		return;
-	}
-
-	vector<Node*> &children = tree->getChildren();
-	for(int i = 0; i < (int) children.size(); ++i){
-		deleteTree(children[i]);
-	}
-	delete tree;
-}
-void visitTree(ostream *treeOut){
-	tree = new Node(Node::PROGRAM);
-	tree->addChild(getBEGIN());
-	visitTree(tree, treeOut);
-}
-
-void visitTree (Node *node, ostream *treeOut, string shift = ""){
-	*treeOut << shift << "( " << node->typeToText();
-	if(node->getText() != ""){
-	 	*treeOut<< " \"" << node->getText() << "\"";
-	}
-
-	int counter = 0;
-	// if(node->getChildren().size() > 0){
-	//  	*treeOut << ", children num = "<< node->getChildren().size() << ":\n";
-	// }
-
-	// for(auto it : node->getChildren()){
-	// 	dfs(it, treeOut, shift + ' ');
-	// }
-
-	try {
-		dfs(getEXPRESSION(), treeOut, shift + ' ');
-	}
-	catch (NoticeException ne){
-
-	}
-
-
-	if(counter > 0){
-	 	*treeOut << shift;
-	}
-	else {
-		*treeOut << ' ';
-	}
-	*treeOut   << ")\n";
-	
-}
-
-void deleteTree(){
-	deleteTree(this->tree);
-}
 	
 Node *getTree(){
 	return this->tree;
+}
+
+void pushTree(){
+	this->visitor.setTree(this->tree);
 }
 
 void buildTree(){
