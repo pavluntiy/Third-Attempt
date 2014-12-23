@@ -44,6 +44,20 @@ void deleteTree(){
 	deleteTree(this->tree);
 }
 
+Node *clone(Node *tree){
+	if(tree == nullptr){
+		return nullptr;
+	}
+
+	Node *result = new Node(*tree);
+
+	vector<Node*> &children = tree->getChildren();
+	for(int i = 0; i < (int) children.size(); ++i){
+		result->addChild(clone(children[i]));
+	}
+	return result;
+}
+
 void deleteTree(Node *tree){
 	if(tree == nullptr){
 		return;

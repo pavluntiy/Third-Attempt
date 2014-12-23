@@ -58,7 +58,13 @@ public:
 		POINTER_MOD,
 		VARDECL,
 		VARDECL_LIST,
-		VARDECL_ELEM
+		VARDECL_ELEM,
+
+		FUNC_SIGN,
+		SIGN_ARGS,
+		ARGS,
+		TYPE_LIST,
+		ARG
 				
 	};
 
@@ -80,6 +86,12 @@ public:
 		this->note = note;
 	}
 
+	Node (const Node &other){
+		this->type = other.type;
+		this->text = other.text;
+		this->note = other.note;
+	}
+
 	bool operator == (const Node &other){
 		return this->type == other.type && this->text == other.text;
 	}
@@ -91,6 +103,7 @@ public:
 	string getText(){
 		return this->text;
 	}
+
 
 	string typeToText(){
 		switch (this->type){
@@ -144,6 +157,12 @@ public:
 			case Type::VARDECL: return "VARDECL";
 			case Type::VARDECL_LIST: return "VARDECL_LIST";
 			case Type::VARDECL_ELEM: return "VARDECL_ELEM";
+
+			case Type::FUNC_SIGN: return "FUNC_SIGN";
+			case Type::SIGN_ARGS: return "SIGN_ARGS";
+			case Type::ARGS: return "ARGS";
+			case Type::TYPE_LIST: return "TYPE_LIST";
+			case Type::ARG: return "ARG";
 
 
 		}

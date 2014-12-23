@@ -1402,9 +1402,9 @@ Node *getCOMPOUND_NAME(Node *left = nullptr){
 			catch(NoticeException ne){
 				if(op != nullptr && right == nullptr){
 					visitor.deleteTree (op);
-					visitor.deleteTree(left);
-					visitor.deleteTree(right);
-					throw ParserException("Strange '.' in name of type at " + currentToken.getPosition().toString());
+					// visitor.deleteTree(left);
+					// visitor.deleteTree(right);
+					throw ParserException("Strange '.' in name at " + currentToken.getPosition().toString());
 				}
 				return left;
 			}
@@ -1464,18 +1464,20 @@ Node *getTYPE(){
 		result->addChild(getCOMPOUND_NAME());
 	}
 	catch (NoticeException ne){
-		visitor.deleteTree(result);
-		visitor.deleteTree(typemods);
-		visitor.deleteTree(pointermods);
+		
+		
+		
 		if(typemods->getChildren().size() > 0){
+			visitor.deleteTree(result);
 			throw ParserException("Only TYPE_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
 		}
 
 		if(pointermods->getChildren().size() > 0){
+			visitor.deleteTree(result);
 			throw ParserException("Only POINTER_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
 		}
 
-
+		visitor.deleteTree(result);
 		throw NoticeException("Not TYPE found!");
 	}
 	return result;
@@ -1512,16 +1514,16 @@ Node *getVARDECL_ELEM(){
 
 	return result;
 
-//	throw NoticeException("No VARDECL_ELEM found!");
+	//	throw NoticeException("No VARDECL_ELEM found!");
 }
 
 Node *getVARDECL(){
 
 	Node *result = new Node(Node::VARDECL);
-	Node *type = nullptr;
+	//	Node *type = nullptr;
 
 	try{
-		type = getTYPE();
+		result->addChild(getTYPE());
 	}
 	catch(NoticeException ne){
 		visitor.deleteTree(result);
@@ -1552,10 +1554,119 @@ Node *getVARDECL(){
 
 	}
 
-	result->addChild(type);
+
 	result->addChild(list);
 
 	return result;
+}
+
+Node *getARG(){
+	Node *result = new Node(Node::ARG);
+	try{
+		result->addChild(getTYPE());
+	}
+	catch(NoticeException ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No TYPE for ARG found!");
+	}
+
+	Node *var = nullptr;
+	try{
+		result->addChild(getVARDECL_ELEM());
+	}
+	catch(NoticeException ne){
+	//	visitor.deleteTree(result);
+	//	throw ParserException("No argument found ("+ ne.what()+") at " + currentToken.getPosition().toString());
+
+	}
+
+	return result;
+}
+
+Node *getFUNC_SIGN_ARGS(){
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw NoticeException("No FUNC_SING_ARGS found!");
+	}
+
+	consume();
+	Node *result = new Node(Node::SIGN_ARGS);
+	Node *list = nullptr;
+	Node *typeList = nullptr;
+	try{
+		int counter = 0;
+		list = new Node(Node::ARGS);
+		typeList = new Node(Node::TYPE_LIST);
+		list->addChild(getARG());
+		typeList->addChild(visitor.clone(list->getChildren()[counter]->getChildren()[0]));
+		++counter;
+		try{
+			while(currentToken == Token(Token::OPERATOR, ",")){
+				consume();
+				list->addChild(getARG());
+				typeList->addChild(visitor.clone(list->getChildren()[counter]->getChildren()[0]));
+				++counter;
+			}
+		}
+		catch (NoticeException ne){
+			visitor.deleteTree(list);
+			visitor.deleteTree(typeList);
+			visitor.deleteTree(result);
+			throw ParserException ("Unfinished ARG at " + currentToken.getPosition().toString());
+		}
+
+	}
+	catch(NoticeException ne){
+		//empty for empty case;
+	}
+
+	result->addChild(typeList);
+	result->addChild(list);
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		visitor.deleteTree(result);
+		throw ParserException("Missing BRACE_RIGHT in FUNC_SIGN_ARGS at " + currentToken.getPosition().toString());
+	}
+
+	consume();
+
+
+	return result;
+
+}
+
+Node *getFUNC_SIGN(){
+	if(!(currentToken == Token(Token::KEYWORD, "def"))){
+		throw NoticeException ("No FUNC_SING found!");
+	}
+
+	consume();
+
+	Node *result = new Node(Node::FUNC_SIGN);
+	Node *type = nullptr;
+	Node *name = nullptr;
+	Node *args = nullptr;
+	try{
+		type = getTYPE();
+		name = getCOMPOUND_NAME();
+		args = getFUNC_SIGN_ARGS();
+	}
+	catch(NoticeException ne) {
+		visitor.deleteTree(result);
+		visitor.deleteTree(name);
+		visitor.deleteTree(type);
+		visitor.deleteTree(args);
+		throw ParserException("Corrupted function signature (" + ne.what() + ")at " + currentToken.getPosition().toString());
+	}
+
+	result->addChild(name);
+	result->addChild(type);
+	result->addChild(args);
+
+
+	
+		
+	return result;
+
 }
 
 
@@ -1572,7 +1683,7 @@ void buildTree(){
 	this->tree = new Node(Node::PROGRAM);
 	this->tree->addChild(getBEGIN());
 	try {
-		Node *tmp = getVARDECL();
+		Node *tmp = getFUNC_SIGN();
 		this->tree->addChild(tmp);
 	}
 	catch(NoticeException ne){
