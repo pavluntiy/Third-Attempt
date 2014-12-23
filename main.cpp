@@ -64,12 +64,13 @@ int main (int argc, char **argv) {
 		parser.buildTree();
 		parser.pushTree();
 		visitor.printTree();
+
 	}
 	catch (ParserException e){
 		*err << e.what() << '\n';
 	}
 
-	//parser.deleteTree();
+	parser.pushTree();
 	visitor.deleteTree();
 
 

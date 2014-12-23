@@ -15,6 +15,12 @@ init
 in
 is
 
+long
+short
+unsigned
+signed
+const
+ref
 
 struct
 class

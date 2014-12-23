@@ -21,7 +21,7 @@ public:
 	 	*this->out<< " \"" << node->getText() << "\"";
 	}
 	if(node->getChildren().size() > 0){
-	 	*this->out << ", children num = "<< node->getChildren().size() << ":\n";
+	 	*this->out << ", children num = "<< node->getChildren().size() << ":" << endl;
 	}
 		for(auto it : node->getChildren()){
 			dfs(it, shift + ' ');
@@ -32,7 +32,7 @@ public:
 	else {
 		*this->out << ' ';
 	}
-	*this->out   << ")\n";
+	*this->out   << ")" << endl;
 	
 }
 

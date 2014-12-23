@@ -50,7 +50,15 @@ public:
 		FUNCCALL,
 		FUNCARGS,
 		ACCESS,
-		ACCESSARGS
+		ACCESSARGS,
+
+		TYPE,
+		TYPE_NAME,
+		TYPE_MOD,
+		POINTER_MOD,
+		VARDECL,
+		VARDECL_LIST,
+		VARDECL_ELEM
 				
 	};
 
@@ -128,6 +136,14 @@ public:
 			case Type::FUNCARGS: return "FUNCARGS";
 			case Type::ACCESS: return "ACCESS";
 			case Type::ACCESSARGS: return "ACCESSARGS";
+
+			case Type::TYPE: return "TYPE";
+			case Type::TYPE_NAME: return "TYPE_NAME";
+			case Type::TYPE_MOD: return "TYPE_MOD";
+			case Type::POINTER_MOD: return "POINTER_MOD";
+			case Type::VARDECL: return "VARDECL";
+			case Type::VARDECL_LIST: return "VARDECL_LIST";
+			case Type::VARDECL_ELEM: return "VARDECL_ELEM";
 
 
 		}

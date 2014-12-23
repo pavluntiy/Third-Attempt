@@ -1238,6 +1238,8 @@ Node *getEXPR10(Node *left = nullptr){
 				return getEXPR10(op);
 			}
 			catch(NoticeException ne){
+				//visitor.deleteTree (op);
+				//visitor.deleteTree(right);
 				return getBRACED(left);
 			}
 			return left;
@@ -1287,6 +1289,20 @@ Node *getVALUE(){
 	throw NoticeException("No VALUE found!");
 }
 
+Node *getNON_EMPTY_EXPRESSION(){
+
+	lock();
+	try {
+
+		return getCOMMA_EXPRESSION();
+	}
+	catch (NoticeException ne){
+
+	}
+
+	throw NoticeException("No NON_EMPTY_EXPRESSION found!");
+}
+
 Node *getEXPRESSION(){
 
 	lock();
@@ -1299,6 +1315,247 @@ Node *getEXPRESSION(){
 	}
 	//for empty one
 	return new Node(Node::EXPRESSION);
+
+}
+
+Node *getTYPE_MOD(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::KEYWORD)){
+		if(
+			currentToken.getText() == "const"
+			||
+			currentToken.getText() == "long"
+			||
+			currentToken.getText() == "short"
+			||
+			currentToken.getText() == "unsigned"
+			||
+			currentToken.getText() == "signed"
+			||
+			currentToken.getText() == "volatile"
+			||
+			currentToken.getText() == "extern"
+
+
+		){
+			result = new Node(Node::TYPE_MOD, currentToken.getText());
+			consume();
+			return result;
+		}
+	}
+
+		throw NoticeException("No TYPE_MOD found!");
+
+}
+
+Node *getPOINTER_MOD(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(
+			currentToken.getText() == "@"
+		){
+			result = new Node(Node::POINTER_MOD, currentToken.getText());
+			consume();
+			return result;
+		}
+	}
+
+	if(currentToken.typeEqualsTo(Token::KEYWORD)){
+		if(
+			currentToken.getText() == "ref"
+		){
+			result = new Node(Node::POINTER_MOD, currentToken.getText());
+			consume();
+			return result;
+		}
+	}
+
+		throw NoticeException("No POINTER_MOD found!");
+}
+
+Node *getTYPENAME_OP(){
+	Node *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::OPERATOR)){
+		if(currentToken.getText() == "."){
+			result = new Node(Node::OPERATOR, currentToken.getText());
+			consume();
+			return result;
+		}
+	}
+
+	throw NoticeException ("No '.' for COMPOUND_NAME found!");
+}
+
+Node *getCOMPOUND_NAME(Node *left = nullptr){
+	Node *right = nullptr;
+	Node *op = nullptr;
+	if(left == nullptr){
+		try{
+			left = getNAME();
+			try{
+				op = getTYPENAME_OP();
+				op->addChild(left);
+				right = getNAME();
+				op->addChild(right);
+				return getCOMPOUND_NAME(op);
+			}
+			catch(NoticeException ne){
+				if(op != nullptr && right == nullptr){
+					visitor.deleteTree (op);
+					visitor.deleteTree(left);
+					visitor.deleteTree(right);
+					throw ParserException("Strange '.' in name of type at " + currentToken.getPosition().toString());
+				}
+				return left;
+			}
+		}
+		catch(NoticeException ne){
+
+		}
+	}
+	else {	
+			try{
+				op = getTYPENAME_OP();
+				right = getNAME();
+				op->addChild(left);
+				op->addChild(right);
+				return getCOMPOUND_NAME(op);
+			}
+			catch(NoticeException ne){
+				visitor.deleteTree (op);
+				visitor.deleteTree(right);
+			}
+			return left;
+	}
+
+	try {
+		return getNAME();
+	}
+	catch(NoticeException ne){
+
+	}
+
+	throw NoticeException("No COMPOUND_NAME found!");
+}
+
+Node *getTYPE(){
+	Node *result = new Node(Node::TYPE);
+	Node *typemods = new Node(Node::TYPE_MOD);
+	Node *pointermods = new Node(Node::POINTER_MOD);
+
+	try{
+		while(1){
+			typemods->addChild(getTYPE_MOD());
+		}
+	}
+	catch (NoticeException ne){}
+
+	result->addChild(typemods);
+
+	try{
+		while(1){
+			pointermods->addChild(getPOINTER_MOD());
+		}
+	}
+	catch (NoticeException ne){}
+	result->addChild(pointermods);
+
+	try{
+		result->addChild(getCOMPOUND_NAME());
+	}
+	catch (NoticeException ne){
+		visitor.deleteTree(result);
+		visitor.deleteTree(typemods);
+		visitor.deleteTree(pointermods);
+		if(typemods->getChildren().size() > 0){
+			throw ParserException("Only TYPE_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
+		}
+
+		if(pointermods->getChildren().size() > 0){
+			throw ParserException("Only POINTER_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
+		}
+
+
+		throw NoticeException("Not TYPE found!");
+	}
+	return result;
+}
+
+Node *getVARDECL_ELEM(){
+
+	Node *result = nullptr;
+	Node *name = nullptr;
+	try {
+		name = getCOMPOUND_NAME();
+		result = new Node(Node::VARDECL_ELEM);
+		result->addChild(name);
+	}
+	catch(NoticeException ne){
+		throw NoticeException("No VARDECL_ELEM found!");
+	}
+
+
+	if(currentToken == Token(Token::OPERATOR, "=")){
+		Node *op = new Node(Node::OPERATOR, "=");
+		consume();
+		op->addChild(new Node(*name));
+		try {
+			op->addChild(getASSIGNMENT());
+		}
+		catch (NoticeException ne){
+			visitor.deleteTree(result);
+			visitor.deleteTree(op);
+			throw ParserException("Unfinished initialization expression at " + currentToken.getPosition().toString());
+		}
+		result->addChild(op);
+	}
+
+	return result;
+
+//	throw NoticeException("No VARDECL_ELEM found!");
+}
+
+Node *getVARDECL(){
+
+	Node *result = new Node(Node::VARDECL);
+	Node *type = nullptr;
+
+	try{
+		type = getTYPE();
+	}
+	catch(NoticeException ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No VARDECL!");
+	}
+
+	Node *tmp = nullptr;
+	//	Node *op = nullptr;
+
+	Node *list = nullptr;
+	try{
+		tmp = getVARDECL_ELEM();
+		list = new Node(Node::VARDECL_LIST);
+		list->addChild(tmp);
+		try{
+			while(currentToken == Token(Token::OPERATOR, ",")){
+				consume();
+				list->addChild(getVARDECL_ELEM());
+			}
+		}
+		catch (NoticeException ne){
+			throw ParserException ("Unfinished VARDECL_LIST at " + currentToken.getPosition().toString());
+		}
+
+
+	}
+	catch(NoticeException ne){
+
+	}
+
+	result->addChild(type);
+	result->addChild(list);
+
+	return result;
 }
 
 
@@ -1315,7 +1572,8 @@ void buildTree(){
 	this->tree = new Node(Node::PROGRAM);
 	this->tree->addChild(getBEGIN());
 	try {
-		this->tree->addChild(getEXPRESSION());
+		Node *tmp = getVARDECL();
+		this->tree->addChild(tmp);
 	}
 	catch(NoticeException ne){
 
