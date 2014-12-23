@@ -1311,7 +1311,7 @@ Node *getEXPRESSION(){
 		return getCOMMA_EXPRESSION();
 	}
 	catch (NoticeException ne){
-
+		recoil();
 	}
 	//for empty one
 	return new Node(Node::EXPRESSION);
@@ -1570,7 +1570,7 @@ Node *getARG(){
 		throw NoticeException("No TYPE for ARG found!");
 	}
 
-	Node *var = nullptr;
+	//Node *var = nullptr;
 	try{
 		result->addChild(getVARDECL_ELEM());
 	}
@@ -1669,6 +1669,52 @@ Node *getFUNC_SIGN(){
 
 }
 
+Node *getOPERATOR(){
+
+	try {
+		return getFUNC_SIGN();
+	}
+	catch (NoticeException ne){}
+
+	try {
+		return getNON_EMPTY_EXPRESSION();
+	}
+	catch (NoticeException ne){}
+
+	try {
+		return getVARDECL();
+	}
+	catch (NoticeException ne){}
+
+	
+
+	throw NoticeException("No OPERATOR found!");
+}
+
+Node *getOPERATORS(){
+	Node *result = new Node(Node::OPERATORS);
+
+	try{
+
+		while(true){
+			while(currentToken.typeEqualsTo(Token::SEMICOLON)) {
+				consume();
+			}
+			result->addChild(getOPERATOR());
+		}		
+			
+
+	}
+	catch(NoticeException ne){}
+
+	if(result->getChildren().size() == 0){
+		visitor.deleteTree(result);
+		throw NoticeException ("No OPERATORS found!");
+	}
+
+	return result;
+}
+
 
 	
 Node *getTree(){
@@ -1683,7 +1729,7 @@ void buildTree(){
 	this->tree = new Node(Node::PROGRAM);
 	this->tree->addChild(getBEGIN());
 	try {
-		Node *tmp = getFUNC_SIGN();
+		Node *tmp = getOPERATORS();
 		this->tree->addChild(tmp);
 	}
 	catch(NoticeException ne){

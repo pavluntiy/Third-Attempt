@@ -36,6 +36,7 @@ public:
 		B_AND,
 
 		OPERATOR,
+		OPERATORS,
 	
 		INT, 
 		FLOAT, 
@@ -134,6 +135,7 @@ public:
 			case Type::B_AND: return "B_AND";
 
 			case Type::OPERATOR: return "OPERATOR";
+			case Type::OPERATORS: return "OPERATORS";
 		
 			case Type::INT: return "INT"; 
 			case Type::FLOAT: return "FLOAT"; 
