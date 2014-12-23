@@ -36,27 +36,27 @@ int main (int argc, char **argv) {
 
 
 	Lexer lexer(*in);
-	int i = 0;
-		try{
+	// int i = 0;
+	// 	try{
 
-			while(!lexer.closed()){
-			//while(true){
-				try{
-					*out << lexer[i];
-					out->flush(); 
-				}	
-				catch(DataException de){
-					*err << "Data exception: " << de.what() << '\n';
-				}
-				++i;
-			}
-		}
-		catch (LexerException e){
-			*err << e.what() << '\n';
-		}
+	// 		while(!lexer.closed()){
+	// 		//while(true){
+	// 			try{
+	// 				*out << lexer[i];
+	// 				out->flush(); 
+	// 			}	
+	// 			catch(DataException de){
+	// 				*err << "Data exception: " << de.what() << '\n';
+	// 			}
+	// 			++i;
+	// 		}
+	// 	}
+	// 	catch (LexerException e){
+	// 		*err << e.what() << '\n';
+	// 	}
 
 	Parser parser(lexer);
-//	Parser parser(lexer(*);
+//	Parser parser(Lexer(*in));
 	try{
 		parser.buildTree();
 		parser.printTree(parser.getTree(), out);

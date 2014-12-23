@@ -1098,7 +1098,7 @@ public:
 	}
 
 	bool isValidIndex(int index){
-		return index < this->size && index >= 0;
+		return (index < this->size && index >= 0) || !eofReported;
 	}
 
 };

@@ -15,7 +15,6 @@ init
 in
 is
 
-end
 
 struct
 class
@@ -27,12 +26,6 @@ private
 protected
 
 friend
-
-signal
-signals
-
-slot
-slots
 
 virtual
 abstract
@@ -71,7 +64,7 @@ generic
 
 implicit
 
-'auto
+auto
 dynamic
 decltype
 cast
@@ -80,4 +73,3 @@ using
 namespace
 from
 import
-as
