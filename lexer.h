@@ -1059,7 +1059,7 @@ public:
 	}
 
 	Token tokenAt(int index){
-	
+		
 		if(eof() && index >= this->size){
 
 			if(index == this->size && !EofReported()){
@@ -1085,11 +1085,13 @@ public:
 		// if(eof()){
 		// 	addToOutput(Token (Token::END, data.sourcePosition));
 		// }
-		if(index == this->size && !EofReported()){
-				reportEof();
-			}
-		
 
+		if(index == this->size && !EofReported()){
+		//	cout << "WTF!?";
+			reportEof();
+		}
+		
+	//	cout << index;
 		return output[index];
 	}
 
@@ -1098,6 +1100,7 @@ public:
 	}
 
 	bool isValidIndex(int index){
+
 		return (index < this->size && index >= 0) || !eofReported;
 	}
 

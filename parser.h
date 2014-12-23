@@ -945,10 +945,10 @@ Node *getEXPR8(){
 }
 
 Node *getATOM(){
-
 	if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 		consume();
 		Node *result = getEXPRESSION();
+	//	cout << "HEY!";
 		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
 			throw ParserException("Missing BRACE_RIGHT at " + currentToken.getPosition().toString());
 		}
@@ -1179,8 +1179,8 @@ Node *getEXPR9_SUFFIX(Node *left = nullptr){
 		try{
 			left = getEXPR10();
 		}
-		catch (ParserException pe){
-			throw ParserException("Strange stuff at " + currentToken.getPosition().toString() + ";\n got " + currentToken.toString());
+		catch (NoticeException ne){
+		//	throw ParserException("Strange stuff at " + currentToken.getPosition().toString() + ";\n got " + currentToken.toString());
 		}
 	}
 
@@ -1309,8 +1309,10 @@ Node *getVALUE(){
 }
 
 Node *getEXPRESSION(){
+
 	lock();
 	try {
+
 		return getCOMMA_EXPRESSION();
 	}
 	catch (NoticeException ne){
@@ -1334,6 +1336,44 @@ void deleteTree(Node *tree){
 		deleteTree(children[i]);
 	}
 	delete tree;
+}
+void visitTree(ostream *treeOut){
+	tree = new Node(Node::PROGRAM);
+	tree->addChild(getBEGIN());
+	visitTree(tree, treeOut);
+}
+
+void visitTree (Node *node, ostream *treeOut, string shift = ""){
+	*treeOut << shift << "( " << node->typeToText();
+	if(node->getText() != ""){
+	 	*treeOut<< " \"" << node->getText() << "\"";
+	}
+
+	int counter = 0;
+	// if(node->getChildren().size() > 0){
+	//  	*treeOut << ", children num = "<< node->getChildren().size() << ":\n";
+	// }
+
+	// for(auto it : node->getChildren()){
+	// 	dfs(it, treeOut, shift + ' ');
+	// }
+
+	try {
+		dfs(getEXPRESSION(), treeOut, shift + ' ');
+	}
+	catch (NoticeException ne){
+
+	}
+
+
+	if(counter > 0){
+	 	*treeOut << shift;
+	}
+	else {
+		*treeOut << ' ';
+	}
+	*treeOut   << ")\n";
+	
 }
 
 void deleteTree(){

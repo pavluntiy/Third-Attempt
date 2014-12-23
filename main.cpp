@@ -58,6 +58,7 @@ int main (int argc, char **argv) {
 	Parser parser(lexer);
 //	Parser parser(Lexer(*in));
 	try{
+	//	parser.visitTree(out);
 		parser.buildTree();
 		parser.printTree(parser.getTree(), out);
 	}
