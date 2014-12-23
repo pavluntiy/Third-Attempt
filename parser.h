@@ -32,12 +32,15 @@ public:
 	{
 		this->currentPosition = 0;
 		this->currentToken = this->lexer[0];
+		this->history.push(currentPosition);
 	}
 
 void lock(){
 	this->history.push(currentPosition);
 }
 void recoil(){
+
+//	cout << "recoiling!!!!!!!!!!!!!!!!!!!!!\n";
 	if(this->history.empty()){
 		throw ParserException("Incorrect recoiling!");
 	}
@@ -45,7 +48,9 @@ void recoil(){
 	this->currentPosition = this->history.top();
 	this->history.pop();
 	this->currentToken = this->lexer[this->currentPosition];
+//	cout << currentToken << '\n';
 }
+
 void memoize(Node::Type type, int position, bool success, int jump){
 	this->memo[make_pair(type, position)] = make_pair(success, jump);
 }
@@ -1091,7 +1096,7 @@ Node *getEXPR9_OP_SUFFIX(){
 		}
 	}
 
-	throw NoticeException("No EXPR9_OP_SUFFIX found!");
+	throw NoticeException("No EXPR9_OP_SUFFIX found , got + " + currentToken.toString());
 }
 
 Node *getEXPR9_OP(){
@@ -1147,15 +1152,17 @@ Node *getEXPR9_OP(){
 		}
 	}
 
-	throw NoticeException("No EXPR9_OP found!");
+	throw NoticeException("No EXPR9_OP found, got + " + currentToken.toString());
 }
 
 Node *getEXPR9_SUFFIX(Node *left = nullptr){
 	Node *op = nullptr;
 	Node *tmp = nullptr;
-
+//	cout << "AT ENTER LEFT IS " << left << '\n'; 
 	if(left == nullptr){
 		try{
+//			cout << "#######\n";
+//			cout << currentToken;
 			left = getEXPR10();
 		}
 		catch (NoticeException ne){
@@ -1163,6 +1170,7 @@ Node *getEXPR9_SUFFIX(Node *left = nullptr){
 		}
 	}
 
+//	cout << "ONGTWSEDFVGJS\n";
 	try{
 		op = getEXPR9_OP_SUFFIX();
 		tmp = getEXPR9_SUFFIX(left);
@@ -1170,42 +1178,50 @@ Node *getEXPR9_SUFFIX(Node *left = nullptr){
 		return op;
 	}
 	catch(NoticeException ne){
+//		cout << ne.what();
 	}
-
+//	cout << "LEFT IS " << left << '\n';
 	return left;
 }
 
 Node *getEXPR9(){
+	//cout << "TEWEGSDF|\n";
 	Node *son= nullptr;
 	Node *op = nullptr;
 	try {
 		op = getEXPR9_OP();
 		son = getEXPR9();
 		op->addChild(son);
+		return op;
 	}
 	catch (NoticeException ne){
-
+		//cout << ne.what();
+		//cout << "ppppp\n";
+		//cout << currentToken << '\n';
 	}
 
 	try {
+	//	cout << "eeeee\n";
+	//	cout << currentToken;
+		//cout << "currentPosition: " << currentPosition << '\n';
 		return getEXPR9_SUFFIX();
 	}
 	catch (NoticeException ne){
-
+		//cout << "OH YEAH!\n\n";
 	}
 
 	if(op == nullptr){
-		throw NoticeException("No EXPR10 found!");
+		throw NoticeException("No EXPR9 found!");
 	}
 
 	return op;
 }
 
 Node *getEXPR10(Node *left = nullptr){
-	lock();
 	//	Node *tmp = nullptr;
 	Node *right = nullptr;
 	Node *op = nullptr;
+	//cout << "ololo!";
 	if(left == nullptr){
 	//	cout << "ololo!";
 		try{
@@ -1246,10 +1262,11 @@ Node *getEXPR10(Node *left = nullptr){
 	}
 
 	try {
+		//cout << "OK\n";
 		return getATOM();
 	}
 	catch(NoticeException ne){
-
+	//	cout << ne.what();
 	}
 
 	throw NoticeException("No EXPR10 found!");
@@ -1297,7 +1314,7 @@ Node *getNON_EMPTY_EXPRESSION(){
 		return getCOMMA_EXPRESSION();
 	}
 	catch (NoticeException ne){
-
+		recoil();
 	}
 
 	throw NoticeException("No NON_EMPTY_EXPRESSION found!");
@@ -1305,16 +1322,17 @@ Node *getNON_EMPTY_EXPRESSION(){
 
 Node *getEXPRESSION(){
 
-	lock();
-	try {
+	return getNON_EMPTY_EXPRESSION();
+	// lock();
+	// try {
 
-		return getCOMMA_EXPRESSION();
-	}
-	catch (NoticeException ne){
-		recoil();
-	}
-	//for empty one
-	return new Node(Node::EXPRESSION);
+	// 	return getCOMMA_EXPRESSION();
+	// }
+	// catch (NoticeException ne){
+	// 	recoil();
+	// }
+	// //for empty one
+	// //return new Node(Node::EXPRESSION);
 
 }
 
@@ -1518,7 +1536,7 @@ Node *getVARDECL_ELEM(){
 }
 
 Node *getVARDECL(){
-
+	lock();
 	Node *result = new Node(Node::VARDECL);
 	//	Node *type = nullptr;
 
@@ -1527,6 +1545,7 @@ Node *getVARDECL(){
 	}
 	catch(NoticeException ne){
 		visitor.deleteTree(result);
+		recoil();
 		throw NoticeException("No VARDECL!");
 	}
 
@@ -1545,13 +1564,16 @@ Node *getVARDECL(){
 			}
 		}
 		catch (NoticeException ne){
+			recoil();
 			throw ParserException ("Unfinished VARDECL_LIST at " + currentToken.getPosition().toString());
 		}
 
 
 	}
 	catch(NoticeException ne){
-
+		visitor.deleteTree(result);
+		recoil();
+		throw NoticeException("No VARDECL found!");
 	}
 
 
@@ -1559,6 +1581,8 @@ Node *getVARDECL(){
 
 	return result;
 }
+
+
 
 Node *getARG(){
 	Node *result = new Node(Node::ARG);
@@ -1672,6 +1696,11 @@ Node *getFUNC_SIGN(){
 Node *getOPERATOR(){
 
 	try {
+		return getVARDECL();
+	}
+	catch (NoticeException ne){}
+
+	try {
 		return getFUNC_SIGN();
 	}
 	catch (NoticeException ne){}
@@ -1681,10 +1710,7 @@ Node *getOPERATOR(){
 	}
 	catch (NoticeException ne){}
 
-	try {
-		return getVARDECL();
-	}
-	catch (NoticeException ne){}
+	
 
 	
 
