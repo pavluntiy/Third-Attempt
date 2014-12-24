@@ -12,7 +12,7 @@ class Data{
 
 	istream &in;
 	string str;
-	int size;
+	//int size;
 	bool wasEof;
 	bool ready;
 	bool errorOccured;
@@ -32,7 +32,7 @@ public:
 	Data(istream &in = cin):
 	in(in)
 	{
-		size = 0;
+		//size = 0;
 		wasEof = false;
 		ready = false;
 		currentPosition = -1;
@@ -74,13 +74,13 @@ public:
 		sourcePosition.linePosition++;
 		tmp = *(end(str) - 1);
 		this->str.pop_back();
-		this->size--;
+		//this->size--;
 		return tmp;	
 	}	
 
 	void push(char c){
 		this->str.push_back(c);
-		this->size++;
+		//this->size++;
 	}
 
 
@@ -120,11 +120,15 @@ public:
 	}
 	
 	int getSize(){
-		return this->size;
+		return this->str.size();
 	}
 	bool eof(){
-		this->wasEof = this->wasEof || this->in.eof();
-		return this->wasEof;
+		//this->wasEof = (currentChar == -1);
+		//this->wasEof = this->wasEof || this->in.eof();
+		//return this->wasEof;
+		//cout << currentPosition << ' ' << str[str.size() - 2];
+		//cout << currentPosition << '!';
+		return this->in.eof() && currentPosition  >= static_cast<int>(str.size()) - 1;
 	}
 
 	Position getSourcePosition(){
@@ -137,12 +141,12 @@ public:
 
 	char charAt(int index){
 	//	cout << index << endl;
-		if(wasEof && index >= size){
+		if(eof() && index >= str.size()){
 			throw DataException("Invalid index of input");
 		}
 
-		if(index >= this->size){
-			while (!eof() && index >= this->size){
+		if(index >= this->str.size()){
+			while (!eof() && index >= this->str.size()){
 				char c = static_cast<char>(in.get());
 				this->push(c);
 			}
@@ -194,7 +198,9 @@ public:
 		if(!ready){
 			makeReady();
 		}
-		ignore(this->charAt(currentPosition + 1));
+		//cout << "'" <<currentChar << "'";
+		//ignore(this->charAt(currentPosition + 1));
+		//cout << "'" <<currentChar << "'";
 		return;
 	}
 
@@ -240,6 +246,7 @@ public:
 		}
 
 		if (wasEof){
+
 			throw DataException("Unexpected end of file on " + sourcePosition.toString() + "\n");
 		}
 		
@@ -253,7 +260,7 @@ public:
 		else {
 			currentChar = this->charAt(currentPosition); 
 		}
-	//	cout << "got character: " << currentChar << endl;
+	//	cout << "got character: " << currentChar << wasEof << endl;
 
 	}
 

@@ -1693,12 +1693,17 @@ Node *getOPERATOR(){
 	catch (NoticeException ne){}
 
 	try {
-		return getFUNC_SIGN();
+		return getFUNC_DEF();
 	}
 	catch (NoticeException ne){}
 
 	try {
 		return getNON_EMPTY_EXPRESSION();
+	}
+	catch (NoticeException ne){}
+
+	try {
+		return getBLOCK();
 	}
 	catch (NoticeException ne){}
 
@@ -1731,6 +1736,43 @@ Node *getOPERATORS(){
 	}
 
 	return result;
+}
+
+Node *getBLOCK(){
+	if(!currentToken.typeEqualsTo(Token::CURL_LEFT)){
+		throw NoticeException("No block found!");
+	}
+	consume();
+	Node *result = new Node(Node::BLOCK);
+
+	try {
+		result->addChild(getOPERATORS());
+	}
+	catch (NoticeException &ne) {}
+
+	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
+		cout << currentToken;
+		throw ParserException("Unfinished block of code at " + currentToken.getPosition().toString());
+	}
+	consume();
+
+	return result;
+}
+
+Node *getFUNC_DEF(){
+
+	Node *result = nullptr;
+	try{
+		result = new Node(Node::FUNC_DEF);
+		result->addChild(getFUNC_SIGN());
+		result->addChild(getBLOCK());
+		return result;
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException ("No function found!");
+
+	}
 }
 
 

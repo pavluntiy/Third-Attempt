@@ -54,7 +54,7 @@ public:
 	char currentChar(){
 		if(this->data.eof()){
 			setEof();
-			return '\n';
+			return '\0';
 		}
 		return this->data.currentChar;
 	}
@@ -419,6 +419,7 @@ public:
 
 	void getWhitespaces(){
 		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) && !Alphabet::is<Alphabet::NEWLINE>(currentChar())) {
+
 				data.consume();
 			}
 	}
@@ -752,13 +753,16 @@ public:
 			if (currentChar() == '|'){
 				data.consume();
 				if(currentChar() == '='){
+
 					data.consume();
 					return Token(Token::OPERATOR, "||=", "", data.getPreviousSourcePosition());
 				}
 				return Token(Token::OPERATOR, "||", "", data.getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
+				cout << data.eof() << " &&\n";
 				data.consume();
+				cout << data.eof() << " &&\n";
 				return Token(Token::OPERATOR, "|=", "", data.getPreviousSourcePosition());
 			}
 			else {
@@ -823,6 +827,7 @@ public:
 	Token tryAndGetOperator(){
 
 		data.lock();
+		//cout << currentChar() << data.eof();
 		switch (currentChar()){
 			case '/': return getSlashVariants(); break;
 			case '%': return getProcentVariants(); break;
@@ -871,17 +876,21 @@ public:
 
 
 	Token getToken(){
+
+		//cout << currentChar() << eof();
 			Token result;
 			try{
 				data.isReady();
+				//cout << "'"<< currentChar() << "'";
 			}
 			catch (DataException de){
 				setEof();
 			//	return Token(Token::END, data.sourcePosition);
-				throw LexerException("Eof already occured!");
+
+				throw LexerException("Eof already occured #1!");
 			}
 
-
+				//cout << currentChar() << eof();
 
 			try {
 				getWhitespaces();
@@ -890,8 +899,10 @@ public:
 				setEof();
 			//	cout << data.dataDump();
 			//	return(Token (Token::END, data.sourcePosition));
-				throw NoticeException("Eof already occured!");
+				throw NoticeException("Eof already occured #2!");
 			}
+
+		
 
 			if(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
 				try {
@@ -903,7 +914,7 @@ public:
 				//	cout << data.dataDump();
 				//	cout << "asdfasdfasdf";
 				//	return(Token (Token::END, data.sourcePosition));
-					throw NoticeException("Eof already occured!");
+					throw NoticeException("Eof already occured #3!");
 				}
 			}
 
@@ -979,6 +990,7 @@ public:
 			}
 
 			try{
+
 				result = tryAndGetOperator();
 				return result;
 			}
@@ -1054,6 +1066,7 @@ public:
 	}
 
 	void reportEof(void){
+		//cout << data.dataDump();
 		addToOutput(Token (Token::END, data.sourcePosition));
 		this->eofReported = true;
 	}
@@ -1073,6 +1086,7 @@ public:
 		while (!eof() && index >= this->size){
 	//	while(index >= this->size){
 	//		cout << "blabla\n\n";
+			//cout << currentChar() << eof();
 			getNextToken();
 		}	
 	//	cout << "Trying to get token at " << index << "\n";
@@ -1088,6 +1102,7 @@ public:
 
 		if(index == this->size && !EofReported()){
 		//	cout << "WTF!?";
+		//	cout << currentChar();
 			reportEof();
 		}
 		

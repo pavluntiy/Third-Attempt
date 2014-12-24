@@ -31,29 +31,30 @@ int main (int argc, char **argv) {
 		else {
 			out = &cout;
 		}
+		err = &cerr;
 
 	}
 
 
-	Lexer lexer(*in);
-	// int i = 0;
-	// 	try{
+	 Lexer lexer(*in);
+	int i = 0;
+		try{
 
-	// 		while(!lexer.closed()){
-	// 		//while(true){
-	// 			try{
-	// 				*out << lexer[i];
-	// 				out->flush(); 
-	// 			}	
-	// 			catch(DataException de){
-	// 				*err << "Data exception: " << de.what() << '\n';
-	// 			}
-	// 			++i;
-	// 		}
-	// 	}
-	// 	catch (LexerException e){
-	// 		*err << e.what() << '\n';
-	// 	}
+			while(!lexer.closed()){
+			//while(true){
+				try{
+					*out << lexer[i];
+					out->flush(); 
+				}	
+				catch(DataException de){
+					*err << "Data exception: " << de.what() << '\n';
+				}
+				++i;
+			}
+		}
+		catch (LexerException e){
+			*err << e.what() << '\n';
+		}
 	TreeVisitor visitor (out);
 	Parser parser(lexer, visitor);
 //	Parser parser(Lexer(*in));

@@ -65,7 +65,10 @@ public:
 		SIGN_ARGS,
 		ARGS,
 		TYPE_LIST,
-		ARG
+		ARG,
+		FUNC_DEF,
+
+		BLOCK
 				
 	};
 
@@ -165,6 +168,9 @@ public:
 			case Type::ARGS: return "ARGS";
 			case Type::TYPE_LIST: return "TYPE_LIST";
 			case Type::ARG: return "ARG";
+			case Type::FUNC_DEF: return "FUNC_DEF";
+
+			case Type::BLOCK: return "BLOCK";
 
 
 		}

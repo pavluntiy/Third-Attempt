@@ -10,10 +10,10 @@ class Token {
 
 public:	
 	enum  Type {
+		NONE,
 		NEWLINE,
 		BEGIN,
 		END,
-		NONE,
 		INT,
 		FLOAT,
 		CHAR,
@@ -39,6 +39,9 @@ private:
  		 Position position;	
 public:
 	Token(Type type = Type::NONE, string text = "", string note = "", Position position = {0, 0}){
+		// if(type == Type::CURL_RIGHT){
+		// 	cout << "SDFJSIDFJLK:SDJF:LKSJD:KLSDJ:FKLSDJF:SKDJF:SKLDJF\n\n\n\n";
+		// }
 			this->type = type;
 			this->text = text;
 			this->note = note;
@@ -73,8 +76,8 @@ public:
 			case Type::COMMENT: return "COMMENT"; break;
 			case Type::BRACKET_LEFT: return "BRACKET_LEFT"; break;
 			case Type::BRACKET_RIGHT: return "BRACKET_RIGHT"; break;
-			case Type::CURL_LEFT: return "BRACKET_LEFT"; break;
-			case Type::CURL_RIGHT: return "BRACKET_RIGHT"; break;
+			case Type::CURL_LEFT: return "CURL_LEFT"; break;
+			case Type::CURL_RIGHT: return "CURL_RIGHT"; break;
 			case Type::BRACE_LEFT: return "BRACE_LEFT"; break;
 			case Type::BRACE_RIGHT: return "BRACE_RIGHT"; break;
 		}
