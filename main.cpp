@@ -41,6 +41,7 @@ int main (int argc, char **argv) {
 		try{
 
 			while(!lexer.closed()){
+			//	cout << lexer.closed();
 			//while(true){
 				try{
 					*out << lexer[i];
@@ -58,21 +59,21 @@ int main (int argc, char **argv) {
 	TreeVisitor visitor (out);
 	Parser parser(lexer, visitor);
 //	Parser parser(Lexer(*in));
-	try{
-	//	parser.visitTree(out);
-	//	parser.buildTree();
-	//	parser.printTree(parser.getTree(), out);
-		parser.buildTree();
-		parser.pushTree();
-		visitor.printTree();
+	// try{
+	// //	parser.visitTree(out);
+	// //	parser.buildTree();
+	// //	parser.printTree(parser.getTree(), out);
+	// 	parser.buildTree();
+	// 	parser.pushTree();
+	// 	visitor.printTree();
 
-	}
-	catch (ParserException e){
-		*err << e.what() << '\n';
-	}
+	// }
+	// catch (ParserException e){
+	// 	*err << e.what() << '\n';
+	// }
 
-	parser.pushTree();
-	visitor.deleteTree();
+	// parser.pushTree();
+	// visitor.deleteTree();
 
 
 	return 0;

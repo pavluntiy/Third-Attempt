@@ -1751,7 +1751,7 @@ Node *getBLOCK(){
 	catch (NoticeException &ne) {}
 
 	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
-		cout << currentToken;
+		//cout << currentToken;
 		throw ParserException("Unfinished block of code at " + currentToken.getPosition().toString());
 	}
 	consume();

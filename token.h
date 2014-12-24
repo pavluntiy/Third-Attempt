@@ -39,9 +39,6 @@ private:
  		 Position position;	
 public:
 	Token(Type type = Type::NONE, string text = "", string note = "", Position position = {0, 0}){
-		// if(type == Type::CURL_RIGHT){
-		// 	cout << "SDFJSIDFJLK:SDJF:LKSJD:KLSDJ:FKLSDJF:SKDJF:SKLDJF\n\n\n\n";
-		// }
 			this->type = type;
 			this->text = text;
 			this->note = note;
@@ -114,8 +111,12 @@ public:
 	}
 
 	bool isInvisible()
-	const{
-		return this->note == "invisible";
+	const{	
+		return 
+		this->type == Token::NEWLINE 
+		|| 
+		this->type == Token::NONE
+		;
 	}
 
 	void setType(Token::Type type){

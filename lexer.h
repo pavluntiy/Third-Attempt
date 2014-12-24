@@ -16,7 +16,7 @@ public:
 	Data data;
 	vector<Token> output;
 	Token currentToken;
-	int size;
+	//int size;
 	int lastSuccessTokenEnd = 0;
 	set<string> keywords;
 
@@ -30,7 +30,7 @@ public:
 	data(in)
 	{	
 		this->wasEof = false;
-		this->size = 1;
+		//this->size = 1;
 		output.push_back(Token(Token::BEGIN));
 		currentToken = output[0];
 
@@ -428,7 +428,7 @@ public:
 		while(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
 			data.consume();
 		}
-		return Token(Token::NEWLINE, "", "invisible", data.getPreviousSourcePosition());
+		return Token(Token::NEWLINE, "", "", data.getPreviousSourcePosition());
 	}
 
 	Token tryAndGetWord(){
@@ -1021,7 +1021,7 @@ public:
 
 	void recover(){
 
-		for(int i = this->size - 1; i > 1 && !output[i].typeEqualsTo(Token::NEWLINE); --i){
+		for(int i = static_cast<int>(this->output.size()) - 1; i > 1 && !output[i].typeEqualsTo(Token::NEWLINE); --i){
 			output[i].setType(Token::NONE);
 		}
 		
@@ -1036,7 +1036,7 @@ public:
 	void addToOutput (const Token &token){
 		this->currentToken = token;
 		this->output.push_back(token);
-		this->size++;
+	//	this->size++;
 	//	this->lastSuccessTokenEnd = data.getPosition() - 1;
 	//	cout << "Added: " << data.getSize() << data.getSourcePosition().toString() << '\n';
 	//	cout << "Last succeeded token at position " << data.getPosition() << '\n';
@@ -1065,6 +1065,10 @@ public:
 
 	}
 
+	void checkForEof(void){
+		this->wasEof = data.eof();
+	}
+
 	void reportEof(void){
 		//cout << data.dataDump();
 		addToOutput(Token (Token::END, data.sourcePosition));
@@ -1072,10 +1076,10 @@ public:
 	}
 
 	Token tokenAt(int index){
-		
-		if(eof() && index >= this->size){
+		//	cout << index << ' ';
+		if(eof() && index >= static_cast<int>(this->output.size())){
 
-			if(index == this->size && !EofReported()){
+			if(index == static_cast<int>(this->output.size()) && !EofReported()){
 				reportEof();
 			}
 			else{
@@ -1083,11 +1087,12 @@ public:
 			}
 		}
 		
-		while (!eof() && index >= this->size){
+		while (!closed() && index >= static_cast<int>(this->output.size())){
 	//	while(index >= this->size){
 	//		cout << "blabla\n\n";
 			//cout << currentChar() << eof();
 			getNextToken();
+			checkForEof();
 		}	
 	//	cout << "Trying to get token at " << index << "\n";
 	//	cout << currentToken;
@@ -1100,13 +1105,10 @@ public:
 		// 	addToOutput(Token (Token::END, data.sourcePosition));
 		// }
 
-		if(index == this->size && !EofReported()){
-		//	cout << "WTF!?";
-		//	cout << currentChar();
+		if(index >= static_cast<int>(this->output.size()) && !EofReported()){
 			reportEof();
 		}
-		
-	//	cout << index;
+
 		return output[index];
 	}
 
@@ -1116,7 +1118,7 @@ public:
 
 	bool isValidIndex(int index){
 
-		return (index < this->size && index >= 0) || !eofReported;
+		return (index < static_cast<int>(this->output.size()) && index >= 0) || !eofReported;
 	}
 
 };

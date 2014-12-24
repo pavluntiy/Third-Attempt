@@ -141,12 +141,12 @@ public:
 
 	char charAt(int index){
 	//	cout << index << endl;
-		if(eof() && index >= str.size()){
+		if(eof() && index >= static_cast<int>(this->str.size())){
 			throw DataException("Invalid index of input");
 		}
 
-		if(index >= this->str.size()){
-			while (!eof() && index >= this->str.size()){
+		if(index >= static_cast<int>(this->str.size())){
+			while (!eof() && index >= static_cast<int>(this->str.size())) {
 				char c = static_cast<char>(in.get());
 				this->push(c);
 			}
@@ -196,6 +196,7 @@ public:
 		// }
 	//	cout << "adrtkekqerqwdf\n";
 		if(!ready){
+			//cout << "WTF?!?!";
 			makeReady();
 		}
 		//cout << "'" <<currentChar << "'";
