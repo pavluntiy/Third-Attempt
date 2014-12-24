@@ -68,6 +68,14 @@ public:
 		ARG,
 		FUNC_DEF,
 
+		IF,
+		// THEN,
+		// ELSE,
+
+		WHILE,
+		DOWHILE,
+		FOR,
+
 		BLOCK
 				
 	};
@@ -169,6 +177,13 @@ public:
 			case Type::TYPE_LIST: return "TYPE_LIST";
 			case Type::ARG: return "ARG";
 			case Type::FUNC_DEF: return "FUNC_DEF";
+
+			case Type::IF: return "IF";
+			// case Type::THEN: return "THEN";
+			// case Type::ELSE: return "ELSE";
+			case Type::WHILE: return "WHILE";
+			case Type::DOWHILE: return "DOWHILE";
+			case Type::FOR: return "FOR";
 
 			case Type::BLOCK: return "BLOCK";
 

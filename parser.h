@@ -72,6 +72,22 @@ void consume(){
 //	}
 }
 
+void get(Token token){
+	if(! (currentToken == token) ){
+		throw NoticeException ("No " + token.toString() + " found, got " + currentToken.toString() + 
+			"instead at " + currentToken.getPosition().toString());
+	}
+	consume();
+}
+
+void get(Token::Type type){
+	if(! currentToken.typeEqualsTo(type) ){
+		throw NoticeException ("No " + Token(type).toString() + " found, got " + currentToken.toString() + 
+			"instead at " + currentToken.getPosition().toString());
+	}
+	consume();
+}
+
 Node *getCOMMA(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
@@ -1707,8 +1723,16 @@ Node *getOPERATOR(){
 	}
 	catch (NoticeException ne){}
 
-	
+	try {
+		return getSPECIAL();
+	}
+	catch (NoticeException ne){}	
 
+	
+	if(currentToken.typeEqualsTo(Token::SEMICOLON)){
+		consume();
+		return new Node(Node::OPERATOR);
+	}
 	
 
 	throw NoticeException("No OPERATOR found!");
@@ -1773,6 +1797,228 @@ Node *getFUNC_DEF(){
 		throw NoticeException ("No function found!");
 
 	}
+}
+
+Node *getIF(){
+	if(!(currentToken == Token(Token::KEYWORD, "if"))){
+		throw ParserException("Trying to get IF statemetn without IF! Check functio getSPECIAL!!!");
+	}
+
+	consume();
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw NoticeException("Missing '(' at" + currentToken.getPosition().toString());
+	}
+
+	consume();
+
+	Node *result = new Node(Node::IF);
+
+	try {
+		result->addChild(getEXPRESSION());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No EXPRESSION in IF!");
+	}
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		throw NoticeException("Missing ')' at " +  currentToken.getPosition().toString());
+	}
+
+	consume();
+
+	try {
+		result->addChild(getOPERATOR());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No OPERATOR in IF!");
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "else")){
+		consume();
+		try {
+		result->addChild(getOPERATOR());
+		}
+		catch (NoticeException &ne){
+			visitor.deleteTree(result);
+			throw NoticeException("Empty ELSE!");
+		}
+	}
+
+	return result;
+}
+
+Node *getWHILE(){
+	if(!(currentToken == Token(Token::KEYWORD, "while"))){
+		throw ParserException("Trying to get WHILE statemetn without WHILE! Check functio getSPECIAL!!!");
+	}
+
+	consume();
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw NoticeException("Missing '(' at" + currentToken.getPosition().toString());
+	}
+
+	consume();
+
+	Node *result = new Node(Node::WHILE);
+
+	try {
+		result->addChild(getEXPRESSION());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No EXPRESSION in WHILE!");
+	}
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		throw NoticeException("Missing ')' at " +  currentToken.getPosition().toString());
+	}
+
+	consume();
+
+	try {
+		result->addChild(getOPERATOR());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No OPERATOR in WHILE!");
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "else")){
+		consume();
+		try {
+		result->addChild(getOPERATOR());
+		}
+		catch (NoticeException &ne){
+			visitor.deleteTree(result);
+			throw NoticeException("Empty ELSE!");
+		}
+	}
+
+	return result;
+}
+
+Node *getDOWHILE(){
+	if(!(currentToken == Token(Token::KEYWORD, "do"))){
+		throw ParserException("Trying to get DOWHILE statemetn without 'do'! Check functio getSPECIAL!!!");
+	}
+
+	consume();
+
+	Node *result = new Node(Node::WHILE);
+
+	try {
+		result->addChild(getOPERATOR());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No OPERATOR in WHILE!");
+	}
+
+	if(!(currentToken == Token(Token::KEYWORD, "while"))){
+		throw ParserException("Trying to get DOWHILE statemetn without 'while'! Check functio getSPECIAL!!!");
+	}
+
+	consume();
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw NoticeException("Missing '(' at" + currentToken.getPosition().toString());
+	}
+
+	consume();
+
+
+	try {
+		result->addChild(getEXPRESSION());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw NoticeException("No EXPRESSION in IF!");
+	}
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		throw NoticeException("Missing ')' at " +  currentToken.getPosition().toString());
+	}
+
+	consume();
+
+
+
+	return result;
+}
+
+Node *getFOR(){
+
+	Node *result = nullptr;
+
+	try{
+		get(Token(Token::KEYWORD, "for"));
+		result = new Node(Node::FOR);
+		get(Token::BRACE_LEFT);
+		result->addChild(getEXPRESSION());
+		get(Token::SEMICOLON);
+		result->addChild(getEXPRESSION());
+		get(Token::SEMICOLON);
+		result->addChild(getEXPRESSION());
+		get(Token::BRACE_RIGHT);
+
+		result->addChild(getOPERATOR());
+
+	}	
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw ParserException("Corrupted FOR (" + ne.what() + ") " + currentToken.getPosition().toString());
+	}
+
+	return result;
+
+}
+
+Node *getSPECIAL(){
+
+	if(currentToken == Token(Token::KEYWORD, "if")){
+		try{
+			return getIF();
+		}
+		catch (NoticeException &ne){
+			throw ParserException("Corrupted IF statemetn (" + ne.what() +") at " + currentToken.getPosition().toString());
+		}
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "while")){
+		try{
+			return getWHILE();
+		}
+		catch (NoticeException &ne){
+			throw ParserException("Corrupted WHILE statemetn (" + ne.what() +") at " + currentToken.getPosition().toString());
+		}
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "do")){
+		try{
+			return getDOWHILE();
+		}
+		catch (NoticeException &ne){
+			throw ParserException("Corrupted DOWHILE statemetn (" + ne.what() +") at " + currentToken.getPosition().toString());
+		}
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "for")){
+		try{
+			return getFOR();
+		}
+		catch (NoticeException &ne){
+			throw ParserException("Corrupted FOR statemetn (" + ne.what() +") at " + currentToken.getPosition().toString());
+		}
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "else")){
+		throw ParserException("ifless else at " + currentToken.getPosition().toString());
+	}
+	throw NoticeException("No special statemetn found!");
 }
 
 

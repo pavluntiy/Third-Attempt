@@ -37,43 +37,44 @@ int main (int argc, char **argv) {
 
 
 	 Lexer lexer(*in);
-	int i = 0;
-		try{
+	// int i = 0;
+	// 	try{
 
-			while(!lexer.closed()){
-			//	cout << lexer.closed();
-			//while(true){
-				try{
-					*out << lexer[i];
-					out->flush(); 
-				}	
-				catch(DataException de){
-					*err << "Data exception: " << de.what() << '\n';
-				}
-				++i;
-			}
-		}
-		catch (LexerException e){
-			*err << e.what() << '\n';
-		}
+	// 		while(!lexer.closed()){
+	// 		//	cout << lexer.closed();
+	// 		//while(true){
+	// 			try{
+	// 				*out << lexer[i];
+	// 				out->flush(); 
+	// 			}	
+	// 			catch(DataException de){
+	// 				*err << "Data exception: " << de.what() << '\n';
+	// 			}
+	// 			++i;
+	// 		}
+	// 	}
+	// 	catch (LexerException e){
+	// 		*err << e.what() << '\n';
+	// 	}
+	 
 	TreeVisitor visitor (out);
 	Parser parser(lexer, visitor);
-//	Parser parser(Lexer(*in));
-	// try{
-	// //	parser.visitTree(out);
-	// //	parser.buildTree();
-	// //	parser.printTree(parser.getTree(), out);
-	// 	parser.buildTree();
-	// 	parser.pushTree();
-	// 	visitor.printTree();
+	//Parser parser(Lexer(*in));
+	try{
+	//	parser.visitTree(out);
+	//	parser.buildTree();
+	//	parser.printTree(parser.getTree(), out);
+		parser.buildTree();
+		parser.pushTree();
+		visitor.printTree();
 
-	// }
-	// catch (ParserException e){
-	// 	*err << e.what() << '\n';
-	// }
+	}
+	catch (ParserException e){
+		*err << e.what() << '\n';
+	}
 
-	// parser.pushTree();
-	// visitor.deleteTree();
+	parser.pushTree();
+	visitor.deleteTree();
 
 
 	return 0;

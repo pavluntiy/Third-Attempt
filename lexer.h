@@ -16,8 +16,6 @@ public:
 	Data data;
 	vector<Token> output;
 	Token currentToken;
-	//int size;
-	int lastSuccessTokenEnd = 0;
 	set<string> keywords;
 
 	bool eofReported = false;
@@ -30,7 +28,6 @@ public:
 	data(in)
 	{	
 		this->wasEof = false;
-		//this->size = 1;
 		output.push_back(Token(Token::BEGIN));
 		currentToken = output[0];
 
@@ -42,15 +39,6 @@ public:
 		kw.close();
 	}
 
-	// Lexer(Data &&data):
-	// data(move(data))
-	// {
-	// 	this->wasEof = false;
-	// 	this->size = 1;
-	// 	output.push_back(Token(Token::BEGIN));
-	// 	currentToken = output[0];
-	// }
-
 	char currentChar(){
 		if(this->data.eof()){
 			setEof();
@@ -61,7 +49,6 @@ public:
 
 	void setEof(){
 		this->wasEof = true;
-//		this->addToOutput(Token (Token::END, data.sourcePosition));
 	}
 
 	bool closed(){
@@ -126,10 +113,6 @@ public:
 				 	throw LexerException("No fractions are allowed for octal");
 		}
 
-
-		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
-		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
-		// }
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
@@ -178,10 +161,6 @@ public:
 				 	throw LexerException("No fractions are allowed for hexadecimal");
 		}
 
-
-		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
-		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
-		// }
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
@@ -195,11 +174,8 @@ public:
 
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
-	//		cout << "#3\n";
 			data.consume();
 		}
-
-	//	cout << "Current char == " << data.currentChar << " ********\n";
 
 		bool isFloat = false;
 		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) || currentChar() == '.'){
@@ -211,7 +187,6 @@ public:
 
 				if(currentChar() == '.'){
 					if(isFloat){
-					//	data.restore();
 						throw LexerException("FLOAT with excessive dot!");
 					}
 					isFloat = true;
@@ -221,7 +196,6 @@ public:
 					buffer += currentChar();
 				}
 
-		//		cout << "#4\n";
 				data.consume();
 
 			}
@@ -235,14 +209,9 @@ public:
 			throw NoticeException("Orphan sign!");
 		}
 
-		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
-		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
-		// }
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
-
-	//	cout << "---> " << data.currentPosition  << " :|: " << data.currentChar << '\n';
 
 		return Token(Token::INT, buffer, "decimal", data.getPreviousSourcePosition());
 
@@ -281,17 +250,11 @@ public:
 			}
 		}
 
-
-
 		if(currentChar() == '.'){
 				 	data.restore();
 				 	throw LexerException("No fractions are allowed for binary");
 		}
 
-
-		// if(!Alphabet::is<Alphabet::WHITESPACE>(currentChar())){
-		// 	throw LexerException("Strange thing!", MyException::Type::NOTICE);
-		// }
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
@@ -307,10 +270,6 @@ public:
 		bool zeroFound = false;
 
 		string buffer = "";
-		// if(Alphabet::is<Alphabet::SIGN>(currentChar())){
-		// 	buffer += currentChar();
-		// 	data.consume();
-		// }
 
 		if (Alphabet::is<Alphabet::ZERO>(currentChar())){
 			zeroFound = true;
@@ -348,15 +307,10 @@ public:
 				result = tryAndGetOctal(zeroFound, buffer);
 				return result;
 			}
-			catch(NoticeException le){
-			//	cout << "asdfasdfasdfasfasdf\n";
-			//	data.restore();
-			}
-
+			catch(NoticeException le){}
 		}	
 		
 		try{
-		//	cout << ">>>>>>>>>>>>>>>>>>>>>> " << data.currentPosition << '\n';
 			result = tryAndGetDecimal(buffer);
 			return result;
 		}
@@ -392,10 +346,6 @@ public:
 	}
 
 	Token tryAndGetString(){
-
-		// if(currentChar() != '\"'){
-		// 	throw NoticeException("No '\"' found!");
-		// }
 
 		string buffer = "";
 		buffer += currentChar();
@@ -450,10 +400,6 @@ public:
 	}
 
 	Token tryAndGetOneLineComment (){
-		// if(!data.find("//")){
-		// 	throw NoticeException("No '//' found!");
-		// }
-
 		string buffer = "//";
 		data.get("//");
 
@@ -467,10 +413,6 @@ public:
 	}
 
 	Token tryAndGetMultyLineComment (){
-		// if(!data.find("/*")){
-		// 	throw NoticeException("No '/*' found!");
-		// }
-
 		string buffer = "/*";
 		data.get("/*");
 
@@ -487,10 +429,6 @@ public:
 	}
 
 	Token tryAndGetDirective(){
-		// if(currentChar() != '#'){
-		// 	throw NoticeException("No '#' found!");
-		// }
-
 		std::string buffer = "#";
 		data.consume();
 		while (!Alphabet::is<Alphabet::NEWLINE>(currentChar()) && !data.find("//") && !data.find("/*")){
@@ -502,9 +440,6 @@ public:
 
 
 	Token getSlashVariants(){
-			// if(currentChar() != '/'){
-			// 	throw NoticeException("No '/' found!");
-			// }
 			data.consume();
 			if (currentChar() == '/'){
 				data.consume();
@@ -520,9 +455,6 @@ public:
 	}
 
 	Token getPlusVariants (){
-		// if(currentChar() != '+'){
-		// 	throw NoticeException("No '*' found!");
-		// }
 		data.consume();
 		if ( currentChar() == '+' ){
 				data.consume();
@@ -538,9 +470,6 @@ public:
 	}
 
 	Token getMinusVariants (){
-		// if(currentChar() != '-'){
-		// 	throw NoticeException("No '-' found!");
-		// }
 		data.consume();
 		if ( currentChar() == '-' ){
 				data.consume();
@@ -560,9 +489,6 @@ public:
 	}
 
 	Token getStarVariants(){
-		// if(currentChar() != '*'){
-		// 	throw NoticeException("No '*' found!");
-		// }
 		data.consume();
 		if ( currentChar() == '*' ){
 			data.consume();
@@ -579,10 +505,6 @@ public:
 	}
 
 	Token getProcentVariants(){
-
-		// if(currentChar() != '%'){
-		// 		throw NoticeException("No '%' found!");
-		// 	}
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -594,9 +516,6 @@ public:
 	}
 
 	Token getCircumflexVariants(){
-		// if(currentChar() != '^'){
-		// 		throw NoticeException("No '^' found!");
-		// 	}
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -608,9 +527,6 @@ public:
 	}
 
 	Token getWaveVariants(){
-		// if(currentChar() != '~'){
-		// 		throw NoticeException("No '~' found!");
-		// 	}
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -760,9 +676,9 @@ public:
 				return Token(Token::OPERATOR, "||", "", data.getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
-				cout << data.eof() << " &&\n";
+				//cout << data.eof() << " &&\n";
 				data.consume();
-				cout << data.eof() << " &&\n";
+				//cout << data.eof() << " &&\n";
 				return Token(Token::OPERATOR, "|=", "", data.getPreviousSourcePosition());
 			}
 			else {
@@ -818,16 +734,9 @@ public:
 		}
 	}
 
-
-
-
-
-
-
 	Token tryAndGetOperator(){
 
 		data.lock();
-		//cout << currentChar() << data.eof();
 		switch (currentChar()){
 			case '/': return getSlashVariants(); break;
 			case '%': return getProcentVariants(); break;
@@ -877,28 +786,20 @@ public:
 
 	Token getToken(){
 
-		//cout << currentChar() << eof();
 			Token result;
 			try{
 				data.isReady();
-				//cout << "'"<< currentChar() << "'";
 			}
 			catch (DataException de){
 				setEof();
-			//	return Token(Token::END, data.sourcePosition);
-
 				throw LexerException("Eof already occured #1!");
 			}
-
-				//cout << currentChar() << eof();
 
 			try {
 				getWhitespaces();
 			}
 			catch (DataException de){
 				setEof();
-			//	cout << data.dataDump();
-			//	return(Token (Token::END, data.sourcePosition));
 				throw NoticeException("Eof already occured #2!");
 			}
 
@@ -911,9 +812,6 @@ public:
 				}
 				catch(DataException de){
 					setEof();
-				//	cout << data.dataDump();
-				//	cout << "asdfasdfasdf";
-				//	return(Token (Token::END, data.sourcePosition));
 					throw NoticeException("Eof already occured #3!");
 				}
 			}
@@ -1004,11 +902,6 @@ public:
 
 			if(data.eof()){
 				setEof();
-			//	cout << "Returning end\n";
-			//	cout << data.dataDump();
-			//	cout << "opqwerqweqweq";
-			//	return(Token (Token::END, data.sourcePosition));
-
 			}
 			data.restore();
 			throw LexerException("Unknown characters ");
@@ -1025,10 +918,7 @@ public:
 			output[i].setType(Token::NONE);
 		}
 		
-	//	cout << "Blablab" << endl;
 		data.recover();
-	//	data.consume();
-	//	cout << currentChar() << '\n';
 
 	}
 
@@ -1036,32 +926,23 @@ public:
 	void addToOutput (const Token &token){
 		this->currentToken = token;
 		this->output.push_back(token);
-	//	this->size++;
-	//	this->lastSuccessTokenEnd = data.getPosition() - 1;
-	//	cout << "Added: " << data.getSize() << data.getSourcePosition().toString() << '\n';
-	//	cout << "Last succeeded token at position " << data.getPosition() << '\n';
 		data.lock();
 	}
 
 	void getNextToken(){
-		//Nicify!
 				try {
 					currentToken = getToken();
 				}
 				catch (LexerException le) {
 					recover();
 					addToOutput(Token(Token::ERROR, le.what() + ": " + data.getErrorReport(), "", data.getPreviousSourcePosition()));
-			//		addToOutput(Token(Token::ERROR, le.what()));
 					return;
 				}
 				catch (NoticeException ne){
 					return;
 				}
-
-		//		if(!currentToken.typeEqulasTo(Token::NONE)){
 					
-				addToOutput(currentToken);
-		//		}	
+				addToOutput(currentToken);	
 
 	}
 
@@ -1070,13 +951,11 @@ public:
 	}
 
 	void reportEof(void){
-		//cout << data.dataDump();
 		addToOutput(Token (Token::END, data.sourcePosition));
 		this->eofReported = true;
 	}
 
 	Token tokenAt(int index){
-		//	cout << index << ' ';
 		if(eof() && index >= static_cast<int>(this->output.size())){
 
 			if(index == static_cast<int>(this->output.size()) && !EofReported()){
@@ -1088,27 +967,15 @@ public:
 		}
 		
 		while (!closed() && index >= static_cast<int>(this->output.size())){
-	//	while(index >= this->size){
-	//		cout << "blabla\n\n";
-			//cout << currentChar() << eof();
 			getNextToken();
 			checkForEof();
 		}	
-	//	cout << "Trying to get token at " << index << "\n";
-	//	cout << currentToken;
-	//	cout << "Hurrah!\n";
-		// if(eof() && index >= this->size){
-		// 	throw LexerException("Invalid index of token");
-		// }
-
-		// if(eof()){
-		// 	addToOutput(Token (Token::END, data.sourcePosition));
-		// }
 
 		if(index >= static_cast<int>(this->output.size()) && !EofReported()){
 			reportEof();
 		}
 
+		//		cout << currentChar() << ' ';
 		return output[index];
 	}
 
@@ -1117,7 +984,6 @@ public:
 	}
 
 	bool isValidIndex(int index){
-
 		return (index < static_cast<int>(this->output.size()) && index >= 0) || !eofReported;
 	}
 

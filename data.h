@@ -12,8 +12,7 @@ class Data{
 
 	istream &in;
 	string str;
-	//int size;
-	bool wasEof;
+	//bool wasEof;
 	bool ready;
 	bool errorOccured;
 
@@ -25,36 +24,21 @@ class Data{
 public:
 
 	char currentChar;
-	Position sourcePosition;// previousSourcePosition;
-	int currentPosition; //previousPosition;
+	Position sourcePosition;
+	int currentPosition;
 	stack<Position> previousSourcePosition;
 	stack<int> previousPosition;
 	Data(istream &in = cin):
 	in(in)
 	{
-		//size = 0;
-		wasEof = false;
+		//wasEof = false;
 		ready = false;
 		currentPosition = -1;
-	//	previousPosition = 0;
 		previousPosition.push(0);
 		currentChar = '\n';
 		badCharacters = "";
 		errorOccured = false;
 	}
-
-	// Data(Data &&other){
-	// 	in(move(other.in));
-	// 	size = 0;
-	// 	wasEof = false;
-	// 	ready = false;
-	// 	currentPosition = -1;
-	// //	previousPosition = 0;
-	// 	previousPosition.push(0);
-	// 	currentChar = '\n';
-	// 	badCharacters = "";
-	// 	errorOccured = false;
-	// }
 
 	bool wasError(){
 		return this->errorOccured;
@@ -74,60 +58,25 @@ public:
 		sourcePosition.linePosition++;
 		tmp = *(end(str) - 1);
 		this->str.pop_back();
-		//this->size--;
 		return tmp;	
 	}	
 
 	void push(char c){
 		this->str.push_back(c);
-		//this->size++;
 	}
 
 
 	void recover (){
-	//	this->errorOccured = true;
-
 		while(!eof() && !Alphabet::is<Alphabet::NEWLINE>(this->currentChar)){
 			badCharacters += currentChar;
 			consume();
 		}
-
-
-	// 	cout << "Bad character: " << currentChar << endl;
-	// 	if(previousPosition >= this->size){
-	// //		cout << "Trash!: " << previousPosition <<  "\n";
-	// 		throw DataException("Invalid resetting of position!");
-	// 	}
-
-	// 	while(this->size > previousPosition){
-	// 		badCharacters.push_back(this->pop());
-	// 		// if(previousPosition == -1){
-	// 		// 	break;
-	// 		// }
-	// 	}
-
-	// //	cout << "Size: " << this->size << " \n";
-
-	// //	cout << "Restored to " << previousPosition<< "\n";
-	// 	this->currentPosition = previousPosition ;
-
-	// 	if(currentPosition == 0){
-	// 		makeReady();
-	// 	}
-	// 	currentChar = this->charAt(this->currentPosition);
-
-	//	cout << "Current char : " << currentChar << endl;
 	}
 	
 	int getSize(){
 		return this->str.size();
 	}
 	bool eof(){
-		//this->wasEof = (currentChar == -1);
-		//this->wasEof = this->wasEof || this->in.eof();
-		//return this->wasEof;
-		//cout << currentPosition << ' ' << str[str.size() - 2];
-		//cout << currentPosition << '!';
 		return this->in.eof() && currentPosition  >= static_cast<int>(str.size()) - 1;
 	}
 
@@ -140,15 +89,16 @@ public:
 	}
 
 	char charAt(int index){
-	//	cout << index << endl;
 		if(eof() && index >= static_cast<int>(this->str.size())){
 			throw DataException("Invalid index of input");
 		}
 
 		if(index >= static_cast<int>(this->str.size())){
 			while (!eof() && index >= static_cast<int>(this->str.size())) {
+			//	cout << "!!!";
 				char c = static_cast<char>(in.get());
 				this->push(c);
+			//	cout << c;
 			}
 		}
 
@@ -172,17 +122,11 @@ public:
 
 	void makeReady(){
 		this->ready = true;
-	//	this->currentPosition = 0;
-	//	this->str.push_backCharToStream();
 		ignore(this->charAt(currentPosition + 1));	
 	}
 
 	void pushCharToStream(char c = '\n'){
-
-//		cout << "Pushed to stream!\n";
 		this->push(c);
-	//	this->size++;
-	//	this->currentChar = *(end(str) - 1);
 	}
 
 	void isReady(){
@@ -190,27 +134,15 @@ public:
 			throw DataException("Stream is closed!");
 			return;
 		}
-		// if(this->currentPosition == -1){
-		// 	this->consume();
-		// 	return;
-		// }
-	//	cout << "adrtkekqerqwdf\n";
 		if(!ready){
-			//cout << "WTF?!?!";
 			makeReady();
 		}
-		//cout << "'" <<currentChar << "'";
-		//ignore(this->charAt(currentPosition + 1));
-		//cout << "'" <<currentChar << "'";
 		return;
 	}
 
 	void lock(){
-	//	cout << "Size of str: " << this->size << "\n";
-	//	cout << "Locked on postion " << currentPosition << "\n";
 		this->previousSourcePosition.push(sourcePosition);
 		this->previousPosition.push(currentPosition);
-	//	cout << "current char : " << currentChar << "\n";
 	}
 
 	void restore(){
@@ -221,9 +153,7 @@ public:
 		else{
 			this->currentPosition = 0;
 		}
-	//	this->sourcePosition = this->previousSourcePosition;
 		this->currentChar = this->charAt(currentPosition);
-
 	}
 
 	Position getPreviousSourcePosition(){
@@ -246,23 +176,18 @@ public:
 			sourcePosition.linePosition++;
 		}
 
-		if (wasEof){
-
+		if (eof()){
 			throw DataException("Unexpected end of file on " + sourcePosition.toString() + "\n");
 		}
 		
 		currentPosition++; 
 		
-			
-	//	cout << "Consuming... ";
-		if (wasEof){
+		if (eof()){
 			currentChar = EOF;
 		}
 		else {
 			currentChar = this->charAt(currentPosition); 
 		}
-	//	cout << "got character: " << currentChar << wasEof << endl;
-
 	}
 
 	bool get(std::string text){
@@ -305,9 +230,9 @@ public:
 		return true;
 	}
 
-	void close(){
-		this->wasEof = true;
-	}
+	// void close(){
+	// 	this->wasEof = true;
+	// }
 };
 
 #endif

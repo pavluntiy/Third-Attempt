@@ -22,3 +22,24 @@ def int main (){
 	int a = 0;
 	a = 10 * IO.getInt();
 }
+
+if(a > 0){
+	int a = 0;
+	cout << a << "It's empty!" 
+	++a--
+	//Parsed in a very strange way...
+}
+
+for(pass; i != foo(); next(i)) {  
+	int a = magic(i);
+	cout << a;
+	printf("%d", a);
+}
+
+if(a != 0);
+else ;
+
+
+while(true) 
+	int a = 100, b = foo(a, b, c)
+;
