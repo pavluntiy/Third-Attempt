@@ -43,3 +43,10 @@ else ;
 while(true) 
 	int a = 100, b = foo(a, b, c)
 ;
+
+def int main (int argc, @@char argv){
+	print("Hello, world!")
+	return 0
+}
+def int main (int argc, @@char argv){
+}

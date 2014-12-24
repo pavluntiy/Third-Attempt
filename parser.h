@@ -1977,6 +1977,31 @@ Node *getFOR(){
 
 }
 
+bool is_RETURN_keyword(){
+	return 
+	currentToken == Token(Token::KEYWORD, "return")
+	||
+	currentToken == Token(Token::KEYWORD, "yield")
+	;
+}
+
+Node *getRETURN(){
+
+	Node *result = nullptr;
+
+	try{
+		get(Token::KEYWORD);
+		result = new Node(Node::RETURN);
+		result->addChild(getEXPRESSION());
+	}
+	catch (NoticeException &ne){
+		visitor.deleteTree(result);
+		throw ParserException("Corrupted RETURN statemetn " + currentToken.getPosition().toString());
+	}
+	return result;
+
+}
+
 Node *getSPECIAL(){
 
 	if(currentToken == Token(Token::KEYWORD, "if")){
@@ -2010,9 +2035,14 @@ Node *getSPECIAL(){
 		try{
 			return getFOR();
 		}
-		catch (NoticeException &ne){
-			throw ParserException("Corrupted FOR statemetn (" + ne.what() +") at " + currentToken.getPosition().toString());
+		catch (NoticeException &ne){}
+	}
+
+	if(is_RETURN_keyword()){
+		try{
+			return getRETURN();
 		}
+		catch (NoticeException &ne){}
 	}
 
 	if(currentToken == Token(Token::KEYWORD, "else")){

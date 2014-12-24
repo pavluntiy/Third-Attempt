@@ -75,6 +75,7 @@ public:
 		WHILE,
 		DOWHILE,
 		FOR,
+		RETURN,
 
 		BLOCK
 				
@@ -184,8 +185,10 @@ public:
 			case Type::WHILE: return "WHILE";
 			case Type::DOWHILE: return "DOWHILE";
 			case Type::FOR: return "FOR";
+			case Type::RETURN: return "RETURN";
 
 			case Type::BLOCK: return "BLOCK";
+
 
 
 		}
