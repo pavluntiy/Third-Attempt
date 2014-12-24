@@ -60,19 +60,11 @@ void consume(){
 	++this->currentPosition;
 	if(this->lexer.isValidIndex(this->currentPosition)){	
 		this->currentToken = this->lexer[this->currentPosition];
-		while(this->lexer.isValidIndex(this->currentPosition) && 
-				(
-					this->currentToken.isInvisible() 
-					||
-					this->currentToken.typeEqualsTo(Token::NONE)
-					||
-					this->currentToken.typeEqualsTo(Token::ERROR)
-
-				)
-			)
+		while(currentToken.isIgnorable())
 		{
 			++this->currentPosition;
 			this->currentToken = this->lexer[this->currentPosition];
+
 		}	
 	}
 //	else{
@@ -1158,11 +1150,11 @@ Node *getEXPR9_OP(){
 Node *getEXPR9_SUFFIX(Node *left = nullptr){
 	Node *op = nullptr;
 	Node *tmp = nullptr;
-//	cout << "AT ENTER LEFT IS " << left << '\n'; 
+  //	cout << "AT ENTER LEFT IS " << left << '\n'; 
 	if(left == nullptr){
 		try{
-//			cout << "#######\n";
-//			cout << currentToken;
+  //			cout << "#######\n";
+  //			cout << currentToken;
 			left = getEXPR10();
 		}
 		catch (NoticeException ne){
@@ -1170,7 +1162,7 @@ Node *getEXPR9_SUFFIX(Node *left = nullptr){
 		}
 	}
 
-//	cout << "ONGTWSEDFVGJS\n";
+  //	cout << "ONGTWSEDFVGJS\n";
 	try{
 		op = getEXPR9_OP_SUFFIX();
 		tmp = getEXPR9_SUFFIX(left);
@@ -1178,9 +1170,9 @@ Node *getEXPR9_SUFFIX(Node *left = nullptr){
 		return op;
 	}
 	catch(NoticeException ne){
-//		cout << ne.what();
+ //		cout << ne.what();
 	}
-//	cout << "LEFT IS " << left << '\n';
+ //	cout << "LEFT IS " << left << '\n';
 	return left;
 }
 

@@ -130,6 +130,19 @@ public:
 	}
 
 
+	bool isIgnorable(){
+		return 
+		this->type == Token::NEWLINE 
+		|| 
+		this->type == Token::NONE
+		||
+		this->type == Token::ERROR
+		||
+		this->type == Token::COMMENT
+		||
+		this->type == Token::DIRECTIVE
+		;
+	}
 
 };
  ostream& operator << (ostream &cout, const Token &token){
