@@ -1,8 +1,8 @@
 
-#include "noticeexception.h"
+#include "noticeexception.hpp"
 
 
-	NoticeException::NoticeException (std::string error, Type type = Type::DEFAULT):
-	MyException(error, type)
+	NoticeException::NoticeException (std::string error):
+	MyException(error)
 	{
 	}

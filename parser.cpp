@@ -78,7 +78,7 @@ Node* Parser::getCOMMA(){
 	throw NoticeException("No COMMA found!");
 }
 
-Node* Parser::getCOMMA_EXPRESSION(Node *left = nullptr){
+Node* Parser::getCOMMA_EXPRESSION(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -239,7 +239,7 @@ Node* Parser::getIS_IN_EXPRESSION_OP(){
 	throw NoticeException("No IS_IN_EXPRESSION_OP found!");
 }
 
-Node* Parser::getIS_IN_EXPRESSION(Node *left = nullptr){
+Node* Parser::getIS_IN_EXPRESSION(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -289,7 +289,7 @@ Node* Parser::getL_OR_OP(){
 	throw NoticeException("No L_OR_OP found!");
 }
 
-Node* Parser::getL_OR(Node *left = nullptr){
+Node* Parser::getL_OR(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -339,7 +339,7 @@ Node* Parser::getL_AND_OP(){
 	throw NoticeException("No L_AND_OP found!");
 }
 
-Node* Parser::getL_AND(Node *left = nullptr){
+Node* Parser::getL_AND(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -389,7 +389,7 @@ Node* Parser::getCOMPARISION_OP(){
 
 	throw NoticeException("No COMPARISION_OP found!");
 }
-Node* Parser::getCOMPARISION(Node *left = nullptr){
+Node* Parser::getCOMPARISION(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -443,7 +443,7 @@ Node* Parser::getDIFF_COMPARISION_OP(){
 
 	throw NoticeException("No DIFF_COMPARISION_OP found!");
 }
-Node* Parser::getDIFF_COMPARISION(Node *left = nullptr){
+Node* Parser::getDIFF_COMPARISION(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -491,7 +491,7 @@ Node* Parser::getB_OR_OP(){
 
 	throw NoticeException("No B_OR_OP found!");
 }
-Node* Parser::getB_OR(Node *left = nullptr){
+Node* Parser::getB_OR(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -539,7 +539,7 @@ Node* Parser::getB_XOR_OP(){
 
 	throw NoticeException("No B_XOR_OP found!");
 }
-Node* Parser::getB_XOR(Node *left = nullptr){
+Node* Parser::getB_XOR(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -587,7 +587,7 @@ Node* Parser::getB_AND_OP(){
 
 	throw NoticeException("No B_AND_OP found!");
 }
-Node* Parser::getB_AND(Node *left = nullptr){
+Node* Parser::getB_AND(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -639,7 +639,7 @@ Node* Parser::getSHIFT_OP(){
 
 	throw NoticeException("No SHIFT_OP found!");
 }
-Node* Parser::getSHIFT(Node *left = nullptr){
+Node* Parser::getSHIFT(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -689,7 +689,7 @@ Node* Parser::getEXPR6_OP(){
 
 	throw NoticeException("No EXPR6_OP found!");
 }
-Node* Parser::getEXPR6(Node *left = nullptr){
+Node* Parser::getEXPR6(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -741,7 +741,7 @@ Node* Parser::getEXPR7_OP(){
 
 	throw NoticeException("No EXPR7_OP found!");
 }
-Node* Parser::getEXPR7(Node *left = nullptr){
+Node* Parser::getEXPR7(Node *left){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -1034,7 +1034,7 @@ Node* Parser::getACCESSES(Node *left){
 		return left;
 }
 
-Node* Parser::getBRACED(Node *left = nullptr){
+Node* Parser::getBRACED(Node *left){
 	//cout << "mimimi\n";
 	if(left == nullptr){
 		throw ParserException("Unexpected BRACE_LEFT or BRACKET_RIGHT at " + currentToken.getPosition().toString());
@@ -1128,7 +1128,7 @@ Node* Parser::getEXPR9_OP(){
 	throw NoticeException("No EXPR9_OP found, got + " + currentToken.toString());
 }
 
-Node* Parser::getEXPR9_SUFFIX(Node *left = nullptr){
+Node* Parser::getEXPR9_SUFFIX(Node *left){
 	Node *op = nullptr;
 	Node *tmp = nullptr;
   //	cout << "AT ENTER LEFT IS " << left << '\n'; 
@@ -1190,7 +1190,7 @@ Node* Parser::getEXPR9(){
 	return op;
 }
 
-Node* Parser::getEXPR10(Node *left = nullptr){
+Node* Parser::getEXPR10(Node *left){
 	//	Node *tmp = nullptr;
 	Node *right = nullptr;
 	Node *op = nullptr;
@@ -1377,7 +1377,7 @@ Node* Parser::getTYPENAME_OP(){
 	throw NoticeException ("No '.' for COMPOUND_NAME found!");
 }
 
-Node* Parser::getCOMPOUND_NAME(Node *left = nullptr){
+Node* Parser::getCOMPOUND_NAME(Node *left){
 	Node *right = nullptr;
 	Node *op = nullptr;
 	if(left == nullptr){

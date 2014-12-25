@@ -4,7 +4,10 @@
 #include "token.hpp"
 #include "node.hpp"
 #include "parserexception.hpp"
+#include "noticeexception.hpp"
+#include "lexer.hpp"
 #include "tree_visitor.h"
+
 #include <vector>
 #include <set>
 #include <stack>

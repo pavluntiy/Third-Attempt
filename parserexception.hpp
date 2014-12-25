@@ -5,10 +5,7 @@
 
 class ParserException : public MyException {
 public:
-	ParserException (std::string error):
-	MyException(error)
-	{
-	}
+	ParserException (std::string error);
 };
 
 

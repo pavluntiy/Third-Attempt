@@ -42,24 +42,23 @@ public:
 	Token(Type type, Position position);
 	
 
-	string typeToString();
+	string typeToString() const;
 
-	bool typeEqualsTo(Type type);
+	bool typeEqualsTo(Type type) const;
 
 	bool operator == (const Token &other);
 
-	string toString();
+	string toString() const;
 
 	Position getPosition();
 
-	bool isInvisible();
+	bool isInvisible() const;
 
 	void setType(Token::Type type);
 
-	Type getType();
+	Type getType()const;
 
-	string getText();
-
+	string getText() const;
 
 	bool isIgnorable();
 

@@ -1,30 +1,12 @@
-#ifndef LEXER
-#define LEXER
 
-#include "token.hpp"
-#include "lexerexception.hpp"
-#include "noticeexception.hpp"
-#include "data.h"
-#include "alphabet.h"
-#include <vector>
-#include <set>
+#include "lexer.hpp"
 
-class Lexer {
-public:
-		
-	bool wasEof;
-	Data data;
-	vector<Token> output;
-	Token currentToken;
-	set<string> keywords;
 
-	bool eofReported = false;
-
-	bool EofReported(){
+	bool Lexer::EofReported(){
 		return this->eofReported;
 	}
 
-	Lexer(istream &in = cin):
+	Lexer::Lexer(istream &in):
 	data(in)
 	{	
 		this->wasEof = false;
@@ -39,7 +21,7 @@ public:
 		kw.close();
 	}
 
-	char currentChar(){
+	char Lexer::currentChar(){
 		if(this->data.eof()){
 			setEof();
 			return '\0';
@@ -47,17 +29,17 @@ public:
 		return this->data.currentChar;
 	}
 
-	void setEof(){
+	void Lexer::setEof(){
 		this->wasEof = true;
 	}
 
-	bool closed(){
+	bool Lexer::closed(){
 		
 		return eof() && EofReported();
 
 	}
 
-	string getSuffix(){
+	string Lexer::getSuffix(){
 
 			string buffer = "";
 			buffer += currentChar();
@@ -74,7 +56,7 @@ public:
 			return " ::: " + buffer;
 	}
 
-	Token tryAndGetOctal(bool zeroFound, string buffer){
+	Token Lexer::tryAndGetOctal(bool zeroFound, string buffer){
 		if(!zeroFound){
 			data.restore();
 			throw LexerException("No octal found!");
@@ -121,7 +103,7 @@ public:
 
 	}
 
-	Token tryAndGetHexadecimal(string buffer){
+	Token Lexer::tryAndGetHexadecimal(string buffer){
 
 		int zeroes = 0;
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
@@ -169,9 +151,7 @@ public:
 
 	}
 
-	Token tryAndGetDecimal(string buffer){
-
-
+	Token Lexer::tryAndGetDecimal(string buffer){
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
 			data.consume();
@@ -217,7 +197,7 @@ public:
 
 	}
 
-	Token tryAndGetBinary(string buffer){
+	Token Lexer::tryAndGetBinary(string buffer){
 
 		int zeroes = 0;
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
@@ -264,7 +244,7 @@ public:
 	}
 
 
-	Token tryAndGetNumeric(){
+	Token Lexer::tryAndGetNumeric(){
 		data.lock();
 		Token result;
 		bool zeroFound = false;
@@ -322,7 +302,7 @@ public:
 		return Token(Token::NONE);
 	}
 
-	Token tryAndGetChar(){
+	Token Lexer::tryAndGetChar(){
 
 		string buffer = "";
 		buffer += currentChar();
@@ -345,7 +325,7 @@ public:
 		return Token(Token::CHAR, buffer, "", data.getPreviousSourcePosition());
 	}
 
-	Token tryAndGetString(){
+	Token Lexer::tryAndGetString(){
 
 		string buffer = "";
 		buffer += currentChar();
@@ -367,21 +347,21 @@ public:
 		return Token(Token::STRING, buffer, "", data.getPreviousSourcePosition());
 	}
 
-	void getWhitespaces(){
+	void Lexer::getWhitespaces(){
 		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) && !Alphabet::is<Alphabet::NEWLINE>(currentChar())) {
 
 				data.consume();
 			}
 	}
 
-	Token getNewLine(){
+	Token Lexer::getNewLine(){
 		while(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
 			data.consume();
 		}
 		return Token(Token::NEWLINE, "", "", data.getPreviousSourcePosition());
 	}
 
-	Token tryAndGetWord(){
+	Token Lexer::tryAndGetWord(){
 		if(!Alphabet::is<Alphabet::LETTER>(currentChar())){
 			throw NoticeException("No letter found!");
 		}
@@ -399,7 +379,7 @@ public:
 		return Token(Token::NAME, buffer, "", data.getPreviousSourcePosition());
 	}
 
-	Token tryAndGetOneLineComment (){
+	Token Lexer::tryAndGetOneLineComment (){
 		string buffer = "//";
 		data.get("//");
 
@@ -412,7 +392,7 @@ public:
 		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
 	}
 
-	Token tryAndGetMultyLineComment (){
+	Token Lexer::tryAndGetMultyLineComment (){
 		string buffer = "/*";
 		data.get("/*");
 
@@ -428,7 +408,7 @@ public:
 		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
 	}
 
-	Token tryAndGetDirective(){
+	Token Lexer::tryAndGetDirective(){
 		std::string buffer = "#";
 		data.consume();
 		while (!Alphabet::is<Alphabet::NEWLINE>(currentChar()) && !data.find("//") && !data.find("/*")){
@@ -439,7 +419,7 @@ public:
 	}
 
 
-	Token getSlashVariants(){
+	Token Lexer::getSlashVariants(){
 			data.consume();
 			if (currentChar() == '/'){
 				data.consume();
@@ -454,7 +434,7 @@ public:
 			}
 	}
 
-	Token getPlusVariants (){
+	Token Lexer::getPlusVariants (){
 		data.consume();
 		if ( currentChar() == '+' ){
 				data.consume();
@@ -469,7 +449,7 @@ public:
 		}
 	}
 
-	Token getMinusVariants (){
+	Token Lexer::getMinusVariants (){
 		data.consume();
 		if ( currentChar() == '-' ){
 				data.consume();
@@ -488,7 +468,7 @@ public:
 		}
 	}
 
-	Token getStarVariants(){
+	Token Lexer::getStarVariants(){
 		data.consume();
 		if ( currentChar() == '*' ){
 			data.consume();
@@ -504,7 +484,7 @@ public:
 
 	}
 
-	Token getProcentVariants(){
+	Token Lexer::getProcentVariants(){
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -515,7 +495,7 @@ public:
 			}
 	}
 
-	Token getCircumflexVariants(){
+	Token Lexer::getCircumflexVariants(){
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -526,7 +506,7 @@ public:
 			}
 	}
 
-	Token getWaveVariants(){
+	Token Lexer::getWaveVariants(){
 			data.consume();
 			if (currentChar() == '='){
 				data.consume();
@@ -537,37 +517,37 @@ public:
 			}
 	}
 
-	Token getBraceLeft(){
+	Token Lexer::getBraceLeft(){
 		data.consume();
 		return Token(Token::BRACE_LEFT, data.getPreviousSourcePosition());
 	}
 
-	Token getBraceRight(){
+	Token Lexer::getBraceRight(){
 		data.consume();
 		return Token(Token::BRACE_RIGHT, data.getPreviousSourcePosition());
 	}
 
-	Token getBracketLeft(){
+	Token Lexer::getBracketLeft(){
 		data.consume();
 		return Token(Token::BRACKET_LEFT, data.getPreviousSourcePosition());
 	}
 
-	Token getBracketRight(){
+	Token Lexer::getBracketRight(){
 		data.consume();
 		return Token(Token::BRACKET_RIGHT, data.getPreviousSourcePosition());
 	}
 
-	Token getCurlLeft(){
+	Token Lexer::getCurlLeft(){
 		data.consume();
 		return Token(Token::CURL_LEFT, data.getPreviousSourcePosition());
 	}
 
-	Token getCurlRight(){
+	Token Lexer::getCurlRight(){
 		data.consume();
 		return Token(Token::CURL_RIGHT, data.getPreviousSourcePosition());
 	}
 
-	Token getDotVariants(){
+	Token Lexer::getDotVariants(){
 		data.consume();
 		if (currentChar() == '.'){
 			data.consume();
@@ -582,12 +562,12 @@ public:
 		}	
 	}
 
-	Token getComaVariants(){
+	Token Lexer::getComaVariants(){
 		data.consume();
 		return Token(Token::OPERATOR, ",", "", data.getPreviousSourcePosition());	
 	}
 
-	Token  getLessVariants(){
+	Token Lexer::getLessVariants(){
 		data.consume();
 		if(currentChar() == '='){
 			data.consume();
@@ -606,7 +586,7 @@ public:
 		}	
 	}
 
-	Token  getGreaterVariants(){
+	Token Lexer::getGreaterVariants(){
 		data.consume();
 		if(currentChar() == '='){
 			data.consume();
@@ -631,7 +611,7 @@ public:
 
 
 
-	Token getEqualsVariants(){
+	Token Lexer::getEqualsVariants(){
 
 			data.consume();
 			if (currentChar() == '='){
@@ -643,7 +623,7 @@ public:
 			}
 	}
 
-	Token getAmpersandVariants(){
+	Token Lexer::getAmpersandVariants(){
 
 			data.consume();
 			if (currentChar() == '&'){
@@ -663,7 +643,7 @@ public:
 			}
 	}
 
-	Token getDashVariants(){
+	Token Lexer::getDashVariants(){
 
 			data.consume();
 			if (currentChar() == '|'){
@@ -686,23 +666,23 @@ public:
 			}
 	}
 
-	Token getAtVariants(){
+	Token Lexer::getAtVariants(){
 		data.consume();
 		return Token(Token::OPERATOR, "@", "", data.getPreviousSourcePosition());
 	}
 
-	Token getDollarVariants(){
+	Token Lexer::getDollarVariants(){
 		data.consume();
 		return Token(Token::OPERATOR, "$", "", data.getPreviousSourcePosition());
 	}
 
 
-	Token getQuestionVariants(){
+	Token Lexer::getQuestionVariants(){
 		data.consume();
 		return Token(Token::OPERATOR, "?", "", data.getPreviousSourcePosition());
 	}
 
-	Token getColonVariants(){
+	Token Lexer::getColonVariants(){
 		data.consume();
 			if (currentChar() == ':'){
 				data.consume();
@@ -722,7 +702,7 @@ public:
 		
 	}
 
-	Token getExclamationVariants(){
+	Token Lexer::getExclamationVariants(){
 
 		data.consume();
 		if (currentChar() == '='){
@@ -734,7 +714,7 @@ public:
 		}
 	}
 
-	Token tryAndGetOperator(){
+	Token Lexer::tryAndGetOperator(){
 
 		data.lock();
 		switch (currentChar()){
@@ -784,7 +764,7 @@ public:
 	}
 
 
-	Token getToken(){
+	Token Lexer::getToken(){
 
 			Token result;
 			try{
@@ -895,11 +875,6 @@ public:
 			catch (NoticeException le){
 			}
 
-			//cout << "Nothing strange!\n\n";
-
-
-
-
 			if(data.eof()){
 				setEof();
 			}
@@ -908,11 +883,11 @@ public:
 			return Token();
 	}
 
-	bool eof(){
+	bool Lexer::eof(){
 		return this->wasEof;
 	}
 
-	void recover(){
+	void Lexer::recover(){
 
 		for(int i = static_cast<int>(this->output.size()) - 1; i > 1 && !output[i].typeEqualsTo(Token::NEWLINE); --i){
 			output[i].setType(Token::NONE);
@@ -923,13 +898,13 @@ public:
 	}
 
 
-	void addToOutput (const Token &token){
+	void Lexer::addToOutput (const Token &token){
 		this->currentToken = token;
 		this->output.push_back(token);
 		data.lock();
 	}
 
-	void getNextToken(){
+	void Lexer::getNextToken(){
 				try {
 					currentToken = getToken();
 				}
@@ -946,16 +921,16 @@ public:
 
 	}
 
-	void checkForEof(void){
+	void Lexer::checkForEof(void){
 		this->wasEof = data.eof();
 	}
 
-	void reportEof(void){
+	void Lexer::reportEof(void){
 		addToOutput(Token (Token::END, data.sourcePosition));
 		this->eofReported = true;
 	}
 
-	Token tokenAt(int index){
+	Token Lexer::tokenAt(int index){
 		if(eof() && index >= static_cast<int>(this->output.size())){
 
 			if(index == static_cast<int>(this->output.size()) && !EofReported()){
@@ -979,14 +954,10 @@ public:
 		return output[index];
 	}
 
-	Token operator[](int index){
+	Token  Lexer::operator[](int index){
 		return this->tokenAt(index);
 	}
 
-	bool isValidIndex(int index){
+	bool Lexer::isValidIndex(int index){
 		return (index < static_cast<int>(this->output.size()) && index >= 0) || !eofReported;
 	}
-
-};
-
-#endif

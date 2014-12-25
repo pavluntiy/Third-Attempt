@@ -7,7 +7,7 @@
 		return this->children;
 	}
 
-	Node::Node (Type type, string text = "", string note = ""){
+	Node::Node (Type type, string text, string note){
 		this->type = type;
 		this->text = text;
 		this->note = note;
@@ -19,7 +19,7 @@
 		this->note = other.note;
 	}
 
-	bool operator Node::== (const Node &other){
+	bool Node::operator== (const Node &other){
 		return this->type == other.type && this->text == other.text;
 	}
 
@@ -117,5 +117,3 @@
 		cout << "I am dying!" << endl;
 	}
 
-
-#endif

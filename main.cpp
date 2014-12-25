@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "lexer.h"
+#include "lexer.hpp"
 #include "parser.hpp"
 //#include "treeprinter.hpp"
 

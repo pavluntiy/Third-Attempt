@@ -2,7 +2,6 @@
 #define NODE
 
 #include "header.hpp"
-#include <iostream>
 class Node {
 public:
 

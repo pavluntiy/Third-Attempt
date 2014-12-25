@@ -1,18 +1,16 @@
-#ifndef TOKEN
-#define TOKEN
 
 #include "token.hpp"
 
 
 
-	Token::Token(Type type = Type::NONE, string text = "", string note = "", Position position = {0, 0}){
+	Token::Token(Token::Type type, string text, string note, Position position){
 			this->type = type;
 			this->text = text;
 			this->note = note;
 			this->position = position;
 		}
 
-	Token::Token(Type type, Position position){
+	Token::Token(Token::Type type, Position position){
 			this->type = type;
 			this->text = "";
 			this->note = "";
@@ -23,37 +21,37 @@
 	string Token::typeToString()
 	const{
 		switch (this->type){
-			case Type::NEWLINE: return "NEWLINE"; break;
-			case Type::BEGIN: return "BEGIN"; break;
-			case Type::END: return "END"; break;
-			case Type::NONE: return "NONE"; break;
-			case Type::INT: return "INT"; break;
-			case Type::FLOAT: return "FLOAT"; break;
-			case Type::CHAR: return "CHAR"; break;
-			case Type::STRING: return "STRING"; break;
-			case Type::OPERATOR: return "OPERATOR"; break;
-			case Type::ERROR: return "ERROR"; break;
-			case Type::NAME: return "NAME"; break;
-			case Type::KEYWORD: return "KEYWORD"; break;
-			case Type::SEMICOLON: return "SEMICOLON"; break;
-			case Type::DIRECTIVE: return "DIRECTIVE"; break;
-			case Type::COMMENT: return "COMMENT"; break;
-			case Type::BRACKET_LEFT: return "BRACKET_LEFT"; break;
-			case Type::BRACKET_RIGHT: return "BRACKET_RIGHT"; break;
-			case Type::CURL_LEFT: return "CURL_LEFT"; break;
-			case Type::CURL_RIGHT: return "CURL_RIGHT"; break;
-			case Type::BRACE_LEFT: return "BRACE_LEFT"; break;
-			case Type::BRACE_RIGHT: return "BRACE_RIGHT"; break;
+			case Token::Type::NEWLINE: return "NEWLINE"; break;
+			case Token::Type::BEGIN: return "BEGIN"; break;
+			case Token::Type::END: return "END"; break;
+			case Token::Type::NONE: return "NONE"; break;
+			case Token::Type::INT: return "INT"; break;
+			case Token::Type::FLOAT: return "FLOAT"; break;
+			case Token::Type::CHAR: return "CHAR"; break;
+			case Token::Type::STRING: return "STRING"; break;
+			case Token::Type::OPERATOR: return "OPERATOR"; break;
+			case Token::Type::ERROR: return "ERROR"; break;
+			case Token::Type::NAME: return "NAME"; break;
+			case Token::Type::KEYWORD: return "KEYWORD"; break;
+			case Token::Type::SEMICOLON: return "SEMICOLON"; break;
+			case Token::Type::DIRECTIVE: return "DIRECTIVE"; break;
+			case Token::Type::COMMENT: return "COMMENT"; break;
+			case Token::Type::BRACKET_LEFT: return "BRACKET_LEFT"; break;
+			case Token::Type::BRACKET_RIGHT: return "BRACKET_RIGHT"; break;
+			case Token::Type::CURL_LEFT: return "CURL_LEFT"; break;
+			case Token::Type::CURL_RIGHT: return "CURL_RIGHT"; break;
+			case Token::Type::BRACE_LEFT: return "BRACE_LEFT"; break;
+			case Token::Type::BRACE_RIGHT: return "BRACE_RIGHT"; break;
 		}
 		return "NONE";
 	}
 
-	bool Token::typeEqualsTo(Type type)
+	bool Token::typeEqualsTo(Token::Type type)
 	const{
 		return this->type == type;
 	}
 
-	bool operator Token::== (const Token &other){
+	bool Token::operator == (const Token &other){
 		return this->typeEqualsTo(other.getType()) && this->text == other.getText();
 	}
 
@@ -90,7 +88,7 @@
 		this->type = type;
 	}
 
-	Type Token::getType()
+	Token::Type Token::getType()
 	const{
 		return this->type;
 	}
@@ -115,8 +113,7 @@
 		;
 	}
 
-};
- ostream& operator Token::<< (ostream &cout, const Token &token){
+ ostream& operator<< (ostream &cout, const Token &token){
  	if(!token.isInvisible()){
  		cout << token.toString() << '\n';
  	}

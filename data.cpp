@@ -1,34 +1,5 @@
-
-#ifndef DATA 
-#define DATA
-
-#include <iostream>
-#include "dataexception.hpp"
-#include "alphabet.hpp"
-#include "header.hpp"
-#include <stack>
-
-class Data{
-
-	istream &in;
-	string str;
-	//bool wasEof;
-	bool ready;
-	bool errorOccured;
-
-	
-	int spacesInTab;
-	string badCharacters;
-
-
-public:
-
-	char currentChar;
-	Position sourcePosition;
-	int currentPosition;
-	stack<Position> previousSourcePosition;
-	stack<int> previousPosition;
-	Data(istream &in = cin):
+#include "data.hpp"
+	Data::Data(istream &in):
 	in(in)
 	{
 		//wasEof = false;
@@ -40,17 +11,17 @@ public:
 		errorOccured = false;
 	}
 
-	bool wasError(){
+	bool Data::wasError(){
 		return this->errorOccured;
 	}
-	string getErrorReport(){
+	string Data::getErrorReport(){
 		this->errorOccured = false;
 		string tmp = this->badCharacters;
 		this->badCharacters = "";
 		return tmp;
 	}
 
-	char pop(){
+	char Data::pop(){
 		if(str.size() == 0){
 			return '\0';
 		}
@@ -61,34 +32,34 @@ public:
 		return tmp;	
 	}	
 
-	void push(char c){
+	void Data::push(char c){
 		this->str.push_back(c);
 	}
 
 
-	void recover (){
+	void Data::recover (){
 		while(!eof() && !Alphabet::is<Alphabet::NEWLINE>(this->currentChar)){
 			badCharacters += currentChar;
 			consume();
 		}
 	}
 	
-	int getSize(){
+	int Data::getSize(){
 		return this->str.size();
 	}
-	bool eof(){
+	bool Data::eof(){
 		return this->in.eof() && currentPosition  >= static_cast<int>(str.size()) - 1;
 	}
 
-	Position getSourcePosition(){
+	Position Data::getSourcePosition(){
 		return this->sourcePosition;
 	}
 
-	int getPosition (){
+	int Data::getPosition (){
 		return this->currentPosition;
 	}
 
-	char charAt(int index){
+	char Data::charAt(int index){
 		if(eof() && index >= static_cast<int>(this->str.size())){
 			throw DataException("Invalid index of input");
 		}
@@ -105,31 +76,31 @@ public:
 		return str[index];
 	}
 
-	char operator [] (int index){
+	char Data::operator [] (int index){
 
 		return this->charAt(index);
 	}
 
-	void consume(int n){
+	void Data::consume(int n){
 		for(int i = 0; i < n; ++i){
 			consume();
 		}
 	}
 
-	void consumeNewlineTabs(){
+	void Data::consumeNewlineTabs(){
 
 	}
 
-	void makeReady(){
+	void Data::makeReady(){
 		this->ready = true;
-		ignore(this->charAt(currentPosition + 1));	
+		myIgnore(this->charAt(currentPosition + 1));	
 	}
 
-	void pushCharToStream(char c = '\n'){
+	void Data::pushCharToStream(char c){
 		this->push(c);
 	}
 
-	void isReady(){
+	void Data::isReady(){
 		if(eof()){
 			throw DataException("Stream is closed!");
 			return;
@@ -140,12 +111,12 @@ public:
 		return;
 	}
 
-	void lock(){
+	void Data::lock(){
 		this->previousSourcePosition.push(sourcePosition);
 		this->previousPosition.push(currentPosition);
 	}
 
-	void restore(){
+	void Data::restore(){
 		if(this->previousPosition.size() > 0){
 			this->currentPosition = this->previousPosition.top();
 			this->previousPosition.pop();
@@ -156,17 +127,17 @@ public:
 		this->currentChar = this->charAt(currentPosition);
 	}
 
-	Position getPreviousSourcePosition(){
+	Position Data::getPreviousSourcePosition(){
 		if(this->previousSourcePosition.size() == 0){
 			return Position();
 		}
 		return this->previousSourcePosition.top();
 	}
 
-	string dataDump(){
+	string Data::dataDump(){
 		return this->str;
 	}
-	void consume(){
+	void Data::consume(){
 
 		if (Alphabet::is<Alphabet::NEWLINE>(currentChar)){
 			sourcePosition.line ++;
@@ -190,7 +161,7 @@ public:
 		}
 	}
 
-	bool get(std::string text){
+	bool Data::get(std::string text){
 		for (int i = 0; i < (int) text.size(); i++){
 			if (text[i] != this->charAt(currentPosition + i)){
 				return false;
@@ -204,7 +175,7 @@ public:
 		return true;
 	}
 
-	bool get(char c){
+	bool Data::get(char c){
 		if(currentChar == c){
 			consume();
 			return true;
@@ -213,7 +184,7 @@ public:
 		return false;
 	}
 
-	bool find(char c){
+	bool Data::find(char c){
 		if(currentChar == c){
 			return true;
 		}
@@ -221,7 +192,7 @@ public:
 		return false;
 	}
 
-	bool find(std::string text){
+	bool Data::find(std::string text){
 		for (int i = 0; i < (int) text.size(); i++){
 			if (text[i] != this->charAt(currentPosition + i)){
 				return false;
@@ -230,9 +201,3 @@ public:
 		return true;
 	}
 
-	// void close(){
-	// 	this->wasEof = true;
-	// }
-};
-
-#endif

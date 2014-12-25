@@ -1,10 +1,10 @@
+#include "header.hpp"
 
-
-	Position (int line = 0, int linePosition = 0): line(line), linePosition(linePosition){
+	Position::Position (int line, int linePosition): line(line), linePosition(linePosition){
 
 	} 
 
-	std::string toString()
+	std::string Position::toString()
 	const{
 		std::stringstream ss;
 		ss << "line: " << this->line << ", position: " << this->linePosition;
@@ -12,7 +12,7 @@
 	}
 
 template <typename T>
-void ignore(T arg){
+void myIgnore(T arg){
 	volatile T tmp = arg;
 	arg = tmp;
 }
