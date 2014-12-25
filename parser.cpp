@@ -1,33 +1,7 @@
-#ifndef PARSER
-#define PARSER
 
-#include "token.h"
-#include "node.h"
-#include "parser_exception.h"
-#include "tree_visitor.h"
-#include <vector>
-#include <set>
-#include <stack>
-#include <map>
+#include "parser.hpp"
 
-
-class Parser{
-
-protected: 
-	Node *tree;
-	//vector<Token> &tokens;
-	Lexer &lexer;
-
-	stack<int> history;
-	map<pair<Node::Type, int>, pair<bool, int> > memo;
-	int currentPosition;
-	Token currentToken;
-	TreeVisitor &visitor;
-
-
-
-public:
-	Parser (Lexer &lexer, TreeVisitor &visitor):
+Parser::Parser (Lexer &lexer, TreeVisitor &visitor):
 		lexer(lexer), visitor(visitor)
 	{
 		this->currentPosition = 0;
@@ -35,10 +9,10 @@ public:
 		this->history.push(currentPosition);
 	}
 
-void lock(){
+void Parser::lock(){
 	this->history.push(currentPosition);
 }
-void recoil(){
+void Parser::recoil(){
 
 //	cout << "recoiling!!!!!!!!!!!!!!!!!!!!!\n";
 	if(this->history.empty()){
@@ -51,12 +25,12 @@ void recoil(){
 //	cout << currentToken << '\n';
 }
 
-void memoize(Node::Type type, int position, bool success, int jump){
+void Parser::memoize(Node::Type type, int position, bool success, int jump){
 	this->memo[make_pair(type, position)] = make_pair(success, jump);
 }
 
 
-void consume(){
+void Parser::consume(){
 	++this->currentPosition;
 	if(this->lexer.isValidIndex(this->currentPosition)){	
 		this->currentToken = this->lexer[this->currentPosition];
@@ -72,7 +46,7 @@ void consume(){
 //	}
 }
 
-void get(Token token){
+void Parser::get(Token token){
 	if(! (currentToken == token) ){
 		throw NoticeException ("No " + token.toString() + " found, got " + currentToken.toString() + 
 			"instead at " + currentToken.getPosition().toString());
@@ -80,7 +54,7 @@ void get(Token token){
 	consume();
 }
 
-void get(Token::Type type){
+void Parser::get(Token::Type type){
 	if(! currentToken.typeEqualsTo(type) ){
 		throw NoticeException ("No " + Token(type).toString() + " found, got " + currentToken.toString() + 
 			"instead at " + currentToken.getPosition().toString());
@@ -88,7 +62,7 @@ void get(Token::Type type){
 	consume();
 }
 
-Node *getCOMMA(){
+Node* Parser::getCOMMA(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -104,7 +78,7 @@ Node *getCOMMA(){
 	throw NoticeException("No COMMA found!");
 }
 
-Node *getCOMMA_EXPRESSION(Node *left = nullptr){
+Node* Parser::getCOMMA_EXPRESSION(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -137,7 +111,7 @@ Node *getCOMMA_EXPRESSION(Node *left = nullptr){
 
 }
 
-Node *getASSIGNMENT_OP(){
+Node* Parser::getASSIGNMENT_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -181,7 +155,7 @@ Node *getASSIGNMENT_OP(){
 	throw NoticeException("No EXPR8_OP found!");
 }
 
-Node *getASSIGNMENT(){
+Node* Parser::getASSIGNMENT(){
 	Node *left = nullptr;
 	Node *op = nullptr;
 	Node *tmp = nullptr;
@@ -208,7 +182,7 @@ Node *getASSIGNMENT(){
 	return left;
 }
 
-Node *getTERNARY(){
+Node *Parser::getTERNARY(){
 	Node *op = nullptr;
 	Node *cond = nullptr, *first = nullptr, *second = nullptr;
 
@@ -244,13 +218,10 @@ Node *getTERNARY(){
 	op->addChild(cond);
 	op->addChild(first);
 	op->addChild(second);
-
-
-	
 	return op;
 }
 
-Node *getIS_IN_EXPRESSION_OP(){
+Node* Parser::getIS_IN_EXPRESSION_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::KEYWORD)){
 		if(
@@ -268,7 +239,7 @@ Node *getIS_IN_EXPRESSION_OP(){
 	throw NoticeException("No IS_IN_EXPRESSION_OP found!");
 }
 
-Node *getIS_IN_EXPRESSION(Node *left = nullptr){
+Node* Parser::getIS_IN_EXPRESSION(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -302,7 +273,7 @@ Node *getIS_IN_EXPRESSION(Node *left = nullptr){
 }
 
 
-Node *getL_OR_OP(){
+Node* Parser::getL_OR_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -318,7 +289,7 @@ Node *getL_OR_OP(){
 	throw NoticeException("No L_OR_OP found!");
 }
 
-Node *getL_OR(Node *left = nullptr){
+Node* Parser::getL_OR(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -352,7 +323,7 @@ Node *getL_OR(Node *left = nullptr){
 }
 
 
-Node *getL_AND_OP(){
+Node* Parser::getL_AND_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -368,7 +339,7 @@ Node *getL_AND_OP(){
 	throw NoticeException("No L_AND_OP found!");
 }
 
-Node *getL_AND(Node *left = nullptr){
+Node* Parser::getL_AND(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -401,7 +372,7 @@ Node *getL_AND(Node *left = nullptr){
 
 }
 
-Node *getCOMPARISION_OP(){
+Node* Parser::getCOMPARISION_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -418,7 +389,7 @@ Node *getCOMPARISION_OP(){
 
 	throw NoticeException("No COMPARISION_OP found!");
 }
-Node *getCOMPARISION(Node *left = nullptr){
+Node* Parser::getCOMPARISION(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -451,7 +422,7 @@ Node *getCOMPARISION(Node *left = nullptr){
 
 }
 
-Node *getDIFF_COMPARISION_OP(){
+Node* Parser::getDIFF_COMPARISION_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -472,7 +443,7 @@ Node *getDIFF_COMPARISION_OP(){
 
 	throw NoticeException("No DIFF_COMPARISION_OP found!");
 }
-Node *getDIFF_COMPARISION(Node *left = nullptr){
+Node* Parser::getDIFF_COMPARISION(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -505,7 +476,7 @@ Node *getDIFF_COMPARISION(Node *left = nullptr){
 
 }
 
-Node *getB_OR_OP(){
+Node* Parser::getB_OR_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -520,7 +491,7 @@ Node *getB_OR_OP(){
 
 	throw NoticeException("No B_OR_OP found!");
 }
-Node *getB_OR(Node *left = nullptr){
+Node* Parser::getB_OR(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -553,7 +524,7 @@ Node *getB_OR(Node *left = nullptr){
 
 }
 
-Node *getB_XOR_OP(){
+Node* Parser::getB_XOR_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -568,7 +539,7 @@ Node *getB_XOR_OP(){
 
 	throw NoticeException("No B_XOR_OP found!");
 }
-Node *getB_XOR(Node *left = nullptr){
+Node* Parser::getB_XOR(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -601,7 +572,7 @@ Node *getB_XOR(Node *left = nullptr){
 
 }
 
-Node *getB_AND_OP(){
+Node* Parser::getB_AND_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -616,7 +587,7 @@ Node *getB_AND_OP(){
 
 	throw NoticeException("No B_AND_OP found!");
 }
-Node *getB_AND(Node *left = nullptr){
+Node* Parser::getB_AND(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -649,9 +620,7 @@ Node *getB_AND(Node *left = nullptr){
 
 }
 
-
-
-Node *getSHIFT_OP(){
+Node* Parser::getSHIFT_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -670,7 +639,7 @@ Node *getSHIFT_OP(){
 
 	throw NoticeException("No SHIFT_OP found!");
 }
-Node *getSHIFT(Node *left = nullptr){
+Node* Parser::getSHIFT(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -703,7 +672,7 @@ Node *getSHIFT(Node *left = nullptr){
 
 }
 
-Node *getEXPR6_OP(){
+Node* Parser::getEXPR6_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -720,7 +689,7 @@ Node *getEXPR6_OP(){
 
 	throw NoticeException("No EXPR6_OP found!");
 }
-Node *getEXPR6(Node *left = nullptr){
+Node* Parser::getEXPR6(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -753,7 +722,7 @@ Node *getEXPR6(Node *left = nullptr){
 
 }
 
-Node *getEXPR7_OP(){
+Node* Parser::getEXPR7_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -772,7 +741,7 @@ Node *getEXPR7_OP(){
 
 	throw NoticeException("No EXPR7_OP found!");
 }
-Node *getEXPR7(Node *left = nullptr){
+Node* Parser::getEXPR7(Node *left = nullptr){
 
 		Node *op = nullptr, *right = nullptr;
 		if(left == nullptr){
@@ -805,7 +774,7 @@ Node *getEXPR7(Node *left = nullptr){
 
 }
 
-Node *getBEGIN(){
+Node* Parser::getBEGIN(){
 	if(currentToken.typeEqualsTo(Token::BEGIN)){
 		consume();
 		return new Node(Node::BEGIN);
@@ -815,7 +784,7 @@ Node *getBEGIN(){
 	}
 }
 
-Node *getEND(){
+Node* Parser::getEND(){
 	if(currentToken.typeEqualsTo(Token::END)){
 		consume();
 		return new Node(Node::END);
@@ -826,7 +795,7 @@ Node *getEND(){
 	}
 }
 
-Node *getINT(){
+Node* Parser::getINT(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::INT)){
 		result = new Node(Node::INT, currentToken.getText());
@@ -839,7 +808,7 @@ Node *getINT(){
 }
 
 
-Node *getFLOAT(){
+Node* Parser::getFLOAT(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::FLOAT)){
 		result = new Node(Node::FLOAT, currentToken.getText());
@@ -851,7 +820,7 @@ Node *getFLOAT(){
 	}
 }
 
-Node *getCHAR(){
+Node* Parser::getCHAR(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::CHAR)){
 		result = new Node(Node::CHAR, currentToken.getText());
@@ -863,7 +832,7 @@ Node *getCHAR(){
 	}
 }
 
-Node *getSTRING(){
+Node* Parser::getSTRING(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::STRING)){
 		result = new Node(Node::STRING, currentToken.getText());
@@ -875,7 +844,7 @@ Node *getSTRING(){
 	}
 }
 
-Node *getEXPR10_OP(){
+Node* Parser::getEXPR10_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(currentToken.getText() == "."){
@@ -895,7 +864,7 @@ Node *getEXPR10_OP(){
 	throw NoticeException("No EXPR10_OP found!");
 }
 
-Node *getEXPR8_OP(){
+Node* Parser::getEXPR8_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(currentToken.getText() == "**"){
@@ -909,7 +878,7 @@ Node *getEXPR8_OP(){
 	throw NoticeException("No EXPR8_OP found!");
 }
 
-Node *getEXPR8(){
+Node* Parser::getEXPR8(){
 	Node *left = nullptr;
 	Node *op = nullptr;
 	Node *tmp = nullptr;
@@ -936,7 +905,7 @@ Node *getEXPR8(){
 	return left;
 }
 
-Node *getATOM(){
+Node* Parser::getATOM(){
 	if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 		consume();
 		Node *result = getEXPRESSION();
@@ -965,7 +934,7 @@ Node *getATOM(){
 
 }
 
-Node *getNAME(){
+Node* Parser::getNAME(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::NAME)){
 		result = new Node(Node::NAME, currentToken.getText());
@@ -975,7 +944,7 @@ Node *getNAME(){
 	throw NoticeException("No NAME");
 }
 
-Node *getFUNCARGS(){
+Node* Parser::getFUNCARGS(){
 	Node  *tmp = nullptr, *result = nullptr;
 
 	result = new Node(Node::FUNCARGS);
@@ -985,7 +954,6 @@ Node *getFUNCARGS(){
 		tmp = getASSIGNMENT();
 	}
 	catch(NoticeException ne){
-	//	throw NoticeException("No FUNCARGS found!");
 		return result;
 	};
 
@@ -998,12 +966,9 @@ Node *getFUNCARGS(){
 	}
 	
 	return result;
-
-
-	//throw NoticeException("No FUNCARGS found!");
 }
 
-Node *getFUNCCALS(Node *left){
+Node* Parser::getFUNCCALS(Node *left){
 
 		Node *tmp = nullptr, *right = nullptr;
 		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
@@ -1032,7 +997,7 @@ Node *getFUNCCALS(Node *left){
 		return left;
 }
 
-Node *getACCESSARGS(){
+Node* Parser::getACCESSARGS(){
 	try {
 		return getEXPRESSION();
 	}
@@ -1043,7 +1008,7 @@ Node *getACCESSARGS(){
 	throw NoticeException("No FUNCARGS found!");
 }
 
-Node *getACCESSES(Node *left){
+Node* Parser::getACCESSES(Node *left){
 
 		Node *tmp = nullptr, *right = nullptr;
 		if(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
@@ -1069,7 +1034,7 @@ Node *getACCESSES(Node *left){
 		return left;
 }
 
-Node* getBRACED(Node *left = nullptr){
+Node* Parser::getBRACED(Node *left = nullptr){
 	//cout << "mimimi\n";
 	if(left == nullptr){
 		throw ParserException("Unexpected BRACE_LEFT or BRACKET_RIGHT at " + currentToken.getPosition().toString());
@@ -1087,7 +1052,7 @@ Node* getBRACED(Node *left = nullptr){
 	return left;
 }
 
-Node *getEXPR9_OP_SUFFIX(){
+Node* Parser::getEXPR9_OP_SUFFIX(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(currentToken.getText() == "--"){
@@ -1107,7 +1072,7 @@ Node *getEXPR9_OP_SUFFIX(){
 	throw NoticeException("No EXPR9_OP_SUFFIX found , got + " + currentToken.toString());
 }
 
-Node *getEXPR9_OP(){
+Node* Parser::getEXPR9_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(currentToken.getText() == "--"){
@@ -1163,7 +1128,7 @@ Node *getEXPR9_OP(){
 	throw NoticeException("No EXPR9_OP found, got + " + currentToken.toString());
 }
 
-Node *getEXPR9_SUFFIX(Node *left = nullptr){
+Node* Parser::getEXPR9_SUFFIX(Node *left = nullptr){
 	Node *op = nullptr;
 	Node *tmp = nullptr;
   //	cout << "AT ENTER LEFT IS " << left << '\n'; 
@@ -1192,7 +1157,7 @@ Node *getEXPR9_SUFFIX(Node *left = nullptr){
 	return left;
 }
 
-Node *getEXPR9(){
+Node* Parser::getEXPR9(){
 	//cout << "TEWEGSDF|\n";
 	Node *son= nullptr;
 	Node *op = nullptr;
@@ -1225,7 +1190,7 @@ Node *getEXPR9(){
 	return op;
 }
 
-Node *getEXPR10(Node *left = nullptr){
+Node* Parser::getEXPR10(Node *left = nullptr){
 	//	Node *tmp = nullptr;
 	Node *right = nullptr;
 	Node *op = nullptr;
@@ -1280,7 +1245,7 @@ Node *getEXPR10(Node *left = nullptr){
 	throw NoticeException("No EXPR10 found!");
 }
 
-Node *getVALUE(){
+Node* Parser::getVALUE(){
  //	Node *result = nullptr;
 
 	try {
@@ -1314,7 +1279,7 @@ Node *getVALUE(){
 	throw NoticeException("No VALUE found!");
 }
 
-Node *getNON_EMPTY_EXPRESSION(){
+Node* Parser::getNON_EMPTY_EXPRESSION(){
 
 	lock();
 	try {
@@ -1328,7 +1293,7 @@ Node *getNON_EMPTY_EXPRESSION(){
 	throw NoticeException("No NON_EMPTY_EXPRESSION found!");
 }
 
-Node *getEXPRESSION(){
+Node* Parser::getEXPRESSION(){
 
 	return getNON_EMPTY_EXPRESSION();
 	// lock();
@@ -1344,7 +1309,7 @@ Node *getEXPRESSION(){
 
 }
 
-Node *getTYPE_MOD(){
+Node* Parser::getTYPE_MOD(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::KEYWORD)){
 		if(
@@ -1374,7 +1339,7 @@ Node *getTYPE_MOD(){
 
 }
 
-Node *getPOINTER_MOD(){
+Node* Parser::getPOINTER_MOD(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(
@@ -1399,7 +1364,7 @@ Node *getPOINTER_MOD(){
 		throw NoticeException("No POINTER_MOD found!");
 }
 
-Node *getTYPENAME_OP(){
+Node* Parser::getTYPENAME_OP(){
 	Node *result = nullptr;
 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
 		if(currentToken.getText() == "."){
@@ -1412,7 +1377,7 @@ Node *getTYPENAME_OP(){
 	throw NoticeException ("No '.' for COMPOUND_NAME found!");
 }
 
-Node *getCOMPOUND_NAME(Node *left = nullptr){
+Node* Parser::getCOMPOUND_NAME(Node *left = nullptr){
 	Node *right = nullptr;
 	Node *op = nullptr;
 	if(left == nullptr){
@@ -1427,7 +1392,7 @@ Node *getCOMPOUND_NAME(Node *left = nullptr){
 			}
 			catch(NoticeException ne){
 				if(op != nullptr && right == nullptr){
-					visitor.deleteTree (op);
+					//visitor.deleteTree (op);
 					// visitor.deleteTree(left);
 					// visitor.deleteTree(right);
 					throw ParserException("Strange '.' in name at " + currentToken.getPosition().toString());
@@ -1448,8 +1413,8 @@ Node *getCOMPOUND_NAME(Node *left = nullptr){
 				return getCOMPOUND_NAME(op);
 			}
 			catch(NoticeException ne){
-				visitor.deleteTree (op);
-				visitor.deleteTree(right);
+				//visitor.deleteTree (op);
+				//visitor.deleteTree(right);
 			}
 			return left;
 	}
@@ -1464,7 +1429,7 @@ Node *getCOMPOUND_NAME(Node *left = nullptr){
 	throw NoticeException("No COMPOUND_NAME found!");
 }
 
-Node *getTYPE(){
+Node* Parser::getTYPE(){
 	Node *result = new Node(Node::TYPE);
 	Node *typemods = new Node(Node::TYPE_MOD);
 	Node *pointermods = new Node(Node::POINTER_MOD);
@@ -1494,22 +1459,22 @@ Node *getTYPE(){
 		
 		
 		if(typemods->getChildren().size() > 0){
-			visitor.deleteTree(result);
+			//visitor.deleteTree(result);
 			throw ParserException("Only TYPE_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
 		}
 
 		if(pointermods->getChildren().size() > 0){
-			visitor.deleteTree(result);
+			//visitor.deleteTree(result);
 			throw ParserException("Only POINTER_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
 		}
 
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("Not TYPE found!");
 	}
 	return result;
 }
 
-Node *getVARDECL_ELEM(){
+Node* Parser::getVARDECL_ELEM(){
 
 	Node *result = nullptr;
 	Node *name = nullptr;
@@ -1531,8 +1496,8 @@ Node *getVARDECL_ELEM(){
 			op->addChild(getASSIGNMENT());
 		}
 		catch (NoticeException ne){
-			visitor.deleteTree(result);
-			visitor.deleteTree(op);
+			//visitor.deleteTree(result);
+			//visitor.deleteTree(op);
 			throw ParserException("Unfinished initialization expression at " + currentToken.getPosition().toString());
 		}
 		result->addChild(op);
@@ -1543,7 +1508,7 @@ Node *getVARDECL_ELEM(){
 	//	throw NoticeException("No VARDECL_ELEM found!");
 }
 
-Node *getVARDECL(){
+Node* Parser::getVARDECL(){
 	lock();
 	Node *result = new Node(Node::VARDECL);
 	//	Node *type = nullptr;
@@ -1552,7 +1517,7 @@ Node *getVARDECL(){
 		result->addChild(getTYPE());
 	}
 	catch(NoticeException ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		recoil();
 		throw NoticeException("No VARDECL!");
 	}
@@ -1579,7 +1544,7 @@ Node *getVARDECL(){
 
 	}
 	catch(NoticeException ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		recoil();
 		throw NoticeException("No VARDECL found!");
 	}
@@ -1592,13 +1557,13 @@ Node *getVARDECL(){
 
 
 
-Node *getARG(){
+Node* Parser::getARG(){
 	Node *result = new Node(Node::ARG);
 	try{
 		result->addChild(getTYPE());
 	}
 	catch(NoticeException ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No TYPE for ARG found!");
 	}
 
@@ -1615,7 +1580,7 @@ Node *getARG(){
 	return result;
 }
 
-Node *getFUNC_SIGN_ARGS(){
+Node* Parser::getFUNC_SIGN_ARGS(){
 	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 		throw NoticeException("No FUNC_SING_ARGS found!");
 	}
@@ -1640,9 +1605,9 @@ Node *getFUNC_SIGN_ARGS(){
 			}
 		}
 		catch (NoticeException ne){
-			visitor.deleteTree(list);
-			visitor.deleteTree(typeList);
-			visitor.deleteTree(result);
+			// visitor.deleteTree(list);
+			// visitor.deleteTree(typeList);
+			// visitor.deleteTree(result);
 			throw ParserException ("Unfinished ARG at " + currentToken.getPosition().toString());
 		}
 
@@ -1655,7 +1620,7 @@ Node *getFUNC_SIGN_ARGS(){
 	result->addChild(list);
 
 	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw ParserException("Missing BRACE_RIGHT in FUNC_SIGN_ARGS at " + currentToken.getPosition().toString());
 	}
 
@@ -1666,7 +1631,7 @@ Node *getFUNC_SIGN_ARGS(){
 
 }
 
-Node *getFUNC_SIGN(){
+Node* Parser::getFUNC_SIGN(){
 	if(!(currentToken == Token(Token::KEYWORD, "def"))){
 		throw NoticeException ("No FUNC_SING found!");
 	}
@@ -1683,10 +1648,10 @@ Node *getFUNC_SIGN(){
 		args = getFUNC_SIGN_ARGS();
 	}
 	catch(NoticeException ne) {
-		visitor.deleteTree(result);
-		visitor.deleteTree(name);
-		visitor.deleteTree(type);
-		visitor.deleteTree(args);
+		// visitor.deleteTree(result);
+		// visitor.deleteTree(name);
+		// visitor.deleteTree(type);
+		// visitor.deleteTree(args);
 		throw ParserException("Corrupted function signature (" + ne.what() + ")at " + currentToken.getPosition().toString());
 	}
 
@@ -1701,7 +1666,7 @@ Node *getFUNC_SIGN(){
 
 }
 
-Node *getOPERATOR(){
+Node* Parser::getOPERATOR(){
 
 	try {
 		return getVARDECL();
@@ -1738,7 +1703,7 @@ Node *getOPERATOR(){
 	throw NoticeException("No OPERATOR found!");
 }
 
-Node *getOPERATORS(){
+Node* Parser::getOPERATORS(){
 	Node *result = new Node(Node::OPERATORS);
 
 	try{
@@ -1755,14 +1720,14 @@ Node *getOPERATORS(){
 	catch(NoticeException ne){}
 
 	if(result->getChildren().size() == 0){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException ("No OPERATORS found!");
 	}
 
 	return result;
 }
 
-Node *getBLOCK(){
+Node* Parser::getBLOCK(){
 	if(!currentToken.typeEqualsTo(Token::CURL_LEFT)){
 		throw NoticeException("No block found!");
 	}
@@ -1783,7 +1748,7 @@ Node *getBLOCK(){
 	return result;
 }
 
-Node *getFUNC_DEF(){
+Node* Parser::getFUNC_DEF(){
 
 	Node *result = nullptr;
 	try{
@@ -1793,13 +1758,13 @@ Node *getFUNC_DEF(){
 		return result;
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException ("No function found!");
 
 	}
 }
 
-Node *getIF(){
+Node* Parser::getIF(){
 	if(!(currentToken == Token(Token::KEYWORD, "if"))){
 		throw ParserException("Trying to get IF statemetn without IF! Check functio getSPECIAL!!!");
 	}
@@ -1818,7 +1783,7 @@ Node *getIF(){
 		result->addChild(getEXPRESSION());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No EXPRESSION in IF!");
 	}
 
@@ -1832,7 +1797,7 @@ Node *getIF(){
 		result->addChild(getOPERATOR());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No OPERATOR in IF!");
 	}
 
@@ -1842,7 +1807,7 @@ Node *getIF(){
 		result->addChild(getOPERATOR());
 		}
 		catch (NoticeException &ne){
-			visitor.deleteTree(result);
+			//visitor.deleteTree(result);
 			throw NoticeException("Empty ELSE!");
 		}
 	}
@@ -1850,7 +1815,7 @@ Node *getIF(){
 	return result;
 }
 
-Node *getWHILE(){
+Node* Parser::getWHILE(){
 	if(!(currentToken == Token(Token::KEYWORD, "while"))){
 		throw ParserException("Trying to get WHILE statemetn without WHILE! Check functio getSPECIAL!!!");
 	}
@@ -1883,7 +1848,7 @@ Node *getWHILE(){
 		result->addChild(getOPERATOR());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No OPERATOR in WHILE!");
 	}
 
@@ -1893,7 +1858,7 @@ Node *getWHILE(){
 		result->addChild(getOPERATOR());
 		}
 		catch (NoticeException &ne){
-			visitor.deleteTree(result);
+			//visitor.deleteTree(result);
 			throw NoticeException("Empty ELSE!");
 		}
 	}
@@ -1901,7 +1866,7 @@ Node *getWHILE(){
 	return result;
 }
 
-Node *getDOWHILE(){
+Node* Parser::getDOWHILE(){
 	if(!(currentToken == Token(Token::KEYWORD, "do"))){
 		throw ParserException("Trying to get DOWHILE statemetn without 'do'! Check functio getSPECIAL!!!");
 	}
@@ -1914,7 +1879,7 @@ Node *getDOWHILE(){
 		result->addChild(getOPERATOR());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No OPERATOR in WHILE!");
 	}
 
@@ -1935,7 +1900,7 @@ Node *getDOWHILE(){
 		result->addChild(getEXPRESSION());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No EXPRESSION in IF!");
 	}
 
@@ -1944,13 +1909,10 @@ Node *getDOWHILE(){
 	}
 
 	consume();
-
-
-
 	return result;
 }
 
-Node *getFOR(){
+Node* Parser::getFOR(){
 
 	Node *result = nullptr;
 
@@ -1969,7 +1931,7 @@ Node *getFOR(){
 
 	}	
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw ParserException("Corrupted FOR (" + ne.what() + ") " + currentToken.getPosition().toString());
 	}
 
@@ -1977,7 +1939,7 @@ Node *getFOR(){
 
 }
 
-bool is_RETURN_keyword(){
+bool Parser::is_RETURN_keyword(){
 	return 
 	currentToken == Token(Token::KEYWORD, "return")
 	||
@@ -1985,7 +1947,7 @@ bool is_RETURN_keyword(){
 	;
 }
 
-Node *getRETURN(){
+Node* Parser::getRETURN(){
 
 	Node *result = nullptr;
 
@@ -1995,14 +1957,14 @@ Node *getRETURN(){
 		result->addChild(getEXPRESSION());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw ParserException("Corrupted RETURN statemetn " + currentToken.getPosition().toString());
 	}
 	return result;
 
 }
 
-Node *getSPECIAL(){
+Node* Parser::getSPECIAL(){
 
 	if(currentToken == Token(Token::KEYWORD, "if")){
 		try{
@@ -2053,15 +2015,15 @@ Node *getSPECIAL(){
 
 
 	
-Node *getTree(){
+Node* Parser::getTree(){
 	return this->tree;
 }
 
-void pushTree(){
+void Parser::pushTree(){
 	this->visitor.setTree(this->tree);
 }
 
-void buildTree(){
+void Parser::buildTree(){
 	this->tree = new Node(Node::PROGRAM);
 	this->tree->addChild(getBEGIN());
 	try {
@@ -2073,8 +2035,3 @@ void buildTree(){
 	}
 	this->tree->addChild(getEND());
 }
-
-};
-
-
-#endif
