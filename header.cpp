@@ -1,3 +1,5 @@
+
+
 #include "header.hpp"
 
 	Position::Position (int line, int linePosition): line(line), linePosition(linePosition){
@@ -11,8 +13,4 @@
 		return ss.str();
 	}
 
-template <typename T>
-void myIgnore(T arg){
-	volatile T tmp = arg;
-	arg = tmp;
-}
+

@@ -21,6 +21,9 @@ struct Position {
 };
 
 template <typename T>
-void myIgnore(T arg);
+void myIgnore(T arg){
+	volatile T tmp = arg;
+	arg = tmp;
+}
 
 #endif

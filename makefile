@@ -9,10 +9,11 @@ all: $(SOURCES) $(HEADERS) $(EXECUTABLE)
 $(EXECUTABLE) :  $(OBJECTS)
 	$(COMPILER) $(OBJECTS) -o $@
 
-
-
 .cpp.o:
 	$(COMPILER) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf *.o hello 
 
 
 
