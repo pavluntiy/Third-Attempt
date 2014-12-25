@@ -5,7 +5,7 @@
 #include <iostream>
 #include "dataexception.hpp"
 #include "alphabet.h"
-#include "header.h"
+#include "header.hpp"
 #include <stack>
 
 class Data{

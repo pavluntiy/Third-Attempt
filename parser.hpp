@@ -1,7 +1,7 @@
 #ifndef PARSER
 #define PARSER
 
-#include "token.h"
+#include "token.hpp"
 #include "node.hpp"
 #include "parserexception.hpp"
 #include "tree_visitor.h"

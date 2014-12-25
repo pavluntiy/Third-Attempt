@@ -1,51 +1,18 @@
 #ifndef TOKEN
 #define TOKEN
 
-#include <string>
-#include <iostream>
-#include "header.h"
-using namespace std;
+#include "token.hpp"
 
-class Token {
 
-public:	
-	enum  Type {
-		NONE,
-		NEWLINE,
-		BEGIN,
-		END,
-		INT,
-		FLOAT,
-		CHAR,
-		STRING,
-		OPERATOR,
-		ERROR,
-		NAME,
-		KEYWORD,
-		SEMICOLON,
-		DIRECTIVE,
-		COMMENT,
-		BRACE_LEFT,
-		BRACE_RIGHT,
-		CURL_LEFT,
-		CURL_RIGHT,
-		BRACKET_LEFT,
-		BRACKET_RIGHT
-	};
 
-private:	
- 	string text, note;
- 		 Type type; 
- 		 Position position;	
-public:
-	Token(Type type = Type::NONE, string text = "", string note = "", Position position = {0, 0}){
+	Token::Token(Type type = Type::NONE, string text = "", string note = "", Position position = {0, 0}){
 			this->type = type;
 			this->text = text;
 			this->note = note;
 			this->position = position;
 		}
 
-	Token(Type type, Position position){
+	Token::Token(Type type, Position position){
 			this->type = type;
 			this->text = "";
 			this->note = "";
@@ -53,7 +20,7 @@ public:
 		}
 	
 
-	string typeToString()
+	string Token::typeToString()
 	const{
 		switch (this->type){
 			case Type::NEWLINE: return "NEWLINE"; break;
@@ -81,16 +48,16 @@ public:
 		return "NONE";
 	}
 
-	bool typeEqualsTo(Type type)
+	bool Token::typeEqualsTo(Type type)
 	const{
 		return this->type == type;
 	}
 
-	bool operator == (const Token &other){
+	bool operator Token::== (const Token &other){
 		return this->typeEqualsTo(other.getType()) && this->text == other.getText();
 	}
 
-	string toString()
+	string Token::toString()
 	const{
 		string str = this->typeToString();
 		if(this->text != ""){
@@ -106,11 +73,11 @@ public:
 		return str;
 	}
 
-	Position getPosition(){
+	Position Token::getPosition(){
 		return this->position;
 	}
 
-	bool isInvisible()
+	bool Token::isInvisible()
 	const{	
 		return 
 		this->type == Token::NEWLINE 
@@ -119,22 +86,22 @@ public:
 		;
 	}
 
-	void setType(Token::Type type){
+	void Token::setType(Token::Type type){
 		this->type = type;
 	}
 
-	Type getType()
+	Type Token::getType()
 	const{
 		return this->type;
 	}
 
-	string getText()
+	string Token::getText()
 	const{
 		return this->text;
 	}
 
 
-	bool isIgnorable(){
+	bool Token::isIgnorable(){
 		return 
 		this->type == Token::NEWLINE 
 		|| 
@@ -149,11 +116,9 @@ public:
 	}
 
 };
- ostream& operator << (ostream &cout, const Token &token){
+ ostream& operator Token::<< (ostream &cout, const Token &token){
  	if(!token.isInvisible()){
  		cout << token.toString() << '\n';
  	}
  	return cout;
  }
-
-#endif

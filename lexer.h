@@ -1,7 +1,7 @@
 #ifndef LEXER
 #define LEXER
 
-#include "token.h"
+#include "token.hpp"
 #include "lexerexception.hpp"
 #include "noticeexception.hpp"
 #include "data.h"
