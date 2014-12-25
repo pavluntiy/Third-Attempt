@@ -2,20 +2,17 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "tree_visitor.h"
 #include "lexer.h"
-#include "parser.h"
-#include <memory>
+#include "parser.hpp"
+//#include "treeprinter.hpp"
 
 using namespace std;
 
 int main (int argc, char **argv) {
 
-	//weak_ptr<istream> in;
 	istream *in;
 	ostream *out;
 	ostream *err;
-	//weak_ptr<ostream> out, err;
 
 	if(argc == 1){
 		in = &cin;
@@ -23,7 +20,6 @@ int main (int argc, char **argv) {
 		err = &cerr;
 	}
 	else { 
-//	in("input.in");
 		in = new ifstream(string(argv[1]));
 		if(argc > 2){
 			out = new ofstream(string(argv[2]));
@@ -32,7 +28,6 @@ int main (int argc, char **argv) {
 			out = &cout;
 		}
 		err = &cerr;
-
 	}
 
 
@@ -41,8 +36,6 @@ int main (int argc, char **argv) {
 		try{
 
 			while(!lexer.closed()){
-			//	cout << lexer.closed();
-			//while(true){
 				try{
 					*out << lexer[i];
 					out->flush(); 
@@ -56,18 +49,13 @@ int main (int argc, char **argv) {
 		catch (LexerException e){
 			*err << e.what() << '\n';
 		}
-	 
+
 	TreeVisitor visitor (out);
 	Parser parser(lexer, visitor);
-	//Parser parser(Lexer(*in));
 	try{
-	//	parser.visitTree(out);
-	//	parser.buildTree();
-	//	parser.printTree(parser.getTree(), out);
 		parser.buildTree();
 		parser.pushTree();
 		visitor.printTree();
-
 	}
 	catch (ParserException e){
 		*err << e.what() << '\n';

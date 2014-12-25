@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include "node.h"
+#include "node.hpp"
+
 
 class TreeVisitor{
 

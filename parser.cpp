@@ -1834,7 +1834,7 @@ Node* Parser::getWHILE(){
 		result->addChild(getEXPRESSION());
 	}
 	catch (NoticeException &ne){
-		visitor.deleteTree(result);
+		//visitor.deleteTree(result);
 		throw NoticeException("No EXPRESSION in WHILE!");
 	}
 

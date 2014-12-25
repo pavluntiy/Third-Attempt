@@ -2,8 +2,8 @@
 #define LEXER
 
 #include "token.h"
-#include "lexer_exception.h"
-#include "notice_exception.h"
+#include "lexerexception.hpp"
+#include "noticeexception.hpp"
 #include "data.h"
 #include "alphabet.h"
 #include <vector>

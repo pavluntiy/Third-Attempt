@@ -3,7 +3,7 @@
 #define DATA
 
 #include <iostream>
-#include "data_exception.h"
+#include "dataexception.hpp"
 #include "alphabet.h"
 #include "header.h"
 #include <stack>

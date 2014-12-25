@@ -2,8 +2,8 @@
 #define PARSER
 
 #include "token.h"
-#include "node.h"
-#include "parser_exception.h"
+#include "node.hpp"
+#include "parserexception.hpp"
 #include "tree_visitor.h"
 #include <vector>
 #include <set>
