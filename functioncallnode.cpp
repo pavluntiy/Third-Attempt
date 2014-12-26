@@ -28,6 +28,6 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 	}
 
 	FunctionCallNode::FunctionCallNode(Token token){
-		this->functionName = new CompoundNameNode(token.toString());
+		this->functionName = new CompoundNameNode(token.getText());
 		//cout << "OK!";
 	}

@@ -758,80 +758,8 @@ void Parser::get(Token::Type type){
 
 // }
 
-// Node* Parser::getBEGIN(){
-// 	if(currentToken.typeEqualsTo(Token::BEGIN)){
-// 		consume();
-// 		return new Node(Node::BEGIN);
-// 	}
-// 	else {
-// 		throw ParserException("No BEGIN found!");
-// 	}
-// }
-
-// Node* Parser::getEND(){
-// 	if(currentToken.typeEqualsTo(Token::END)){
-// 		consume();
-// 		return new Node(Node::END);
-// 	}
-// 	else {
-// 	//	cout << currentToken;
-// 		throw ParserException("No END found, got " + currentToken.toString() + " instead");
-// 	}
-// }
-
-// Node* Parser::getINT(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::INT)){
-// 		result = new Node(Node::INT, currentToken.getText());
-// 		consume();
-// 		return result;
-// 	}
-// 	else {
-// 		throw NoticeException("No INT found!");
-// 	}
-// }
 
 
-// Node* Parser::getFLOAT(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::FLOAT)){
-// 		result = new Node(Node::FLOAT, currentToken.getText());
-// 		consume();
-// 		return result;
-// 	}
-// 	else {
-// 		throw NoticeException("No FLOAT found!");
-// 	}
-// }
-
-// Node* Parser::getCHAR(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::CHAR)){
-// 		result = new Node(Node::CHAR, currentToken.getText());
-// 		consume();
-// 		return result;
-// 	}
-// 	else {
-// 		throw NoticeException("No CHAR found!");
-// 	}
-// }
-
-// Node* Parser::getSTRING(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::STRING)){
-// 		result = new Node(Node::STRING, currentToken.getText());
-// 		consume();
-// 		return result;
-// 	}
-// 	else {
-// 		throw NoticeException("No CHAR found!");
-// 	}
-// }
-
-
-
-// 	throw NoticeException("No EXPR10_OP found!");
-// }
 
 // Node* Parser::getEXPR8_OP(){
 // 	Node *result = nullptr;
@@ -1000,7 +928,7 @@ BasicNode* Parser::getAccesses(BasicNode *left){
 					return getAccesses(result);
 			}
 			catch(NoticeException ne){
-
+				throw ParserException("corrupted Access at " + currentToken.getPosition().toString());
 			}
 		}
 	
@@ -1044,123 +972,75 @@ BasicNode* Parser::getBraced(BasicNode *left){
 // 	throw NoticeException("No EXPR9_OP_SUFFIX found , got + " + currentToken.toString());
 // }
 
-// Node* Parser::getEXPR9_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(currentToken.getText() == "--"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 		//	cout << currentToken.getText();
-// 			return result;
-// 		}
 
-// 		if(currentToken.getText() == "++"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+bool Parser::isExpr9SuffixOp(){
+	return
+		currentToken.getText() == "--"
+		||
+		currentToken.getText() == "++"
+	;
+}
 
-// 		if(currentToken.getText() == "$"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+BasicNode* Parser::getExpr9Suffix(BasicNode *left){
+	FunctionCallNode *op = nullptr;
 
-// 		if(currentToken.getText() == "@"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+	if(left == nullptr){
+		left = getExpr10();
+	}
 
-// 		if(currentToken.getText() == "+"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+		if(isExpr9SuffixOp()){
+			auto tmpToken = Token(Token::OPERATOR, "_" +currentToken.getText());
+			op = new FunctionCallNode(tmpToken);
+			get(Token::OPERATOR);	
+			op->addArg(getExpr9Suffix(left));
+			return op;
+		}
 
-// 		if(currentToken.getText() == "-"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+	return left;
+}
 
-// 		if(currentToken.getText() == "~"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+bool Parser::isExpr9Op(){
+	return 
+		currentToken.getText() == "--"
+		||
+		currentToken.getText() == "++"
+		||
+		currentToken.getText() == "$"
+		||
+		currentToken.getText() == "@"
+		||
+		currentToken.getText() == "+"
+		||
+		currentToken.getText() == "-"
+		||
+		currentToken.getText() == "~"
+		||
+		currentToken.getText() == "!"
+	;
+}
 
-// 		if(currentToken.getText() == "!"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-// 	}
+BasicNode* Parser::getExpr9(){
+	FunctionCallNode *op = nullptr;
 
-// 	throw NoticeException("No EXPR9_OP found, got + " + currentToken.toString());
-// }
+	if(isExpr9Op()){
+		op = new FunctionCallNode(currentToken);
+		get(Token::OPERATOR);
+		op->addArg(getExpr9());
+		return op;
+	}
 
-// Node* Parser::getEXPR9_SUFFIX(Node *left){
-// 	Node *op = nullptr;
-// 	Node *tmp = nullptr;
-//   //	cout << "AT ENTER LEFT IS " << left << '\n'; 
-// 	if(left == nullptr){
-// 		try{
-//   //			cout << "#######\n";
-//   //			cout << currentToken;
-// 			left = getEXPR10();
-// 		}
-// 		catch (NoticeException ne){
-// 		//	throw ParserException("Strange stuff at " + currentToken.getPosition().toString() + ";\n got " + currentToken.toString());
-// 		}
-// 	}
+	return getExpr9Suffix();
+	// }
+	// catch (NoticeException ne){
+	// 	//cout << "OH YEAH!\n\n";
+	// }
 
-//   //	cout << "ONGTWSEDFVGJS\n";
-// 	try{
-// 		op = getEXPR9_OP_SUFFIX();
-// 		tmp = getEXPR9_SUFFIX(left);
-// 		op->addChild(tmp);
-// 		return op;
-// 	}
-// 	catch(NoticeException ne){
-//  //		cout << ne.what();
-// 	}
-//  //	cout << "LEFT IS " << left << '\n';
-// 	return left;
-// }
+	// if(op == nullptr){
+	// 	throw NoticeException("No EXPR9 found!");
+	// }
 
-// Node* Parser::getEXPR9(){
-// 	//cout << "TEWEGSDF|\n";
-// 	Node *son= nullptr;
-// 	Node *op = nullptr;
-// 	try {
-// 		op = getEXPR9_OP();
-// 		son = getEXPR9();
-// 		op->addChild(son);
-// 		return op;
-// 	}
-// 	catch (NoticeException ne){
-// 		//cout << ne.what();
-// 		//cout << "ppppp\n";
-// 		//cout << currentToken << '\n';
-// 	}
-
-// 	try {
-// 	//	cout << "eeeee\n";
-// 	//	cout << currentToken;
-// 		//cout << "currentPosition: " << currentPosition << '\n';
-// 		return getEXPR9_SUFFIX();
-// 	}
-// 	catch (NoticeException ne){
-// 		//cout << "OH YEAH!\n\n";
-// 	}
-
-// 	if(op == nullptr){
-// 		throw NoticeException("No EXPR9 found!");
-// 	}
-
-// 	return op;
-// }
+	// return op;
+}
 
 bool Parser::isExpr10Op(){
 
@@ -1266,7 +1146,7 @@ BasicNode* Parser::getValue(){
 
 BasicNode* Parser::getExpression(){
 
-	return getExpr10();
+	return getExpr9();
 }
 
 // Node* Parser::getTYPE_MOD(){

@@ -1,11 +1,13 @@
 #include "printvisitor.hpp"
 
 void PrintVisitor::visit(ProgramNode *node){
-	*this->out << shift << "( " << node->toString() << endl;
-
-	this->shift.push_back(' ');
-	node->getChild()->accept(this);
-	this->shift.pop_back();
+	*this->out << shift << "( " << node->toString();
+	if(node->getChild()){
+		cout << endl;
+		this->shift.push_back(' ');
+		node->getChild()->accept(this);
+		this->shift.pop_back();
+	}
 
 	*this->out   << ")" << endl;
 	
@@ -39,6 +41,7 @@ void PrintVisitor::visit(CompoundNameNode *node){
 
 	this->shift.push_back(' ');
 	if(node->getRight()){
+		cout << endl;
 		node->getRight()->accept(this);
 	}
 	this->shift.pop_back();

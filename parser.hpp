@@ -130,13 +130,14 @@ BasicNode* getAccesses(BasicNode *left);
 
 BasicNode* getBraced(BasicNode *left = nullptr);
 
-// Node *getEXPR9_OP_SUFFIX();
+bool isExpr9SuffixOp();
 
-// Node *getEXPR9_OP();
+BasicNode* getExpr9Suffix(BasicNode *left = nullptr);
 
-// Node *getEXPR9_SUFFIX(Node *left = nullptr);
+bool isExpr9Op();
 
-// Node *getEXPR9();
+BasicNode* getExpr9();
+
 bool isExpr10Op();
 BasicNode* getExpr10(BasicNode *left = nullptr);
 bool isValue();
