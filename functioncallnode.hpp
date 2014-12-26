@@ -24,6 +24,7 @@ public:
 	void addArg(BasicNode *node);
 
 	FunctionCallNode();
+	FunctionCallNode(BasicNode *functionName);
 	FunctionCallNode(Token token);
 
 };

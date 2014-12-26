@@ -122,9 +122,9 @@ BasicNode* getName();
 
 // Node *getFUNCARGS();
 
-// Node *getFUNCCALS(Node *left);
+BasicNode *getFunctionCalls(BasicNode *left = nullptr);
 
-// Node *getACCESSARGS();
+BasicNode *getAccessArgs();
 
 BasicNode* getAccesses(BasicNode *left);
 

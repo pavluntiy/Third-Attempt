@@ -14,12 +14,17 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 		return this->functionArgs;
 	}
 
+
 	void FunctionCallNode::addArg(BasicNode *node){
 		this->functionArgs.push_back(node);
 	}
 
 	FunctionCallNode::FunctionCallNode(){
 
+	}
+
+	FunctionCallNode::FunctionCallNode(BasicNode *functionName){
+		this->functionName = functionName;
 	}
 
 	FunctionCallNode::FunctionCallNode(Token token){

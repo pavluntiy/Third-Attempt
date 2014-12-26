@@ -938,71 +938,74 @@ BasicNode* Parser::getName(){
 // 	return result;
 // }
 
-// Node* Parser::getFUNCCALS(Node *left){
+BasicNode* Parser::getFunctionCalls(BasicNode *left){
 
-// 		Node *tmp = nullptr, *right = nullptr;
-// 		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-// 					lock();
-// 					consume();
-// 					try{
-// 						right = getFUNCARGS();
-// 					}
-// 					catch (NoticeException  ne){};
-// 					if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-// 						throw ParserException("Missed BRACE_RIGHT at " + currentToken.getPosition().toString());
-// 					}
-// 					consume();
-// 					tmp = new Node(Node::FUNCCALL);
-// 					tmp->addChild(left);
-// 					tmp->addChild(right);
+		FunctionCallNode *result = nullptr;
+		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+					get(Token::BRACE_LEFT);
+					try{	
+							result = new FunctionCallNode(left);
+							result->addArg(getExpression());
+							cout << currentToken;
+							while(currentToken == Token(Token::OPERATOR, ",")){
+								//cout << "mimi!";
+								get(Token::OPERATOR);
+								result->addArg(getExpression());
+								//SHould I check here for 'foo(arg1, )'
+								//cout << "hshs!";
+							}
+					}
+					catch (NoticeException  &ne){};
+					if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+						throw ParserException("Missed BRACE_RIGHT at " + currentToken.getPosition().toString());
+					}
+					get(Token::BRACE_RIGHT);
 
-// 					try {
-// 						return getFUNCCALS(tmp);
-// 					}
-// 					catch(NoticeException ne){
+					//try {
+						return getFunctionCalls(result);
+					// }
+					// catch(NoticeException ne){
 
-// 					}
-// 		}
+					// }
+		}
 	
-// 		return left;
-// }
+		return left;
+}
 
-// Node* Parser::getACCESSARGS(){
-// 	try {
-// 		return getEXPRESSION();
-// 	}
-// 	catch (NoticeException ne){
+BasicNode* Parser::getAccessArgs(){
+	try {
+		return getExpression();
+	}
+	catch (NoticeException ne){
 
-// 	}
+	}
 
-// 	throw NoticeException("No FUNCARGS found!");
-// }
+	throw NoticeException("No FUNCARGS found!");
+}
 
-// Node* Parser::getACCESSES(Node *left){
+BasicNode* Parser::getAccesses(BasicNode *left){
 
-// 		Node *tmp = nullptr, *right = nullptr;
-// 		if(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
-// 					lock();
-// 					consume();
-// 					right = getACCESSARGS();
-// 					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
-// 						throw ParserException("Missed BRACKET_RIGHT at " + currentToken.getPosition().toString());
-// 					}
-// 					consume();
-// 					tmp = new Node(Node::ACCESS);
-// 					tmp->addChild(left);
-// 					tmp->addChild(right);
+		FunctionCallNode *result = nullptr;
+		if(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+			try {
+					get(Token::BRACKET_LEFT);
+					result = new FunctionCallNode(Token(Token::OPERATOR, "[]"));
+					result->addArg(left);
+					result->addArg(getAccessArgs());
+					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
+						throw ParserException("Missed BRACKET_RIGHT at " + currentToken.getPosition().toString());
+					}
+					get(Token::BRACKET_RIGHT);
 
-// 					try {
-// 						return getACCESSES(tmp);
-// 					}
-// 					catch(NoticeException ne){
+					return getAccesses(result);
+			}
+			catch(NoticeException ne){
 
-// 					}
-// 		}
+			}
+		}
 	
-// 		return left;
-// }
+		return left;
+}
 
 BasicNode* Parser::getBraced(BasicNode *left){
 	if(left == nullptr){
@@ -1010,12 +1013,12 @@ BasicNode* Parser::getBraced(BasicNode *left){
 	}
 
 	while(currentToken.typeEqualsTo(Token::BRACE_LEFT) || currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
-		// if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-		// 	left = getFUNCCALS(left);
-		// }
-		// else {
-		// 	left = getACCESSES(left);
-		// }
+		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+			left = getFunctionCalls(left);
+		}
+		else {
+			left = getAccesses(left);
+		}
 	}
 
 	return left;
@@ -1178,6 +1181,7 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 			left = getAtom();
 			//
 			left = getBraced(left);
+			//cout << "Tyakulli!";
 				if(isExpr10Op()){
 					op = new FunctionCallNode(currentToken);
 					get(Token::OPERATOR);
@@ -1199,6 +1203,7 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 	else {				
 			try{
 				left = getBraced(left);
+
 				if(isExpr10Op()){
 					op = new FunctionCallNode(currentToken);
 					get(Token::OPERATOR);
@@ -1548,8 +1553,9 @@ void Parser::buildTree(){
 	this->tree = new ProgramNode();
 	get(Token::BEGIN);
 	try {
-		BasicNode *tmp = getExpr10();
+		BasicNode *tmp = getExpression();
 		this->tree->addChild(tmp);
+		//cout << tmp;
 		//	cout << reinterpret_cast<CompoundNameNode*>(tmp)->getLeft() << "Here I am!";
 	}
 	catch(NoticeException &ne){
