@@ -64,197 +64,145 @@ void Parser::get(Token::Type type){
 }
 
 
-// ExpressionNode* Parser::getCOMMA_EXPRESSION(FunctionCallNode *left){
+BasicNode* Parser::getCommaExpression(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getAssignment();
+			}
 
-// 		FunctionCallNode *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getASSIGNMENT();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No COMMA_EXPRESSION found!");
-// 			}
-// 		}
-
-// 		if(currentToken != Token(Token::OPERATOR, ",")){
-// 			return left;
-// 		}
-// 		get(Token::OPERATOR);
-
-// 		try {
-// 			right = getASSIGNMENT();
-// 			op->addArg(left);
-// 			op->addArg(right);
-// 			return getCOMMA_EXPRESSION(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for COMMA_EXPRESSION without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getASSIGNMENT_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "="
-// 			||
-// 			currentToken.getText() == "*="
-// 			||
-// 			currentToken.getText() == "/="
-// 			||
-// 			currentToken.getText() == "%="
-// 			||
-// 			currentToken.getText() == "+="
-// 			||
-// 			currentToken.getText() == "-="
-// 			||
-// 			currentToken.getText() == ">>="
-// 			||
-// 			currentToken.getText() == ">>>="
-// 			||
-// 			currentToken.getText() == "<<="
-// 			||
-// 			currentToken.getText() == "&="
-// 			||
-// 			currentToken.getText() == "^="
-// 			||
-// 			currentToken.getText() == "|="
-// 			||
-// 			currentToken.getText() == "&&="
-// 			||
-// 			currentToken.getText() == "||="
-// 			||
-// 			currentToken.getText() == ":="
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No EXPR8_OP found!");
-// }
-
-// Node* Parser::getASSIGNMENT(){
-// 	Node *left = nullptr;
-// 	Node *op = nullptr;
-// 	Node *tmp = nullptr;
-
-// 	try{
-// 		left = getTERNARY();
-// 	}
-// 	catch (NoticeException ne){
-// 	}
-
-// 	try{
-// 		op = getASSIGNMENT_OP();
-// 		op->addChild(left);
-// 		tmp = getASSIGNMENT();
-// 		op->addChild(tmp);
-// 		return op;
-// 	}
-// 	catch(NoticeException ne){
-// 	}
-
-// 	if(left == nullptr){
-// 		throw NoticeException("No ASSIGNMENT found!");
-// 	}
-// 	return left;
-// }
-
-// Node *Parser::getTERNARY(){
-// 	Node *op = nullptr;
-// 	Node *cond = nullptr, *first = nullptr, *second = nullptr;
-
-// 	try {
-// 		cond = getL_AND();
-// 	}
-// 	catch (NoticeException ne){}
-
-// 	if(cond == nullptr){
-// 		throw NoticeException("No TERNARY found!");
-// 	}
+			if(currentToken == Token(Token::OPERATOR, ",")){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getAssignment());
+				return getCommaExpression(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException &ne){
+			throw NoticeException("corrupted Comma expression (" + ne.what() + ") at" + currentToken.getPosition().toString());
+		}
+}
 
 
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR) && currentToken.getText() == "?"){
-// 		consume();
-// 		op = new Node(Node::OPERATOR, "?");
-// 	}
-// 	else {
-// 		return cond;
-// 	}
+bool Parser::isAssignmentOp(){
+	return 
+			currentToken.getText() == "="
+			||
+			currentToken.getText() == "*="
+			||
+			currentToken.getText() == "/="
+			||
+			currentToken.getText() == "%="
+			||
+			currentToken.getText() == "+="
+			||
+			currentToken.getText() == "-="
+			||
+			currentToken.getText() == ">>="
+			||
+			currentToken.getText() == ">>>="
+			||
+			currentToken.getText() == "<<="
+			||
+			currentToken.getText() == "&="
+			||
+			currentToken.getText() == "^="
+			||
+			currentToken.getText() == "|="
+			||
+			currentToken.getText() == "&&="
+			||
+			currentToken.getText() == "||="
+			||
+			currentToken.getText() == ":="
+	;
+}
 
-// 	first = getTERNARY();
+BasicNode* Parser::getAssignment(){
+	BasicNode *left = nullptr;
+	FunctionCallNode *op = nullptr;
+	try{
+		left = getTernary();
+		if(isAssignmentOp()){
+			op = new FunctionCallNode(currentToken);
+			get(Token::OPERATOR);
+			op->addArg(left);
+			op->addArg(getTernary());
+			return op;
+		}
+		else{
+			return left;
+		}
+	}
+	catch(NoticeException ne){
+		throw NoticeException("Corrupted assignment operator  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+	}
+}
 
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR) && currentToken.getText() == ":"){
-// 		consume();
-// 	}
-// 	else{
-// 		throw ParserException("Unfinished TERNARY operator at " + currentToken.getPosition().toString());
-// 	}
 
-// 	second = getTERNARY();
 
-// 	op->addChild(cond);
-// 	op->addChild(first);
-// 	op->addChild(second);
-// 	return op;
-// }
 
-// Node* Parser::getIS_IN_EXPRESSION_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::KEYWORD)){
-// 		if(
-// 			currentToken.getText() == "in"
-// 			||
-// 			currentToken.getText() == "is"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+BasicNode* Parser::getTernary(){
+	FunctionCallNode *op = nullptr;
+	BasicNode *cond = nullptr;
+	try {
+		cond = getInIsExpression();
+		if(currentToken == Token(Token::OPERATOR, "?")){
+			op = new FunctionCallNode(currentToken);
+			get(Token::OPERATOR);
+			op->addArg(cond);
+			op->addArg(getTernary());
+			if(currentToken != Token(Token::OPERATOR, ":")){
+				throw ParserException("Corrupted ternary operator at " + currentToken.getPosition().toString());
+			}
+			get(Token::OPERATOR);
+			op->addArg(getTernary());
+			return op;
+		}
+		else {
+			return cond;
+		}
+	}
+	catch (NoticeException &ne){
+		throw NoticeException("corrupted  ternary operator  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+	}
+}
 
-// 	}
+bool Parser::isInIsExpressionOp(){
+	return 
+			currentToken.getText() == "is"
+			||
+			currentToken.getText() == "in"
+	;
+}
 
-// 	throw NoticeException("No IS_IN_EXPRESSION_OP found!");
-// }
+BasicNode* Parser::getInIsExpression(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getLogicalOr();
+			}
 
-// Node* Parser::getIS_IN_EXPRESSION(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getSHIFT();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No IS_IN_EXPRESSION found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getIS_IN_EXPRESSION_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getSHIFT();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getIS_IN_EXPRESSION(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for IS_IN_EXPRESSION without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
+			if(isInIsExpressionOp()){
+				op = new FunctionCallNode(currentToken);
+				get(Token::KEYWORD);
+				op->addArg(left);
+				op->addArg(getLogicalOr());
+				//return getInIsExpression(op);
+				return op;
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException ne){
+			throw NoticeException("corrupted  Is/In expression  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		}
+}
 
 BasicNode* Parser::getLogicalOr(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
@@ -267,7 +215,7 @@ BasicNode* Parser::getLogicalOr(BasicNode *left){
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
-				op->addArg(getBitwiseAnd());
+				op->addArg(getLogicalAnd());
 				return getLogicalOr(op);
 			}
 			else{
@@ -275,8 +223,6 @@ BasicNode* Parser::getLogicalOr(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			cout << ne.what();
-			cout << "asdfsadf";
 			throw NoticeException("corrupted '||' (" + ne.what() + ") at" + currentToken.getPosition().toString());
 		}
 }
@@ -301,7 +247,6 @@ BasicNode* Parser::getLogicalAnd(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			cout << "ololo!";
 			throw NoticeException("corrupted '&&' (" + ne.what() + ") at" + currentToken.getPosition().toString());
 		}
 }
@@ -547,7 +492,7 @@ BasicNode* Parser::getExpr7(BasicNode *left){
 }
 
 
-bool Parser::isExpr8op(){
+bool Parser::isExpr8Op(){
 	return currentToken.getText() == "**";
 }
 
@@ -556,7 +501,7 @@ BasicNode* Parser::getExpr8(){
 	FunctionCallNode *op = nullptr;
 	try{
 		left = getExpr9();
-		if(isExpr8op()){
+		if(isExpr8Op()){
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
 			op->addArg(left);
@@ -895,7 +840,7 @@ BasicNode* Parser::getValue(){
 
 BasicNode* Parser::getExpression(){
 
-	return getLogicalOr();
+	return getCommaExpression();
 }
 
 // Node* Parser::getTYPE_MOD(){
@@ -1180,16 +1125,18 @@ void Parser::pushTree(){
 
 void Parser::buildTree(){
 	this->tree = new ProgramNode();
-	get(Token::BEGIN);
-	try {
-		BasicNode *tmp = getExpression();
-		this->tree->addChild(tmp);
-		//cout << tmp;
-		//	cout << reinterpret_cast<CompoundNameNode*>(tmp)->getLeft() << "Here I am!";
+	try{
+		get(Token::BEGIN);
+		try {
+			this->tree->addChild(getExpression());
+		}
+		catch(NoticeException &ne){
+			cout << ne.what();
+		}
+
+		get(Token::END);
 	}
 	catch(NoticeException &ne){
-		cout << ne.what();
+		throw ParserException("Program structure corrupted: " + ne.what());
 	}
-
-	get(Token::END);
 }

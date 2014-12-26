@@ -44,19 +44,18 @@ void consume();
 void get(Token token);
 
 void get(Token::Type type);
-// Node *getCOMMA();
 
-// Node *getCOMMA_EXPRESSION(Node *left = nullptr);
+BasicNode* getCommaExpression(BasicNode *left = nullptr);
 
-// Node *getASSIGNMENT_OP();
+bool isAssignmentOp();
 
-// Node *getASSIGNMENT();
+BasicNode* getAssignment();
 
-// Node *getTERNARY();
+BasicNode* getTernary();
 
-// Node *getIS_IN_EXPRESSION_OP();
+bool isInIsExpressionOp();
 
-// Node *getIS_IN_EXPRESSION(Node *left = nullptr);
+BasicNode* getInIsExpression(BasicNode *left = nullptr);
 
 BasicNode* getLogicalOr(BasicNode *left = nullptr);
 
@@ -87,7 +86,7 @@ BasicNode* getExpr6(BasicNode *left = nullptr);
 bool isExpr7Op();
 BasicNode* getExpr7(BasicNode *left = nullptr);
 
-bool isExpr8op();
+bool isExpr8Op();
 
 BasicNode* getExpr8();
 
