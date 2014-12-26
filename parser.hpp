@@ -90,31 +90,15 @@ void get(Token::Type type);
 
 // Node *getSHIFT(Node *left = nullptr);
 
-// Node *getEXPR6_OP();
+bool isExpr6Op();
+BasicNode* getExpr6(BasicNode *left = nullptr);
 
-// Node *getEXPR6(Node *left = nullptr);
+bool isExpr7Op();
+BasicNode* getExpr7(BasicNode *left = nullptr);
 
-// Node *getEXPR7_OP();
+bool isExpr8op();
 
-// Node *getEXPR7(Node *left = nullptr);
-
-// Node *getBEGIN();
-
-// Node *getEND();
-
-// Node *getINT();
-
-// Node *getFLOAT();
-
-// Node *getCHAR();
-
-// Node *getSTRING();
-
-// Node *getEXPR10_OP();
-
-// Node *getEXPR8_OP();
-
-// Node *getEXPR8();
+BasicNode* getExpr8();
 
 BasicNode* getAtom();
 

@@ -656,151 +656,96 @@ void Parser::get(Token::Type type){
 
 // }
 
-// Node* Parser::getEXPR6_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "+"
-// 			||
-// 			currentToken.getText() == "-"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
+bool Parser::isExpr6Op(){
+	return 
+			currentToken.getText() == "+"
+			||
+			currentToken.getText() == "-"
+	;
+}
 
-// 	}
+BasicNode* Parser::getExpr6(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getExpr7();
+			}
 
-// 	throw NoticeException("No EXPR6_OP found!");
-// }
-// Node* Parser::getEXPR6(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getEXPR7();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No EXPR6 found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getEXPR6_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getEXPR7();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getEXPR6(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for EXPR6 without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getEXPR7_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "/"
-// 			||
-// 			currentToken.getText() == "%"
-// 			||
-// 			currentToken.getText() == "*"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No EXPR7_OP found!");
-// }
-// Node* Parser::getEXPR7(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getEXPR8();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No EXPR7 found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getEXPR7_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getEXPR8();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getEXPR7(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for EXPR7 without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
+			if(isExpr6Op()){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getExpr7());
+				return getExpr6(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException ne){
+			throw ParserException("corrupted EXPR6 at " + currentToken.getPosition().toString());
+		}
+}
 
 
+bool Parser::isExpr7Op(){
+	return 
+			currentToken.getText() == "/"
+			||
+			currentToken.getText() == "%"
+			||
+			currentToken.getText() == "*"
+	;
+}
+
+BasicNode* Parser::getExpr7(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getExpr8();
+			}
+
+			if(isExpr7Op()){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getExpr8());
+				return getExpr7(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException ne){
+			throw ParserException("corrupted EXPR7 at " + currentToken.getPosition().toString());
+		}
+}
 
 
-// Node* Parser::getEXPR8_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(currentToken.getText() == "**"){
-// 			result = new Node(Node::OPERATOR, "**");
-// 			consume();
-// 			return result;
-// 		}
+bool Parser::isExpr8op(){
+	return currentToken.getText() == "**";
+}
 
-// 	}
-
-// 	throw NoticeException("No EXPR8_OP found!");
-// }
-
-// Node* Parser::getEXPR8(){
-// 	Node *left = nullptr;
-// 	Node *op = nullptr;
-// 	Node *tmp = nullptr;
-
-// 	try{
-// 		left = getEXPR9();
-// 	}
-// 	catch (NoticeException ne){
-// 	}
-
-// 	try{
-// 		op = getEXPR8_OP();
-// 		op->addChild(left);
-// 		tmp = getEXPR8();
-// 		op->addChild(tmp);
-// 		return op;
-// 	}
-// 	catch(NoticeException ne){
-// 	}
-
-// 	if(left == nullptr){
-// 		throw NoticeException("No EXPR8 found!");
-// 	}
-// 	return left;
-// }
+BasicNode* Parser::getExpr8(){
+	BasicNode *left = nullptr;
+	FunctionCallNode *op = nullptr;
+	try{
+		left = getExpr9();
+		if(isExpr8op()){
+			op = new FunctionCallNode(currentToken);
+			get(Token::OPERATOR);
+			op->addArg(left);
+			op->addArg(getExpr8());
+			return op;
+		}
+		else{
+			return left;
+		}
+	}
+	catch(NoticeException ne){
+		throw NoticeException("No EXPR8 found!");
+	}
+}
 
 BasicNode* Parser::getAtom(){
 	if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
@@ -951,27 +896,6 @@ BasicNode* Parser::getBraced(BasicNode *left){
 
 	return left;
 }
-
-// Node* Parser::getEXPR9_OP_SUFFIX(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(currentToken.getText() == "--"){
-// 			result = new Node(Node::OPERATOR, "_--");
-// 			consume();
-// 		//	cout << currentToken.getText();
-// 			return result;
-// 		}
-
-// 		if(currentToken.getText() == "++"){
-// 			result = new Node(Node::OPERATOR, "_++");
-// 			consume();
-// 			return result;
-// 		}
-// 	}
-
-// 	throw NoticeException("No EXPR9_OP_SUFFIX found , got + " + currentToken.toString());
-// }
-
 
 bool Parser::isExpr9SuffixOp(){
 	return
@@ -1146,7 +1070,7 @@ BasicNode* Parser::getValue(){
 
 BasicNode* Parser::getExpression(){
 
-	return getExpr9();
+	return getExpr6();
 }
 
 // Node* Parser::getTYPE_MOD(){
