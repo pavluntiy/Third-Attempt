@@ -58,37 +58,28 @@ void get(Token::Type type);
 
 // Node *getIS_IN_EXPRESSION(Node *left = nullptr);
 
-// Node *getL_OR_OP();
+BasicNode* getLogicalOr(BasicNode *left = nullptr);
 
-// Node *getL_OR(Node *left = nullptr);
+BasicNode* getLogicalAnd(BasicNode *left = nullptr);
 
-// Node *getL_AND_OP();
+BasicNode* getBitwiseOr(BasicNode *left = nullptr);
 
-// Node *getL_AND(Node *left = nullptr);
+BasicNode* getBitwiseXor(BasicNode *left = nullptr);
 
-// Node *getCOMPARISION_OP();
+BasicNode* getBitwiseAnd(BasicNode *left = nullptr);
 
-// Node *getCOMPARISION(Node *left = nullptr);
+bool isComparisonOp();
 
-// Node *getDIFF_COMPARISION_OP();
+BasicNode* getComparison(BasicNode *left = nullptr);
 
-// Node *getDIFF_COMPARISION(Node *left = nullptr);
+bool isStrictComparisonOp();
 
-// Node *getB_OR_OP();
+BasicNode* getStrictComparison(BasicNode *left = nullptr);
 
-// Node *getB_OR(Node *left = nullptr);
 
-// Node *getB_XOR_OP();
+bool isShiftOp();
 
-// Node *getB_XOR(Node *left = nullptr);
-
-// Node *getB_AND_OP();
-
-// Node *getB_AND(Node *left = nullptr);
-
-// Node *getSHIFT_OP();
-
-// Node *getSHIFT(Node *left = nullptr);
+BasicNode* getShift(BasicNode *left = nullptr);
 
 bool isExpr6Op();
 BasicNode* getExpr6(BasicNode *left = nullptr);

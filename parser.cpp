@@ -256,405 +256,230 @@ void Parser::get(Token::Type type){
 
 // }
 
+BasicNode* Parser::getLogicalOr(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getLogicalAnd();
+			}
+
+			if(currentToken == Token(Token::OPERATOR, "||")){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getBitwiseAnd());
+				return getLogicalOr(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException &ne){
+			cout << ne.what();
+			cout << "asdfsadf";
+			throw NoticeException("corrupted '||' (" + ne.what() + ") at" + currentToken.getPosition().toString());
+		}
+}
+
+
+BasicNode* Parser::getLogicalAnd(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getBitwiseOr();
+			}
+
+			if(currentToken == Token(Token::OPERATOR, "&&")){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getBitwiseOr());
+				return getLogicalAnd(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException &ne){
+			cout << "ololo!";
+			throw NoticeException("corrupted '&&' (" + ne.what() + ") at" + currentToken.getPosition().toString());
+		}
+}
+
+
+BasicNode* Parser::getBitwiseOr(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getBitwiseXor();
+			}
+
+			if(currentToken == Token(Token::OPERATOR, "|")){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getBitwiseXor());
+				return getBitwiseOr(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException &ne){
+			throw NoticeException("corrupted '|' (" + ne.what() + ") at" + currentToken.getPosition().toString());
+		}
+}
+
+BasicNode* Parser::getBitwiseXor(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getBitwiseAnd();
+			}
+
+			if(currentToken == Token(Token::OPERATOR, "^")){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getBitwiseAnd());
+				return getBitwiseXor(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException &ne){
+			throw NoticeException("corrupted '^' (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		}
+}
+
+
+BasicNode* Parser::getBitwiseAnd(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getComparison();
+			}
+
+			if(currentToken == Token(Token::OPERATOR, "&")){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getComparison());
+				return getBitwiseAnd(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException &ne){
+			throw NoticeException("corrupted '&' (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		}
+}
+
+bool Parser::isComparisonOp(){
+	return 
+			currentToken.getText() == "<="
+			||
+			currentToken.getText() == "<"
+			||
+			currentToken.getText() == ">="
+			||
+			currentToken.getText() == ">"
+	;
+}
+
+BasicNode* Parser::getComparison(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getStrictComparison();
+			}
+
+			if(isComparisonOp()){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getStrictComparison());
+				return getComparison(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException ne){
+			throw NoticeException("corrupted  Comparison  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		}
+}
+
+
+
+bool Parser::isStrictComparisonOp(){
+	return 
+			currentToken.getText() == "=="
+			||
+			currentToken.getText() == "="
+	;
+}
+
+BasicNode* Parser::getStrictComparison(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getShift();
+			}
+
+			if(isStrictComparisonOp()){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getShift());
+				return getStrictComparison(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException ne){
+			throw NoticeException("corrupted Strict Comparison (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		}
+}
+
+
+
+bool Parser::isShiftOp(){
+	return 
+			currentToken.getText() == "<<"
+			||
+			currentToken.getText() == ">>"
+			||
+			currentToken.getText() == ">>>"
+	;
+}
+
+BasicNode* Parser::getShift(BasicNode *left){
+		FunctionCallNode *op = nullptr;	
+		try {
+			if(left == nullptr){
+				left = getExpr6();
+			}
+
+			if(isShiftOp()){
+				op = new FunctionCallNode(currentToken);
+				get(Token::OPERATOR);
+				op->addArg(left);
+				op->addArg(getExpr6());
+				return getShift(op);
+			}
+			else{
+				return left;
+			}
+		}
+		catch (NoticeException ne){
+			throw NoticeException("corrupted SHIFT (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		}
+}
 
-// Node* Parser::getL_OR_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "||"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No L_OR_OP found!");
-// }
-
-// Node* Parser::getL_OR(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getL_AND();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No L_OR found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getL_OR_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getL_AND();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getL_OR(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for L_AND without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-
-// Node* Parser::getL_AND_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "&&"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No L_AND_OP found!");
-// }
-
-// Node* Parser::getL_AND(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getB_OR();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No L_AND found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getL_AND_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getB_OR();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getL_AND(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for L_AND without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getCOMPARISION_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "=="
-// 			||
-// 			currentToken.getText() == "!="
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No COMPARISION_OP found!");
-// }
-// Node* Parser::getCOMPARISION(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getDIFF_COMPARISION();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No COMPARISION found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getCOMPARISION_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getDIFF_COMPARISION();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getCOMPARISION(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for COMPARISION without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getDIFF_COMPARISION_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "<="
-// 			||
-// 			currentToken.getText() == ">="
-// 			||
-// 			currentToken.getText() == "<"
-// 			||
-// 			currentToken.getText() == ">"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No DIFF_COMPARISION_OP found!");
-// }
-// Node* Parser::getDIFF_COMPARISION(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getIS_IN_EXPRESSION();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No DIFF_COMPARISION found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getDIFF_COMPARISION_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getIS_IN_EXPRESSION();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getDIFF_COMPARISION(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for DIFF_COMPARISION without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getB_OR_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "|"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No B_OR_OP found!");
-// }
-// Node* Parser::getB_OR(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getB_XOR();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No B_XOR found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getB_OR_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getB_XOR();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getB_OR(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for B_OR without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getB_XOR_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "^"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No B_XOR_OP found!");
-// }
-// Node* Parser::getB_XOR(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getB_AND();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No B_XOR found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getB_XOR_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getB_AND();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getB_XOR(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for B_XOR without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getB_AND_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "&"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No B_AND_OP found!");
-// }
-// Node* Parser::getB_AND(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getCOMPARISION();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No B_AND found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getB_AND_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getCOMPARISION();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getB_AND(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for B_AND without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
-
-// Node* Parser::getSHIFT_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "<<"
-// 			||
-// 			currentToken.getText() == ">>"
-// 			||
-// 			currentToken.getText() == ">>>"
-// 		){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-
-// 	}
-
-// 	throw NoticeException("No SHIFT_OP found!");
-// }
-// Node* Parser::getSHIFT(Node *left){
-
-// 		Node *op = nullptr, *right = nullptr;
-// 		if(left == nullptr){
-// 			try{
-// 				left = getEXPR6();
-// 			}
-// 			catch (NoticeException ne){
-// 				throw NoticeException("No EXPR6 found!");
-// 			}
-// 		}
-
-// 		try {
-// 			op = getSHIFT_OP();
-// 		}
-// 		catch (NoticeException ne){
-// 			return left;
-// 		}
-
-// 		try {
-// 			right = getEXPR6();
-// 			op->addChild(left);
-// 			op->addChild(right);
-// 			return getSHIFT(op);
-// 		}
-// 		catch (NoticeException ne){
-// 			throw ParserException("Operator for SHIFT without operands at " + currentToken.getPosition().toString());
-// 		}
-
-// 		throw ParserException("How did I get here!?!?" +  currentToken.getPosition().toString());
-
-// }
 
 bool Parser::isExpr6Op(){
 	return 
@@ -683,7 +508,7 @@ BasicNode* Parser::getExpr6(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw ParserException("corrupted EXPR6 at " + currentToken.getPosition().toString());
+			throw NoticeException("corrupted EXPR6 (" + ne.what() + ") at " + currentToken.getPosition().toString());
 		}
 }
 
@@ -717,7 +542,7 @@ BasicNode* Parser::getExpr7(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw ParserException("corrupted EXPR7 at " + currentToken.getPosition().toString());
+			throw NoticeException("corrupted EXPR7 (" + ne.what() + ") at " + currentToken.getPosition().toString());
 		}
 }
 
@@ -1070,7 +895,7 @@ BasicNode* Parser::getValue(){
 
 BasicNode* Parser::getExpression(){
 
-	return getExpr6();
+	return getLogicalOr();
 }
 
 // Node* Parser::getTYPE_MOD(){
