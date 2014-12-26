@@ -116,9 +116,9 @@ void get(Token::Type type);
 
 // Node *getEXPR8();
 
-// Node *getATOM();
+BasicNode* getAtom();
 
-// Node *getNAME();
+BasicNode* getName();
 
 // Node *getFUNCARGS();
 
@@ -126,9 +126,9 @@ void get(Token::Type type);
 
 // Node *getACCESSARGS();
 
-// Node *getACCESSES(Node *left);
+BasicNode* getAccesses(BasicNode *left);
 
-// Node* getBRACED(Node *left = nullptr);
+BasicNode* getBraced(BasicNode *left = nullptr);
 
 // Node *getEXPR9_OP_SUFFIX();
 
@@ -137,14 +137,14 @@ void get(Token::Type type);
 // Node *getEXPR9_SUFFIX(Node *left = nullptr);
 
 // Node *getEXPR9();
-
-// Node *getEXPR10(Node *left = nullptr);
+bool isExpr10Op();
+BasicNode* getExpr10(BasicNode *left = nullptr);
 bool isValue();
- BasicNode *getValue();
+ BasicNode* getValue();
 
 // Node *getNON_EMPTY_EXPRESSION();
 
-// Node *getEXPRESSION();
+BasicNode *getExpression();
 
 // Node *getTYPE_MOD();
 

@@ -18,6 +18,7 @@ public:
 	string getLeft();
 	CompoundNameNode* getRight();
 
+	CompoundNameNode(string left = "", CompoundNameNode *right = nullptr);
 
 };
 

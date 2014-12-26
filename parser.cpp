@@ -828,22 +828,7 @@ void Parser::get(Token::Type type){
 // 	}
 // }
 
-// Node* Parser::getEXPR10_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(currentToken.getText() == "."){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 		//	cout << currentToken.getText();
-// 			return result;
-// 		}
 
-// 		if(currentToken.getText() == "->"){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-// 	}
 
 // 	throw NoticeException("No EXPR10_OP found!");
 // }
@@ -889,44 +874,45 @@ void Parser::get(Token::Type type){
 // 	return left;
 // }
 
-// Node* Parser::getATOM(){
-// 	if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-// 		consume();
-// 		Node *result = getEXPRESSION();
-// 	//	cout << "HEY!";
-// 		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-// 			throw ParserException("Missing BRACE_RIGHT at " + currentToken.getPosition().toString());
-// 		}
-// 		consume();
-// 		return result;
-// 	}
-// 	try{
-// 		return getNAME();
-// 	}
-// 	catch(NoticeException ne){
+BasicNode* Parser::getAtom(){
+	if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		get(Token::BRACE_LEFT);
+		BasicNode *result = getExpression();
+		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			throw ParserException("Missing BRACE_RIGHT at " + currentToken.getPosition().toString());
+		}
+		get(Token::BRACE_RIGHT);
+		return result;
+	}
+	try{
+		return getName();
+	}
+	catch(NoticeException &ne){
 
-// 	}
-// 	//	cout << "YEAH!\n";
-// 	try{
-// 		return getVALUE();
-// 	}
-// 	catch(NoticeException ne){
+	}
+	//	cout << "YEAH!\n";
+	try{
+		return getValue();
+	}
+	catch(NoticeException &ne){
 
-// 	}
+	}
 
-// 	throw NoticeException("No ATOM found at " + currentToken.getPosition().toString());
+	throw NoticeException("No ATOM found at " + currentToken.getPosition().toString() + " got " + currentToken.toString());
 
-// }
+}
 
-// Node* Parser::getNAME(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::NAME)){
-// 		result = new Node(Node::NAME, currentToken.getText());
-// 		consume();
-// 		return result;
-// 	}
-// 	throw NoticeException("No NAME");
-// }
+BasicNode* Parser::getName(){
+	CompoundNameNode *result = nullptr;
+	if(currentToken.typeEqualsTo(Token::NAME)){
+		result = new CompoundNameNode(currentToken.getText());
+		consume();
+		//	
+		return result;
+	}
+
+	throw NoticeException("No NAME");
+}
 
 // Node* Parser::getFUNCARGS(){
 // 	Node  *tmp = nullptr, *result = nullptr;
@@ -1018,23 +1004,22 @@ void Parser::get(Token::Type type){
 // 		return left;
 // }
 
-// Node* Parser::getBRACED(Node *left){
-// 	//cout << "mimimi\n";
-// 	if(left == nullptr){
-// 		throw ParserException("Unexpected BRACE_LEFT or BRACKET_RIGHT at " + currentToken.getPosition().toString());
-// 	}
+BasicNode* Parser::getBraced(BasicNode *left){
+	if(left == nullptr){
+		throw ParserException("Unexpected BRACE_LEFT or BRACKET_RIGHT at " + currentToken.getPosition().toString());
+	}
 
-// 	while(currentToken.typeEqualsTo(Token::BRACE_LEFT) || currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
-// 		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-// 			left = getFUNCCALS(left);
-// 		}
-// 		else {
-// 			left = getACCESSES(left);
-// 		}
-// 	}
+	while(currentToken.typeEqualsTo(Token::BRACE_LEFT) || currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+		// if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		// 	left = getFUNCCALS(left);
+		// }
+		// else {
+		// 	left = getACCESSES(left);
+		// }
+	}
 
-// 	return left;
-// }
+	return left;
+}
 
 // Node* Parser::getEXPR9_OP_SUFFIX(){
 // 	Node *result = nullptr;
@@ -1174,60 +1159,69 @@ void Parser::get(Token::Type type){
 // 	return op;
 // }
 
-// Node* Parser::getEXPR10(Node *left){
-// 	//	Node *tmp = nullptr;
-// 	Node *right = nullptr;
-// 	Node *op = nullptr;
-// 	//cout << "ololo!";
-// 	if(left == nullptr){
-// 	//	cout << "ololo!";
-// 		try{
-// 			left = getATOM();
-// 			left = getBRACED(left);
-// 			//cout << "Nya!\n";
-// 			try{
-// 				op = getEXPR10_OP();
-// 				right = getATOM();
-// 				op->addChild(left);
-// 				op->addChild(right);
-// 				return getEXPR10(op);
-// 			}
-// 			catch(NoticeException ne){
-// 			}
+bool Parser::isExpr10Op(){
 
-// 			return left;
-// 		}
-// 		catch(NoticeException ne){
+	return 
+		currentToken == Token(Token::OPERATOR, ".")
+		||
+		currentToken == Token(Token::OPERATOR, "->")
+	;
+}
 
-// 		}
-// 	}
-// 	else {	
-// 			left = getBRACED(left);
-// 			try{
-// 				op = getEXPR10_OP();
-// 				right = getATOM();
-// 				op->addChild(left);
-// 				op->addChild(right);
-// 				return getEXPR10(op);
-// 			}
-// 			catch(NoticeException ne){
-// 				//visitor.deleteTree (op);
-// 				//visitor.deleteTree(right);
-// 				return getBRACED(left);
-// 			}
-// 			return left;
-// 	}
+BasicNode* Parser::getExpr10(BasicNode *left){
 
-// 	try {
-// 		//cout << "OK\n";
-// 		return getATOM();
-// 	}
-// 	catch(NoticeException ne){
-// 	//	cout << ne.what();
-// 	}
+	BasicNode *right = nullptr;
+	FunctionCallNode *op = nullptr;
 
-// 	throw NoticeException("No EXPR10 found!");
-// }
+	if(left == nullptr){
+		try{
+			left = getAtom();
+			//
+			left = getBraced(left);
+				if(isExpr10Op()){
+					op = new FunctionCallNode(currentToken);
+					get(Token::OPERATOR);
+					right = getAtom();
+					op->addArg(left);
+					op->addArg(right);
+					return getExpr10(op);
+				}
+				else {
+
+					return left;
+				}
+			}
+			catch(NoticeException &ne){
+				//cout << ne.what() <<"OMg #1";
+			}
+
+	}
+	else {				
+			try{
+				left = getBraced(left);
+				if(isExpr10Op()){
+					op = new FunctionCallNode(currentToken);
+					get(Token::OPERATOR);
+					right = getAtom();
+					op->addArg(left);
+					op->addArg(right);
+					return getExpr10(op);
+				}
+				else {
+					//cout << "OMg #2" << currentToken;
+					return getBraced(left);
+				}
+			}
+			catch(NoticeException &ne){
+				//cout << ne.what() << "OMg #3";
+				return getAtom();
+			}
+			return left;
+	}
+
+	throw NoticeException("No EXPR10 found!");
+}
+
 bool Parser::isValue(){
 	return 
 		currentToken.typeEqualsTo(Token::INT)
@@ -1265,21 +1259,10 @@ BasicNode* Parser::getValue(){
 // 	throw NoticeException("No NON_EMPTY_EXPRESSION found!");
 // }
 
-// Node* Parser::getEXPRESSION(){
+BasicNode* Parser::getExpression(){
 
-// 	return getNON_EMPTY_EXPRESSION();
-// 	// lock();
-// 	// try {
-
-// 	// 	return getCOMMA_EXPRESSION();
-// 	// }
-// 	// catch (NoticeException ne){
-// 	// 	recoil();
-// 	// }
-// 	// //for empty one
-// 	// //return new Node(Node::EXPRESSION);
-
-// }
+	return getExpr10();
+}
 
 // Node* Parser::getTYPE_MOD(){
 // 	Node *result = nullptr;
@@ -1565,11 +1548,13 @@ void Parser::buildTree(){
 	this->tree = new ProgramNode();
 	get(Token::BEGIN);
 	try {
-		BasicNode *tmp = getValue();
+		BasicNode *tmp = getExpr10();
 		this->tree->addChild(tmp);
+		//	cout << reinterpret_cast<CompoundNameNode*>(tmp)->getLeft() << "Here I am!";
 	}
-	catch(NoticeException ne){
+	catch(NoticeException &ne){
+		cout << ne.what();
+	}
 
-	}
 	get(Token::END);
 }

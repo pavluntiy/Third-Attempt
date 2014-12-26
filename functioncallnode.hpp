@@ -1,25 +1,30 @@
 #ifndef FUNCTIONCALLNODE
 #define FUNCTIONCALLNODE
 
+#include "token.hpp"
 #include "basicnode.hpp"
 #include "basicvisitor.hpp"
 #include "functioncallnode.hpp"
+#include "compoundnamenode.hpp"
 
 class FunctionCallNode: public BasicNode {
 
 friend class BasicVisitor;
 protected:
-	ExpressionNode *functionName;
-	vector<ExpressionNode*> functionArgs;
+	BasicNode *functionName;
+	vector<BasicNode*> functionArgs;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
 
-	ExpressionNode* getFunctionName();
-	vector<ExpressionNode*>& getFunctionArgs();
+	BasicNode* getFunctionName();
+	vector<BasicNode*>& getFunctionArgs();
 
-	void addArg(ExpressionNode *node);
+	void addArg(BasicNode *node);
+
+	FunctionCallNode();
+	FunctionCallNode(Token token);
 
 };
 

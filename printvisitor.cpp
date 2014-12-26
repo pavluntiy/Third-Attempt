@@ -23,14 +23,42 @@ void PrintVisitor::visit(ExpressionNode *node){
 			it->accept(this);
 		}
 		this->shift.pop_back();
-	if(node->getChildren().size() > 0){
-	 	*this->out << shift;
-	}
-	else {
-		*this->out << ' ';
-	}
-	*this->out   << ")" << endl;
+	// if(node->getChildren().size() > 0){
+	//  	*this->out << shift;
+	// }
+	// else {
+	// 	*this->out << ' ';
+	// }
+	*this->out << shift << ")" << endl;
 	
+}
+
+void PrintVisitor::visit(CompoundNameNode *node){
+	*this->out << shift << "( " << node->toString();
+	*this->out << " '" << node->getLeft() << "' ";
+
+	this->shift.push_back(' ');
+	if(node->getRight()){
+		node->getRight()->accept(this);
+	}
+	this->shift.pop_back();
+	
+	*this->out << shift  << ")" << endl;
+}
+
+void PrintVisitor::visit(FunctionCallNode *node){
+	 *this->out << shift << "( " << node->toString() << '\n';
+
+	this->shift.push_back(' ');
+		if(node->getFunctionName()){
+			node->getFunctionName()->accept(this);
+		}
+		for(auto it: node->getFunctionArgs()){
+			it->accept(this);
+		}
+	this->shift.pop_back();
+	
+	*this->out << shift << ")" << endl;
 }
 
 void PrintVisitor::visit(ValueNode *node){
@@ -38,7 +66,7 @@ void PrintVisitor::visit(ValueNode *node){
 	if(node->getText() != ""){
 	 	*this->out<< " \"" << node->getText() << "\"";
 	}
-	*this->out   << ")" << endl;
+	*this->out   << shift << ")" << endl;
 }
 
 PrintVisitor::PrintVisitor(ostream *out){

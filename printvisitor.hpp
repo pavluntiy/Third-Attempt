@@ -4,6 +4,8 @@
 #include "basicvisitor.hpp"
 #include "programnode.hpp"
 #include "expressionnode.hpp"
+#include "compoundnamenode.hpp"
+#include "functioncallnode.hpp"
 
 #include "valuenode.hpp"
 
@@ -15,8 +17,8 @@ public:
 	virtual void visit(ProgramNode *node) override;
 	virtual void visit(ExpressionNode *node) override;
 //	virtual void visit(TypeNode *node) override;
-//	virtual void visit(FunctionCallNode *node) override;
-//	virtual void visit(CompoundNameNode *node) override;
+	virtual void visit(FunctionCallNode *node) override;
+	virtual void visit(CompoundNameNode *node) override;
 	virtual void visit(ValueNode *node) override;
 
 	PrintVisitor(ostream *out);

@@ -1,19 +1,28 @@
 #include "functioncallnode.hpp"
 
 void FunctionCallNode::accept(BasicVisitor *visitor){
-	//visitor->visit(this);
+	visitor->visit(this);
 }
 	string FunctionCallNode::toString(){
 		return "FUNCTION_CALL";
 	}
 
-	ExpressionNode* FunctionCallNode::getFunctionName(){
+	BasicNode* FunctionCallNode::getFunctionName(){
 		return this->functionName;
 	}
-	vector<ExpressionNode*>& FunctionCallNode::getFunctionArgs(){
+	vector<BasicNode*>& FunctionCallNode::getFunctionArgs(){
 		return this->functionArgs;
 	}
 
-	void FunctionCallNode::addArg(ExpressionNode *node){
+	void FunctionCallNode::addArg(BasicNode *node){
 		this->functionArgs.push_back(node);
+	}
+
+	FunctionCallNode::FunctionCallNode(){
+
+	}
+
+	FunctionCallNode::FunctionCallNode(Token token){
+		this->functionName = new CompoundNameNode(token.toString());
+		//cout << "OK!";
 	}
