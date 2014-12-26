@@ -6,7 +6,12 @@
 #include "parserexception.hpp"
 #include "noticeexception.hpp"
 #include "lexer.hpp"
-#include "tree_visitor.h"
+
+#include "programnode.hpp"
+#include "expressionnode.hpp"
+#include "compoundnamenode.hpp"
+#include "functioncallnode.hpp"
+#include "valuenode.hpp"
 
 #include <vector>
 #include <set>
@@ -17,19 +22,19 @@
 class Parser{
 
 protected: 
-	Node *tree;
+	BasicNode *tree;
 	Lexer &lexer;
 
 	stack<int> history;
 	map<pair<Node::Type, int>, pair<bool, int> > memo;
 	int currentPosition;
 	Token currentToken;
-	TreeVisitor &visitor;
+	// TreeVisitor &visitor;
 
 
 
 public:
-	Parser (Lexer &lexer, TreeVisitor &visitor);
+	Parser (Lexer &lexer);
 
 void lock();
 void recoil();
@@ -39,151 +44,151 @@ void consume();
 void get(Token token);
 
 void get(Token::Type type);
-Node *getCOMMA();
+// Node *getCOMMA();
 
-Node *getCOMMA_EXPRESSION(Node *left = nullptr);
+// Node *getCOMMA_EXPRESSION(Node *left = nullptr);
 
-Node *getASSIGNMENT_OP();
+// Node *getASSIGNMENT_OP();
 
-Node *getASSIGNMENT();
+// Node *getASSIGNMENT();
 
-Node *getTERNARY();
+// Node *getTERNARY();
 
-Node *getIS_IN_EXPRESSION_OP();
+// Node *getIS_IN_EXPRESSION_OP();
 
-Node *getIS_IN_EXPRESSION(Node *left = nullptr);
+// Node *getIS_IN_EXPRESSION(Node *left = nullptr);
 
-Node *getL_OR_OP();
+// Node *getL_OR_OP();
 
-Node *getL_OR(Node *left = nullptr);
+// Node *getL_OR(Node *left = nullptr);
 
-Node *getL_AND_OP();
+// Node *getL_AND_OP();
 
-Node *getL_AND(Node *left = nullptr);
+// Node *getL_AND(Node *left = nullptr);
 
-Node *getCOMPARISION_OP();
+// Node *getCOMPARISION_OP();
 
-Node *getCOMPARISION(Node *left = nullptr);
+// Node *getCOMPARISION(Node *left = nullptr);
 
-Node *getDIFF_COMPARISION_OP();
+// Node *getDIFF_COMPARISION_OP();
 
-Node *getDIFF_COMPARISION(Node *left = nullptr);
+// Node *getDIFF_COMPARISION(Node *left = nullptr);
 
-Node *getB_OR_OP();
+// Node *getB_OR_OP();
 
-Node *getB_OR(Node *left = nullptr);
+// Node *getB_OR(Node *left = nullptr);
 
-Node *getB_XOR_OP();
+// Node *getB_XOR_OP();
 
-Node *getB_XOR(Node *left = nullptr);
+// Node *getB_XOR(Node *left = nullptr);
 
-Node *getB_AND_OP();
+// Node *getB_AND_OP();
 
-Node *getB_AND(Node *left = nullptr);
+// Node *getB_AND(Node *left = nullptr);
 
-Node *getSHIFT_OP();
+// Node *getSHIFT_OP();
 
-Node *getSHIFT(Node *left = nullptr);
+// Node *getSHIFT(Node *left = nullptr);
 
-Node *getEXPR6_OP();
+// Node *getEXPR6_OP();
 
-Node *getEXPR6(Node *left = nullptr);
+// Node *getEXPR6(Node *left = nullptr);
 
-Node *getEXPR7_OP();
+// Node *getEXPR7_OP();
 
-Node *getEXPR7(Node *left = nullptr);
+// Node *getEXPR7(Node *left = nullptr);
 
-Node *getBEGIN();
+// Node *getBEGIN();
 
-Node *getEND();
+// Node *getEND();
 
-Node *getINT();
+// Node *getINT();
 
-Node *getFLOAT();
+// Node *getFLOAT();
 
-Node *getCHAR();
+// Node *getCHAR();
 
-Node *getSTRING();
+// Node *getSTRING();
 
-Node *getEXPR10_OP();
+// Node *getEXPR10_OP();
 
-Node *getEXPR8_OP();
+// Node *getEXPR8_OP();
 
-Node *getEXPR8();
+// Node *getEXPR8();
 
-Node *getATOM();
+// Node *getATOM();
 
-Node *getNAME();
+// Node *getNAME();
 
-Node *getFUNCARGS();
+// Node *getFUNCARGS();
 
-Node *getFUNCCALS(Node *left);
+// Node *getFUNCCALS(Node *left);
 
-Node *getACCESSARGS();
+// Node *getACCESSARGS();
 
-Node *getACCESSES(Node *left);
+// Node *getACCESSES(Node *left);
 
-Node* getBRACED(Node *left = nullptr);
+// Node* getBRACED(Node *left = nullptr);
 
-Node *getEXPR9_OP_SUFFIX();
+// Node *getEXPR9_OP_SUFFIX();
 
-Node *getEXPR9_OP();
+// Node *getEXPR9_OP();
 
-Node *getEXPR9_SUFFIX(Node *left = nullptr);
+// Node *getEXPR9_SUFFIX(Node *left = nullptr);
 
-Node *getEXPR9();
+// Node *getEXPR9();
 
-Node *getEXPR10(Node *left = nullptr);
+// Node *getEXPR10(Node *left = nullptr);
+bool isValue();
+ BasicNode *getValue();
 
-Node *getVALUE();
+// Node *getNON_EMPTY_EXPRESSION();
 
-Node *getNON_EMPTY_EXPRESSION();
+// Node *getEXPRESSION();
 
-Node *getEXPRESSION();
+// Node *getTYPE_MOD();
 
-Node *getTYPE_MOD();
+// Node *getPOINTER_MOD();
 
-Node *getPOINTER_MOD();
+// Node *getTYPENAME_OP();
 
-Node *getTYPENAME_OP();
+// Node *getCOMPOUND_NAME(Node *left = nullptr);
 
-Node *getCOMPOUND_NAME(Node *left = nullptr);
+// Node *getTYPE();
 
-Node *getTYPE();
+// Node *getVARDECL_ELEM();
 
-Node *getVARDECL_ELEM();
+// Node *getVARDECL();
 
-Node *getVARDECL();
+// Node *getARG();
 
-Node *getARG();
+// Node *getFUNC_SIGN_ARGS();
 
-Node *getFUNC_SIGN_ARGS();
+// Node *getFUNC_SIGN();
 
-Node *getFUNC_SIGN();
+// Node *getOPERATOR();
 
-Node *getOPERATOR();
+// Node *getOPERATORS();
 
-Node *getOPERATORS();
+// Node *getBLOCK();
 
-Node *getBLOCK();
+// Node *getFUNC_DEF();
 
-Node *getFUNC_DEF();
+// Node *getIF();
 
-Node *getIF();
+// Node *getWHILE();
 
-Node *getWHILE();
+// Node *getDOWHILE();
+// Node *getFOR();
 
-Node *getDOWHILE();
-Node *getFOR();
+// bool is_RETURN_keyword();
 
-bool is_RETURN_keyword();
+// Node *getRETURN();
 
-Node *getRETURN();
-
-Node *getSPECIAL();
+// Node *getSPECIAL();
 
 	
-Node *getTree();
+BasicNode *getTree();
 
 void pushTree();
 

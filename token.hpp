@@ -47,6 +47,7 @@ public:
 	bool typeEqualsTo(Type type) const;
 
 	bool operator == (const Token &other);
+	bool operator != (const Token &other);
 
 	string toString() const;
 

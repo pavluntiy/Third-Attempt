@@ -55,6 +55,10 @@
 		return this->typeEqualsTo(other.getType()) && this->text == other.getText();
 	}
 
+	bool Token::operator != (const Token &other){
+		return !((*this) == other);
+	}
+
 	string Token::toString()
 	const{
 		string str = this->typeToString();

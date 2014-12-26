@@ -4,7 +4,10 @@
 #include <string>
 #include "lexer.hpp"
 #include "parser.hpp"
+// #include "printvisitor.hpp"
 //#include "treeprinter.hpp"
+
+#include "printvisitor.hpp"
 
 using namespace std;
 
@@ -50,19 +53,17 @@ int main (int argc, char **argv) {
 			*err << e.what() << '\n';
 		}
 
-	TreeVisitor visitor (out);
-	Parser parser(lexer, visitor);
+	Parser parser(lexer);
 	try{
 		parser.buildTree();
-		parser.pushTree();
-		visitor.printTree();
 	}
 	catch (ParserException e){
 		*err << e.what() << '\n';
 	}
 
-	parser.pushTree();
-	visitor.deleteTree();
+	PrintVisitor *printVisitor = new PrintVisitor(out);
+
+	parser.getTree()->accept(printVisitor);
 
 
 	return 0;
