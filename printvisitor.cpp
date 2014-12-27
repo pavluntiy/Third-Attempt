@@ -96,6 +96,21 @@ void PrintVisitor::visit(ValueNode *node){
 	if(node->getText() != ""){
 	 	*this->out<< " \"" << node->getText() << "\"";
 	}
+	*this->out  << " )" << endl;
+}
+
+void PrintVisitor::visit(VarDeclarationNode *node){
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+	node->getType()->accept(this);
+
+	for(auto it: node->getVariables()){
+		it->accept(this);
+	}	
+
+	this->shift.pop_back();
+
 	*this->out   << shift << ")" << endl;
 }
 

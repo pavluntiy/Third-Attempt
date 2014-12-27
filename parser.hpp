@@ -13,6 +13,7 @@
 #include "functioncallnode.hpp"
 #include "valuenode.hpp"
 #include "typenode.hpp"
+#include "vardeclarationnode.hpp"
 
 #include <vector>
 #include <set>
@@ -95,8 +96,6 @@ BasicNode* getAtom();
 
 BasicNode* getName();
 
-// Node *getFUNCARGS();
-
 BasicNode *getFunctionCalls(BasicNode *left = nullptr);
 
 BasicNode *getAccessArgs();
@@ -116,9 +115,7 @@ BasicNode* getExpr9();
 bool isExpr10Op();
 BasicNode* getExpr10(BasicNode *left = nullptr);
 bool isValue();
- BasicNode* getValue();
-
-// Node *getNON_EMPTY_EXPRESSION();
+BasicNode* getValue();
 
 BasicNode *getExpression();
 
@@ -130,9 +127,9 @@ bool isAccessMode();
 
 BasicNode* getType();
 
-// Node *getVARDECL_ELEM();
+BasicNode* getVarDeclaration();
 
-// Node *getVARDECL();
+
 
 // Node *getARG();
 

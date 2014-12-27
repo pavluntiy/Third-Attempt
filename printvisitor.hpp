@@ -7,6 +7,7 @@
 #include "compoundnamenode.hpp"
 #include "functioncallnode.hpp"
 #include "typenode.hpp"
+#include "vardeclarationnode.hpp"
 
 #include "valuenode.hpp"
 
@@ -21,6 +22,7 @@ public:
 	virtual void visit(FunctionCallNode *node) override;
 	virtual void visit(CompoundNameNode *node) override;
 	virtual void visit(ValueNode *node) override;
+	virtual void visit(VarDeclarationNode *node) override;
 
 	PrintVisitor(ostream *out);
 

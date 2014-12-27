@@ -8,8 +8,6 @@
 #include "compoundnamenode.hpp"
 
 class FunctionCallNode: public BasicNode {
-
-friend class BasicVisitor;
 protected:
 	BasicNode *functionName;
 	vector<BasicNode*> functionArgs;

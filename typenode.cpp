@@ -17,7 +17,7 @@ CompoundNameNode* TypeNode::getName(){
 }
 
 string TypeNode::toString(){
-	return "EXPRESSION";
+	return "Type";
 }
 
 void TypeNode::accept(BasicVisitor *visitor){

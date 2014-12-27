@@ -824,79 +824,10 @@ BasicNode* Parser::getValue(){
 	throw NoticeException("No VALUE found!");
 }
 
-// Node* Parser::getNON_EMPTY_EXPRESSION(){
-
-// 	lock();
-// 	try {
-
-// 		return getCOMMA_EXPRESSION();
-// 	}
-// 	catch (NoticeException ne){
-// 		recoil();
-// 	}
-
-// 	throw NoticeException("No NON_EMPTY_EXPRESSION found!");
-// }
-
 BasicNode* Parser::getExpression(){
 
 	return getCommaExpression();
 }
-
-// Node* Parser::getTYPE_MOD(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::KEYWORD)){
-// 		if(
-// 			currentToken.getText() == "const"
-// 			||
-// 			currentToken.getText() == "long"
-// 			||
-// 			currentToken.getText() == "short"
-// 			||
-// 			currentToken.getText() == "unsigned"
-// 			||
-// 			currentToken.getText() == "signed"
-// 			||
-// 			currentToken.getText() == "volatile"
-// 			||
-// 			currentToken.getText() == "extern"
-
-
-// 		){
-// 			result = new Node(Node::TYPE_MOD, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-// 	}
-
-// 		throw NoticeException("No TYPE_MOD found!");
-
-// }
-
-// Node* Parser::getPOINTER_MOD(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(
-// 			currentToken.getText() == "@"
-// 		){
-// 			result = new Node(Node::POINTER_MOD, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-// 	}
-
-// 	if(currentToken.typeEqualsTo(Token::KEYWORD)){
-// 		if(
-// 			currentToken.getText() == "ref"
-// 		){
-// 			result = new Node(Node::POINTER_MOD, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-// 	}
-
-// 		throw NoticeException("No POINTER_MOD found!");
-// }
 
 // Node* Parser::getTYPENAME_OP(){
 // 	Node *result = nullptr;
@@ -911,7 +842,7 @@ BasicNode* Parser::getExpression(){
 // 	throw NoticeException ("No '.' for COMPOUND_NAME found!");
 // }
 
-// CompounNameNode* Parser::getCOMPOUND_NAME(Node *left){
+// CompounNameNode* Parser::getCompoundName(BasicNode *left){
 // 	Node *right = nullptr;
 // 	Node *op = nullptr;
 // 	if(left == nullptr){
@@ -1001,7 +932,6 @@ bool Parser::isAccessMode(){
 
 
 BasicNode* Parser::getType(){
-	lock();
 
 	TypeNode *result = new TypeNode();
 
@@ -1021,9 +951,7 @@ BasicNode* Parser::getType(){
 			consume();
 		}
 
-		auto tmp = dynamic_cast<CompoundNameNode*>(getName());
-		//cout << tmp->toString();
-		result->addName(tmp);
+		result->addName(dynamic_cast<CompoundNameNode*>(getName()));
 
 		return result;
 	}
@@ -1047,7 +975,7 @@ BasicNode* Parser::getType(){
 	
 }
 
-// Node* Parser::getVARDECL_ELEM(){
+//Node* Parser::getVARDECL_ELEM(){
 
 // 	Node *result = nullptr;
 // 	Node *name = nullptr;
@@ -1081,52 +1009,26 @@ BasicNode* Parser::getType(){
 // 	//	throw NoticeException("No VARDECL_ELEM found!");
 // }
 
-// Node* Parser::getVARDECL(){
-// 	lock();
-// 	Node *result = new Node(Node::VARDECL);
-// 	//	Node *type = nullptr;
+BasicNode* Parser::getVarDeclaration(){
+	lock();
+	VarDeclarationNode *result = new VarDeclarationNode();
 
-// 	try{
-// 		result->addChild(getTYPE());
-// 	}
-// 	catch(NoticeException ne){
-// 		//visitor.deleteTree(result);
-// 		recoil();
-// 		throw NoticeException("No VARDECL!");
-// 	}
+	try{
+		result->setType(dynamic_cast<TypeNode*>(getType()));
 
-// 	Node *tmp = nullptr;
-// 	//	Node *op = nullptr;
+		result->addVariable(dynamic_cast<CompoundNameNode*>(getName()));
 
-// 	Node *list = nullptr;
-// 	try{
-// 		tmp = getVARDECL_ELEM();
-// 		list = new Node(Node::VARDECL_LIST);
-// 		list->addChild(tmp);
-// 		try{
-// 			while(currentToken == Token(Token::OPERATOR, ",")){
-// 				consume();
-// 				list->addChild(getVARDECL_ELEM());
-// 			}
-// 		}
-// 		catch (NoticeException ne){
-// 			recoil();
-// 			throw ParserException ("Unfinished VARDECL_LIST at " + currentToken.getPosition().toString());
-// 		}
-
-
-// 	}
-// 	catch(NoticeException ne){
-// 		//visitor.deleteTree(result);
-// 		recoil();
-// 		throw NoticeException("No VARDECL found!");
-// 	}
-
-
-// 	result->addChild(list);
-
-// 	return result;
-// }
+		while(currentToken == Token(Token::OPERATOR, ",")){
+			get(Token::OPERATOR);
+			result->addVariable(dynamic_cast<CompoundNameNode*>(getName()));
+		}
+		return result;
+	}
+	catch(NoticeException ne){
+		recoil();
+		throw NoticeException("No Var Declaration found!");
+	}
+}
 
 
 
@@ -1168,7 +1070,7 @@ void Parser::buildTree(){
 		get(Token::BEGIN);
 		try {
 			//this->tree->addChild(getExpression());
-			this->tree->addChild(getType());
+			this->tree->addChild(getVarDeclaration());
 		}
 		catch(NoticeException &ne){
 			cout << ne.what();
