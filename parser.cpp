@@ -963,50 +963,89 @@ BasicNode* Parser::getExpression(){
 // 	throw NoticeException("No COMPOUND_NAME found!");
 // }
 
-// Node* Parser::getTYPE(){
-// 	Node *result = new Node(Node::TYPE);
-// 	Node *typemods = new Node(Node::TYPE_MOD);
-// 	Node *pointermods = new Node(Node::POINTER_MOD);
+bool Parser::isStorageMode(){
+	return
+		currentToken == Token(Token::KEYWORD, "volatile")
+		||
+		currentToken == Token(Token::KEYWORD, "static")
+		||
+		currentToken == Token(Token::KEYWORD, "registre")
+		||
+		currentToken == Token(Token::KEYWORD, "extern")
+		||
+		currentToken == Token(Token::KEYWORD, "const")
+	;
+}
 
-// 	try{
-// 		while(1){
-// 			typemods->addChild(getTYPE_MOD());
-// 		}
-// 	}
-// 	catch (NoticeException ne){}
+bool Parser::isModifier(){
+	return
+		currentToken == Token(Token::KEYWORD, "long")
+		||
+		currentToken == Token(Token::KEYWORD, "short")
+		||
+		currentToken == Token(Token::KEYWORD, "signed")
+		||
+		currentToken == Token(Token::KEYWORD, "unsigned")
+		||
+		currentToken == Token(Token::KEYWORD, "const")
+	;
+}
 
-// 	result->addChild(typemods);
+bool Parser::isAccessMode(){
+	return
+		currentToken == Token(Token::OPERATOR, "@")
+		||
+		currentToken == Token(Token::KEYWORD, "ref")
+	;
+}
 
-// 	try{
-// 		while(1){
-// 			pointermods->addChild(getPOINTER_MOD());
-// 		}
-// 	}
-// 	catch (NoticeException ne){}
-// 	result->addChild(pointermods);
 
-// 	try{
-// 		result->addChild(getCOMPOUND_NAME());
-// 	}
-// 	catch (NoticeException ne){
+BasicNode* Parser::getType(){
+	lock();
+
+	TypeNode *result = new TypeNode();
+
+	try{
+		while(isStorageMode()){
+			result->addStorageMode(currentToken.getText());
+			consume();
+		}
+
+		while(isModifier()){
+			result->addModifier(currentToken.getText());
+			consume();
+		}
+
+		while(isAccessMode()){
+			result->addAccessMode(currentToken.getText());
+			consume();
+		}
+
+		auto tmp = dynamic_cast<CompoundNameNode*>(getName());
+		//cout << tmp->toString();
+		result->addName(tmp);
+
+		return result;
+	}
+	catch (NoticeException ne){
 		
-		
-		
-// 		if(typemods->getChildren().size() > 0){
-// 			//visitor.deleteTree(result);
-// 			throw ParserException("Only TYPE_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
-// 		}
+		recoil();
+		if(result->getStorageModes().size() > 0){
+			throw ParserException("Only Storage Modes, no Type name specified! " + currentToken.getPosition().toString());
+		}
 
-// 		if(pointermods->getChildren().size() > 0){
-// 			//visitor.deleteTree(result);
-// 			throw ParserException("Only POINTER_MODs, no TYPE name specified! " + currentToken.getPosition().toString());
-// 		}
+		if(result->getModifiers().size() > 0){
+			throw ParserException("Only Modifiers, no Type name specified! " + currentToken.getPosition().toString());
+		}
 
-// 		//visitor.deleteTree(result);
-// 		throw NoticeException("Not TYPE found!");
-// 	}
-// 	return result;
-// }
+		if(result->getAccessModes().size() > 0){
+			throw ParserException("Only Access Modes, no Type name specified! " + currentToken.getPosition().toString());
+		}
+
+		throw NoticeException("Not TYPE found!");
+	}
+	
+}
 
 // Node* Parser::getVARDECL_ELEM(){
 
@@ -1128,7 +1167,8 @@ void Parser::buildTree(){
 	try{
 		get(Token::BEGIN);
 		try {
-			this->tree->addChild(getExpression());
+			//this->tree->addChild(getExpression());
+			this->tree->addChild(getType());
 		}
 		catch(NoticeException &ne){
 			cout << ne.what();

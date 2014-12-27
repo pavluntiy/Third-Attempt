@@ -3,10 +3,9 @@
 
 #include "basicnode.hpp"
 #include "basicvisitor.hpp"
+#include "compoundnamenode.hpp"
 
 class TypeNode: public BasicNode {
-
-friend class BasicVisitor;
 protected:
 	vector<string> storageModes;
 	vector<string> modifiers;
@@ -18,7 +17,15 @@ public:
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
 
-	vector<BasicNode*>& getChildren();
+	void addStorageMode(string what);
+	void addModifier(string what);
+	void addAccessMode(string what);
+	void addName(CompoundNameNode *name);
+
+	vector<string>& getStorageModes();
+	vector<string>& getModifiers();
+	vector<string>& getAccessModes();
+	CompoundNameNode* getName();
 
 
 };

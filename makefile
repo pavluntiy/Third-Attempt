@@ -5,7 +5,7 @@ SOURCES=header.cpp alphabet.cpp\
 	token.cpp lexer.cpp data.cpp node.cpp\
 	printvisitor.cpp\
 	basicnode.cpp\
-	expressionnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp\
+	expressionnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp typenode.cpp\
 	parser.cpp\
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

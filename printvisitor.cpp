@@ -64,6 +64,33 @@ void PrintVisitor::visit(FunctionCallNode *node){
 	*this->out << shift << ")" << endl;
 }
 
+void PrintVisitor::visit(TypeNode *node){
+	 *this->out << shift << "( " << node->toString() << '\n';
+
+	this->shift.push_back(' ');
+		*this->out << this->shift;
+		for(auto it: node->getStorageModes()){
+			*this->out << it << ' ';
+		}
+		*this->out << endl;
+		*this->out << this->shift;
+		for(auto it: node->getModifiers()){
+			*this->out << it << ' ';
+		}
+		*this->out << endl;
+		*this->out << this->shift;
+		for(auto it: node->getAccessModes()){
+			*this->out << it << ' ';
+		}
+		*this->out << endl;
+
+		node->getName()->accept(this);
+
+	this->shift.pop_back();
+	
+	*this->out << shift << ")" << endl;
+}
+
 void PrintVisitor::visit(ValueNode *node){
 	*this->out << shift << "( " << node->toString();
 	if(node->getText() != ""){

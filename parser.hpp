@@ -12,6 +12,7 @@
 #include "compoundnamenode.hpp"
 #include "functioncallnode.hpp"
 #include "valuenode.hpp"
+#include "typenode.hpp"
 
 #include <vector>
 #include <set>
@@ -121,15 +122,13 @@ bool isValue();
 
 BasicNode *getExpression();
 
-// Node *getTYPE_MOD();
+bool isStorageMode();
 
-// Node *getPOINTER_MOD();
+bool isModifier();
 
-// Node *getTYPENAME_OP();
+bool isAccessMode();
 
-// Node *getCOMPOUND_NAME(Node *left = nullptr);
-
-// Node *getTYPE();
+BasicNode* getType();
 
 // Node *getVARDECL_ELEM();
 

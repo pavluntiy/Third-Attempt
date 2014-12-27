@@ -5,8 +5,6 @@
 #include "basicvisitor.hpp"
 
 class ExpressionNode: public BasicNode {
-
-friend class BasicVisitor;
 protected:
 	vector<BasicNode*> children;
 

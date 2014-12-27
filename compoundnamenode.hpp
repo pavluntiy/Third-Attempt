@@ -5,8 +5,6 @@
 #include "basicvisitor.hpp"
 
 class CompoundNameNode: public BasicNode {
-
-friend class BasicVisitor;
 protected:
 	string left;
 	CompoundNameNode *right;
