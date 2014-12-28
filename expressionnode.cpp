@@ -1,7 +1,7 @@
 #include "expressionnode.hpp"
 
 string ExpressionNode::toString(){
-	return "EXPRESSION";
+	return "Expression";
 }
 
 vector<BasicNode*>& ExpressionNode::getChildren(){

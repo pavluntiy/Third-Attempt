@@ -13,7 +13,7 @@ void VarDeclarationNode::setType(TypeNode *type){
 	this->type = type;
 }
 
-void VarDeclarationNode::addVariable(CompoundNameNode *what){
+void VarDeclarationNode::addVariable(VarDeclarationNode::VariableListType what){
 	this->variables.push_back(what);
 }
 
@@ -21,7 +21,7 @@ TypeNode* VarDeclarationNode::getType(){
 	return this->type;
 }
 
-vector<CompoundNameNode*>& VarDeclarationNode::getVariables(){
+vector<VarDeclarationNode::VariableListType>& VarDeclarationNode::getVariables(){
 	return this->variables;
 }
 

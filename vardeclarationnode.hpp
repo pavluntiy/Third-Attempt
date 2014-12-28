@@ -7,19 +7,21 @@
 #include "compoundnamenode.hpp"
 
 class VarDeclarationNode: public BasicNode {
+public: 
+	typedef pair<CompoundNameNode*, BasicNode* > VariableListType;
 protected:
 	TypeNode *type;
-	vector<CompoundNameNode*> variables;
+	vector<VariableListType> variables;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
 
 	void setType(TypeNode *type);
-	void addVariable(CompoundNameNode *what);
+	void addVariable(VariableListType);
 
 	TypeNode* getType();
-	vector<CompoundNameNode*>& getVariables();
+	vector<VariableListType>& getVariables();
 
 };
 

@@ -8,7 +8,7 @@
 #include "lexer.hpp"
 
 #include "programnode.hpp"
-#include "expressionnode.hpp"
+#include "operatorsnode.hpp"
 #include "compoundnamenode.hpp"
 #include "functioncallnode.hpp"
 #include "valuenode.hpp"
@@ -129,6 +129,9 @@ BasicNode* getType();
 
 BasicNode* getVarDeclaration();
 
+BasicNode *getOperator();
+
+BasicNode *getOperators();
 
 
 // Node *getARG();
@@ -137,9 +140,6 @@ BasicNode* getVarDeclaration();
 
 // Node *getFUNC_SIGN();
 
-// Node *getOPERATOR();
-
-// Node *getOPERATORS();
 
 // Node *getBLOCK();
 

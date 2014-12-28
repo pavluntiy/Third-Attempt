@@ -4,7 +4,7 @@
 #include "header.hpp"
 
 class ProgramNode;
-class ExpressionNode;
+class OperatorsNode;
 class TypeNode;
 class FunctionCallNode;
 class CompoundNameNode;
@@ -16,7 +16,7 @@ class BasicVisitor {
 
 public:
 	virtual void visit(ProgramNode *node) = 0;
-	virtual void visit(ExpressionNode *node) = 0;
+	virtual void visit(OperatorsNode *node) = 0;
 	virtual void visit(TypeNode *node) = 0;
 	virtual void visit(FunctionCallNode *node) = 0;
 	virtual void visit(CompoundNameNode *node) = 0;

@@ -13,8 +13,9 @@ void PrintVisitor::visit(ProgramNode *node){
 	
 }
 
-void PrintVisitor::visit(ExpressionNode *node){
+void PrintVisitor::visit(OperatorsNode *node){
 	*this->out << shift << "( " << node->toString();
+	
 	if(node->getText() != ""){
 	 	*this->out<< " \"" << node->getText() << "\"";
 	}
@@ -106,7 +107,10 @@ void PrintVisitor::visit(VarDeclarationNode *node){
 	node->getType()->accept(this);
 
 	for(auto it: node->getVariables()){
-		it->accept(this);
+		it.first->accept(this);
+		if(it.second){
+			it.second->accept(this);
+		}
 	}	
 
 	this->shift.pop_back();

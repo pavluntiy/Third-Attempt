@@ -14,8 +14,6 @@ void Parser::lock(){
 	this->history.push(currentPosition);
 }
 void Parser::recoil(){
-
-//	cout << "recoiling!!!!!!!!!!!!!!!!!!!!!\n";
 	if(this->history.empty()){
 		throw ParserException("Incorrect recoiling!");
 	}
@@ -23,7 +21,6 @@ void Parser::recoil(){
 	this->currentPosition = this->history.top();
 	this->history.pop();
 	this->currentToken = this->lexer[this->currentPosition];
-//	cout << currentToken << '\n';
 }
 
 void Parser::memoize(Node::Type type, int position, bool success, int jump){
@@ -533,7 +530,7 @@ BasicNode* Parser::getAtom(){
 	catch(NoticeException &ne){
 
 	}
-	//	cout << "YEAH!\n";
+
 	try{
 		return getValue();
 	}
@@ -550,7 +547,6 @@ BasicNode* Parser::getName(){
 	if(currentToken.typeEqualsTo(Token::NAME)){
 		result = new CompoundNameNode(currentToken.getText());
 		consume();
-		//	
 		return result;
 	}
 
@@ -957,7 +953,6 @@ BasicNode* Parser::getType(){
 	}
 	catch (NoticeException ne){
 		
-		recoil();
 		if(result->getStorageModes().size() > 0){
 			throw ParserException("Only Storage Modes, no Type name specified! " + currentToken.getPosition().toString());
 		}
@@ -975,58 +970,33 @@ BasicNode* Parser::getType(){
 	
 }
 
-//Node* Parser::getVARDECL_ELEM(){
-
-// 	Node *result = nullptr;
-// 	Node *name = nullptr;
-// 	try {
-// 		name = getCOMPOUND_NAME();
-// 		result = new Node(Node::VARDECL_ELEM);
-// 		result->addChild(name);
-// 	}
-// 	catch(NoticeException ne){
-// 		throw NoticeException("No VARDECL_ELEM found!");
-// 	}
-
-
-// 	if(currentToken == Token(Token::OPERATOR, "=")){
-// 		Node *op = new Node(Node::OPERATOR, "=");
-// 		consume();
-// 		op->addChild(new Node(*name));
-// 		try {
-// 			op->addChild(getASSIGNMENT());
-// 		}
-// 		catch (NoticeException ne){
-// 			//visitor.deleteTree(result);
-// 			//visitor.deleteTree(op);
-// 			throw ParserException("Unfinished initialization expression at " + currentToken.getPosition().toString());
-// 		}
-// 		result->addChild(op);
-// 	}
-
-// 	return result;
-
-// 	//	throw NoticeException("No VARDECL_ELEM found!");
-// }
-
 BasicNode* Parser::getVarDeclaration(){
-	lock();
 	VarDeclarationNode *result = new VarDeclarationNode();
 
 	try{
 		result->setType(dynamic_cast<TypeNode*>(getType()));
 
-		result->addVariable(dynamic_cast<CompoundNameNode*>(getName()));
+		int count = 0;
+		do{	
+			if(count > 0){
+				get(Token::OPERATOR);
+			}
 
-		while(currentToken == Token(Token::OPERATOR, ",")){
-			get(Token::OPERATOR);
-			result->addVariable(dynamic_cast<CompoundNameNode*>(getName()));
+			auto variable = dynamic_cast<CompoundNameNode*>(getName());
+			BasicNode *value = nullptr;
+			if(currentToken == Token(Token::OPERATOR, "=")){
+				get(Token::OPERATOR);
+				value = getExpression();
+			}
+			result->addVariable(make_pair(variable, value));
+			++count;
 		}
+		while(currentToken == Token(Token::OPERATOR, ","));
+
 		return result;
 	}
-	catch(NoticeException ne){
-		recoil();
-		throw NoticeException("No Var Declaration found!");
+	catch(NoticeException &ne){
+		throw NoticeException("No Var Declaration found (" + ne.what() + ")!");
 	}
 }
 
@@ -1055,6 +1025,40 @@ BasicNode* Parser::getVarDeclaration(){
 // 	return result;
 // }
 
+BasicNode* Parser::getOperator(){
+	try{
+		lock();
+		return getVarDeclaration();
+	}
+	catch(NoticeException &ne){
+		recoil();
+	}
+
+	try{
+		return getExpression();
+	}
+	catch(NoticeException &ne){
+		
+	}
+
+	throw NoticeException("Nothing found!");
+}
+
+BasicNode* Parser::getOperators(){
+	OperatorsNode *result = new OperatorsNode();
+		try{
+			while(true){
+				result->addOperator(getOperator());
+			}
+		}
+		catch(NoticeException &ne){
+			if(ne.what() != "Nothing found!"){
+				throw ne;
+			}
+		}
+		return result;
+}
+
 
 BasicNode* Parser::getTree(){
 	return this->tree;
@@ -1069,8 +1073,8 @@ void Parser::buildTree(){
 	try{
 		get(Token::BEGIN);
 		try {
-			//this->tree->addChild(getExpression());
-			this->tree->addChild(getVarDeclaration());
+			this->tree->addChild(getOperators());
+			//this->tree->addChild(getVarDeclaration());
 		}
 		catch(NoticeException &ne){
 			cout << ne.what();
