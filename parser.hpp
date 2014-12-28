@@ -16,6 +16,7 @@
 #include "vardeclarationnode.hpp"
 #include "signaturenode.hpp"
 #include "functiondefinitionnode.hpp"
+#include "ifnode.hpp"
 
 #include <vector>
 #include <set>
@@ -43,6 +44,8 @@ void memoize(Node::Type type, int position, bool success, int jump);
 void consume();
 
 void get(Token token);
+void tryAndGet(Token::Type type);
+void tryAndGet(Token token);
 
 void get(Token::Type type);
 
@@ -128,6 +131,8 @@ BasicNode* getType();
 
 BasicNode* getVarDeclaration();
 
+
+bool consumeSemicolons();
 BasicNode *getOperator();
 
 BasicNode *getOperators();
@@ -138,7 +143,7 @@ BasicNode* getBlock();
 
 BasicNode* getFunction();
 
-// Node *getIF();
+BasicNode* getIf();
 
 // Node *getWHILE();
 

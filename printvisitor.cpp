@@ -149,6 +149,27 @@ void PrintVisitor::visit(FunctionDefinitionNode *node){
 	*this->out   << shift << ")" << endl;
 }
 
+void PrintVisitor::visit(IfNode *node){
+
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+ 	
+ 	node->getCondition()->accept(this);
+
+ 	node->getThenBranch()->accept(this);
+
+ 	if(node->getElseBranch()){
+ 		node->getElseBranch()->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
+
 PrintVisitor::PrintVisitor(ostream *out){
 		this->shift = "";
 		this->out = out;

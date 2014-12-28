@@ -41,8 +41,20 @@ void Parser::consume(){
 	}
 }
 
+void Parser::tryAndGet(Token::Type type){
+	if(currentToken.typeEqualsTo(type)){
+		consume();
+	}
+}
+
+void Parser::tryAndGet(Token token){
+	if(currentToken == token){
+		consume();
+	}
+}
+
 void Parser::get(Token token){
-	if(! (currentToken == token) ){
+	if(currentToken != token){
 		throw NoticeException ("No " + token.toString() + " found, got " + currentToken.toString() + 
 			"instead at " + currentToken.getPosition().toString());
 	}
@@ -50,7 +62,7 @@ void Parser::get(Token token){
 }
 
 void Parser::get(Token::Type type){
-	if(! currentToken.typeEqualsTo(type) ){
+	if(!currentToken.typeEqualsTo(type)){
 		throw NoticeException ("No " + Token(type).toString() + " found, got " + currentToken.toString() + 
 			"instead at " + currentToken.getPosition().toString());
 	}
@@ -1072,39 +1084,90 @@ BasicNode* Parser::getFunction(){
 	}
 }
 
+BasicNode* Parser::getIf(){
+	get(Token(Token::KEYWORD, "if"));
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw ParserException("Corrupted 'if'!");
+	}
+	get(Token::BRACE_LEFT);
+
+	IfNode *result = new IfNode();
+
+	result->setCondition(getExpression());
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		throw ParserException("Corrupted 'if'!");
+	}
+	get(Token::BRACE_RIGHT);
+
+	result->setThenBranch(getOperator());
+
+	if(currentToken == Token(Token::KEYWORD, "else")){
+		get(Token::KEYWORD);
+		result->setElseBranch(getOperator());
+	}
+
+	return result;
+
+
+}
+
+bool Parser::consumeSemicolons(){
+	bool result = false;
+	while(currentToken.typeEqualsTo(Token::SEMICOLON)){
+		get(Token::SEMICOLON);
+		result = true;
+	}
+	return result;
+}
+
 BasicNode* Parser::getOperator(){
 
-	if(currentToken.typeEqualsTo(Token::SEMICOLON)){
-		get(Token::SEMICOLON);
-		return new OperatorsNode();
-	}
+	bool semicolonFound = consumeSemicolons();
 
 	try{
 		lock();
-		return getVarDeclaration();
+		auto result = getVarDeclaration();
+		consumeSemicolons();
+		return result;
 	}
 	catch(NoticeException &ne){
 		recoil();
 	}
 
-	try{
-		return getFunction();
-	}
-	catch(NoticeException &ne){
+	if(currentToken == Token(Token::KEYWORD, "def")){
+		auto result = getFunction();
+		consumeSemicolons();
+		return result;
 	}
 
+	if(currentToken == Token(Token::KEYWORD, "if")){
+		auto result = getIf();
+		consumeSemicolons();
+		return result;
+	}
+
+
+	
+
 	try{
-		return getExpression();
+		auto result = getExpression();
+		consumeSemicolons();
+		return result;
 	}
 	catch(NoticeException &ne){
 		
 	}
 
-	try{
-		return getBlock();
+	if(currentToken.typeEqualsTo(Token::CURL_LEFT)){
+		auto result = getBlock();
+		consumeSemicolons();
+		return result;
 	}
-	catch(NoticeException &ne){
-		
+	
+	if(semicolonFound){
+		return new OperatorsNode();
 	}
 
 	throw NoticeException("Nothing found!");
