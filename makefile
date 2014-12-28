@@ -1,11 +1,19 @@
 COMPILER=g++
 CFLAGS=-std=c++11 -g -c -Wall -Wextra --pedantic
 SOURCES=header.cpp alphabet.cpp\
-	myexception.cpp noticeexception.cpp parserexception.cpp lexerexception.cpp dataexception.cpp\
-	token.cpp lexer.cpp data.cpp node.cpp\
+	myexception.cpp\
+	noticeexception.cpp parserexception.cpp lexerexception.cpp dataexception.cpp\
+	\
+	token.cpp\
+	lexer.cpp\
+	data.cpp\
+	\
 	printvisitor.cpp\
+	\
 	basicnode.cpp\
-	operatorsnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp typenode.cpp vardeclarationnode.cpp\
+	operatorsnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
+	typenode.cpp vardeclarationnode.cpp signaturenode.cpp\
+	\
 	parser.cpp\
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

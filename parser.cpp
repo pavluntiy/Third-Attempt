@@ -39,9 +39,6 @@ void Parser::consume(){
 
 		}	
 	}
-//	else{
-//	//	throw ParserException("Structure of input corrupted!");
-//	}
 }
 
 void Parser::get(Token token){
@@ -553,30 +550,6 @@ BasicNode* Parser::getName(){
 	throw NoticeException("No NAME");
 }
 
-// Node* Parser::getFUNCARGS(){
-// 	Node  *tmp = nullptr, *result = nullptr;
-
-// 	result = new Node(Node::FUNCARGS);
-
-
-// 	try{
-// 		tmp = getASSIGNMENT();
-// 	}
-// 	catch(NoticeException ne){
-// 		return result;
-// 	};
-
-// 	result->addChild(tmp);
-
-// 	while(currentToken == Token(Token::OPERATOR, ",")){
-// 		consume();
-// 		tmp = getASSIGNMENT();
-// 		result->addChild(tmp);
-// 	}
-	
-// 	return result;
-// }
-
 BasicNode* Parser::getFunctionCalls(BasicNode *left){
 
 		FunctionCallNode *result = nullptr;
@@ -1026,12 +999,23 @@ BasicNode* Parser::getVarDeclaration(){
 // }
 
 BasicNode* Parser::getOperator(){
+
+	while(currentToken.typeEqualsTo(Token::SEMICOLON)){
+		get(Token::SEMICOLON);
+	}
+
 	try{
 		lock();
 		return getVarDeclaration();
 	}
 	catch(NoticeException &ne){
 		recoil();
+	}
+
+	try{
+		return getSignature();
+	}
+	catch(NoticeException &ne){
 	}
 
 	try{
@@ -1057,6 +1041,67 @@ BasicNode* Parser::getOperators(){
 			}
 		}
 		return result;
+}
+
+
+BasicNode* Parser::getSignature(){
+	get(Token(Token::KEYWORD, "def"));
+
+	SignatureNode *result = new SignatureNode();
+
+	try {
+		result->setType(dynamic_cast<TypeNode*>(getType()));
+		result->setName(dynamic_cast<CompoundNameNode*>(getName()));
+
+		if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+			throw ParserException("Corrupted function signature at " + currentToken.getPosition().toString());
+		}
+		get(Token::BRACE_LEFT);
+
+		if(currentToken != Token(Token::KEYWORD, "void")){
+			try{
+				int counter = 0;
+				do{
+					if(counter > 0){
+						get(Token::OPERATOR);
+					}
+
+					TypeNode *type = dynamic_cast<TypeNode*>(getType());
+					CompoundNameNode *name = dynamic_cast<CompoundNameNode*>(getName());
+					ValueNode *defaultValue = nullptr;
+
+					if(currentToken == Token(Token::OPERATOR, "=")){
+						get(Token::OPERATOR);
+						defaultValue =dynamic_cast<ValueNode*>(getValue());
+					}
+
+					result->addArgument(make_tuple(type, name, defaultValue));
+					++counter;
+				}
+				while(currentToken == Token(Token::OPERATOR, ","));
+
+			}
+			catch(NoticeException &ne){
+
+			}
+		}
+		else{
+			get(Token::KEYWORD);
+		}
+
+		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			throw ParserException("Corrupted function signature at " + currentToken.getPosition().toString());
+		}
+		get(Token::BRACE_RIGHT);
+
+		return result;
+
+	}
+	catch (NoticeException &ne){
+
+	}
+
+	throw NoticeException("No function signature found!");
 }
 
 

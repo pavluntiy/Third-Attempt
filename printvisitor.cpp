@@ -15,7 +15,7 @@ void PrintVisitor::visit(ProgramNode *node){
 
 void PrintVisitor::visit(OperatorsNode *node){
 	*this->out << shift << "( " << node->toString();
-	
+
 	if(node->getText() != ""){
 	 	*this->out<< " \"" << node->getText() << "\"";
 	}
@@ -111,6 +111,28 @@ void PrintVisitor::visit(VarDeclarationNode *node){
 		if(it.second){
 			it.second->accept(this);
 		}
+	}	
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
+
+void PrintVisitor::visit(SignatureNode *node){
+
+
+	 *this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+ 	node->getType()->accept(this);
+
+	for(auto it: node->getArguments()){
+		get<0>(it)->accept(this);
+		get<1>(it)->accept(this);
+	 	if(get<2>(it)){
+	 		get<2>(it)->accept(this);
+	 	}
 	}	
 
 	this->shift.pop_back();

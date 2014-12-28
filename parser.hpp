@@ -14,6 +14,7 @@
 #include "valuenode.hpp"
 #include "typenode.hpp"
 #include "vardeclarationnode.hpp"
+#include "signaturenode.hpp"
 
 #include <vector>
 #include <set>
@@ -31,9 +32,6 @@ protected:
 	map<pair<Node::Type, int>, pair<bool, int> > memo;
 	int currentPosition;
 	Token currentToken;
-	// TreeVisitor &visitor;
-
-
 
 public:
 	Parser (Lexer &lexer);
@@ -133,12 +131,7 @@ BasicNode *getOperator();
 
 BasicNode *getOperators();
 
-
-// Node *getARG();
-
-// Node *getFUNC_SIGN_ARGS();
-
-// Node *getFUNC_SIGN();
+BasicNode* getSignature();
 
 
 // Node *getBLOCK();
