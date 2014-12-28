@@ -44,23 +44,27 @@ if(a > 0){
 	//Parsed in a very strange way...
 }
 
-for(pass; i != foo(); next(i)) {  
-	int a = magic(i);
-	cout << a;
-	printf("%d", a);
-}
 
 if(a != 0);
 else ;
 
 
-while(true) 
-	int a = 100, b = foo(a, b, c)
-;
 
 def int main (int argc, @@char argv){
 	print("Hello, world!")
 	return 0
 }
 def int main (int argc, @@char argv){
+}
+
+
+while(true) 
+	int a = 100, b = foo(a, b, c)
+;
+
+
+for(pass; i != foo(); next(i)) {  
+	int a = magic(i);
+	cout << a;
+	printf("%d", a);
 }

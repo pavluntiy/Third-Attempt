@@ -369,7 +369,7 @@ bool Parser::isStrictComparisonOp(){
 	return 
 			currentToken.getText() == "=="
 			||
-			currentToken.getText() == "="
+			currentToken.getText() == "!="
 	;
 }
 
@@ -1109,8 +1109,34 @@ BasicNode* Parser::getIf(){
 	}
 
 	return result;
+}
 
+bool Parser::isReturnKeyword(){
+	return 
+		currentToken == Token(Token::KEYWORD, "return")
+		||
+		currentToken == Token(Token::KEYWORD, "yield")
+	;
+}
 
+BasicNode* Parser::getReturn(){
+	if(!isReturnKeyword()){
+		throw ParserException("I shouldn't have got to here!");
+	}
+
+	ReturnNode *result = new ReturnNode();
+
+	result->setName(currentToken.getText());
+	get(Token::KEYWORD);
+
+	try {
+		result->setResult(getExpression());
+	}
+	catch(NoticeException &ne){
+
+	}
+
+	return result;
 }
 
 bool Parser::consumeSemicolons(){
@@ -1126,16 +1152,6 @@ BasicNode* Parser::getOperator(){
 
 	bool semicolonFound = consumeSemicolons();
 
-	try{
-		lock();
-		auto result = getVarDeclaration();
-		consumeSemicolons();
-		return result;
-	}
-	catch(NoticeException &ne){
-		recoil();
-	}
-
 	if(currentToken == Token(Token::KEYWORD, "def")){
 		auto result = getFunction();
 		consumeSemicolons();
@@ -1148,9 +1164,29 @@ BasicNode* Parser::getOperator(){
 		return result;
 	}
 
+	if(currentToken.typeEqualsTo(Token::CURL_LEFT)){
+		auto result = getBlock();
+		consumeSemicolons();
+		return result;
+	}
 
+	if(isReturnKeyword()){
+		auto result = getReturn();
+		consumeSemicolons();
+		return result;
+	}
+
+
+	try{
+		lock();
+		auto result = getVarDeclaration();
+		consumeSemicolons();
+		return result;
+	}
+	catch(NoticeException &ne){
+		recoil();
+	}
 	
-
 	try{
 		auto result = getExpression();
 		consumeSemicolons();
@@ -1160,11 +1196,7 @@ BasicNode* Parser::getOperator(){
 		
 	}
 
-	if(currentToken.typeEqualsTo(Token::CURL_LEFT)){
-		auto result = getBlock();
-		consumeSemicolons();
-		return result;
-	}
+	
 	
 	if(semicolonFound){
 		return new OperatorsNode();

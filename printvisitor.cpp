@@ -169,6 +169,22 @@ void PrintVisitor::visit(IfNode *node){
 	*this->out   << shift << ")" << endl;
 }
 
+void PrintVisitor::visit(ReturnNode *node){
+
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+
+ 	if(node->getResult()){
+ 		node->getResult()->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
 
 PrintVisitor::PrintVisitor(ostream *out){
 		this->shift = "";

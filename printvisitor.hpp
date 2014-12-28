@@ -12,6 +12,7 @@
 #include "signaturenode.hpp"
 #include "functiondefinitionnode.hpp"
 #include "ifnode.hpp"
+#include "returnnode.hpp"
 
 #include "valuenode.hpp"
 
@@ -30,6 +31,7 @@ public:
 	virtual void visit(SignatureNode *node) override;
 	virtual void visit(FunctionDefinitionNode *node) override;
 	virtual void visit(IfNode *node) override;
+	virtual void visit(ReturnNode *node) override;
 
 	PrintVisitor(ostream *out);
 

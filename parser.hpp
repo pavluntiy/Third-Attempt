@@ -1,6 +1,8 @@
 #ifndef PARSER
 #define PARSER
 
+#include "header.hpp"
+
 #include "token.hpp"
 #include "node.hpp"
 #include "parserexception.hpp"
@@ -17,12 +19,7 @@
 #include "signaturenode.hpp"
 #include "functiondefinitionnode.hpp"
 #include "ifnode.hpp"
-
-#include <vector>
-#include <set>
-#include <stack>
-#include <map>
-
+#include "returnnode.hpp"
 
 class Parser{
 
@@ -144,6 +141,10 @@ BasicNode* getBlock();
 BasicNode* getFunction();
 
 BasicNode* getIf();
+
+bool isReturnKeyword();
+
+BasicNode* getReturn();
 
 // Node *getWHILE();
 
