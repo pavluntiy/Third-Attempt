@@ -973,77 +973,6 @@ BasicNode* Parser::getVarDeclaration(){
 	}
 }
 
-
-
-// Node* Parser::getARG(){
-// 	Node *result = new Node(Node::ARG);
-// 	try{
-// 		result->addChild(getTYPE());
-// 	}
-// 	catch(NoticeException ne){
-// 		//visitor.deleteTree(result);
-// 		throw NoticeException("No TYPE for ARG found!");
-// 	}
-
-// 	//Node *var = nullptr;
-// 	try{
-// 		result->addChild(getVARDECL_ELEM());
-// 	}
-// 	catch(NoticeException ne){
-// 	//	visitor.deleteTree(result);
-// 	//	throw ParserException("No argument found ("+ ne.what()+") at " + currentToken.getPosition().toString());
-
-// 	}
-
-// 	return result;
-// }
-
-BasicNode* Parser::getOperator(){
-
-	while(currentToken.typeEqualsTo(Token::SEMICOLON)){
-		get(Token::SEMICOLON);
-	}
-
-	try{
-		lock();
-		return getVarDeclaration();
-	}
-	catch(NoticeException &ne){
-		recoil();
-	}
-
-	try{
-		return getSignature();
-	}
-	catch(NoticeException &ne){
-	}
-
-	try{
-		return getExpression();
-	}
-	catch(NoticeException &ne){
-		
-	}
-
-	throw NoticeException("Nothing found!");
-}
-
-BasicNode* Parser::getOperators(){
-	OperatorsNode *result = new OperatorsNode();
-		try{
-			while(true){
-				result->addOperator(getOperator());
-			}
-		}
-		catch(NoticeException &ne){
-			if(ne.what() != "Nothing found!"){
-				throw ne;
-			}
-		}
-		return result;
-}
-
-
 BasicNode* Parser::getSignature(){
 	get(Token(Token::KEYWORD, "def"));
 
@@ -1067,12 +996,15 @@ BasicNode* Parser::getSignature(){
 					}
 
 					TypeNode *type = dynamic_cast<TypeNode*>(getType());
-					CompoundNameNode *name = dynamic_cast<CompoundNameNode*>(getName());
+					CompoundNameNode *name = nullptr;
 					ValueNode *defaultValue = nullptr;
-
-					if(currentToken == Token(Token::OPERATOR, "=")){
-						get(Token::OPERATOR);
-						defaultValue =dynamic_cast<ValueNode*>(getValue());
+					if(currentToken != Token(Token::OPERATOR, ",") && !currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+						name = dynamic_cast<CompoundNameNode*>(getName());
+						defaultValue = nullptr;
+						if(currentToken == Token(Token::OPERATOR, "=")){
+							get(Token::OPERATOR);
+							defaultValue =dynamic_cast<ValueNode*>(getValue());
+						}
 					}
 
 					result->addArgument(make_tuple(type, name, defaultValue));
@@ -1090,7 +1022,7 @@ BasicNode* Parser::getSignature(){
 		}
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-			throw ParserException("Corrupted function signature at " + currentToken.getPosition().toString());
+			throw ParserException("No BRACE_RIGHT, got " +  currentToken.toString());
 		}
 		get(Token::BRACE_RIGHT);
 
@@ -1104,6 +1036,94 @@ BasicNode* Parser::getSignature(){
 	throw NoticeException("No function signature found!");
 }
 
+BasicNode* Parser::getBlock(){
+
+	if(!currentToken.typeEqualsTo(Token::CURL_LEFT)){
+		throw NoticeException("No block found!");
+	}
+	get(Token::CURL_LEFT);
+
+	auto result =  getOperators();
+
+	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
+		throw ParserException("Corrupted block at " + currentToken.getPosition().toString());
+	}
+	get(Token::CURL_RIGHT);
+
+	return result;
+
+}
+
+BasicNode* Parser::getFunction(){
+	try {
+		auto signature = dynamic_cast<SignatureNode*>(getSignature());
+		
+		if(!currentToken.typeEqualsTo(Token::CURL_LEFT)){
+			return signature;
+		}
+
+		FunctionDefinitionNode *result = new FunctionDefinitionNode();
+		result->setSignature(signature);
+		result->setOperators(dynamic_cast<OperatorsNode*> (getBlock()));
+		return result;
+	}
+	catch (NoticeException &ne){
+		throw NoticeException("No function definition found!");
+	}
+}
+
+BasicNode* Parser::getOperator(){
+
+	if(currentToken.typeEqualsTo(Token::SEMICOLON)){
+		get(Token::SEMICOLON);
+		return new OperatorsNode();
+	}
+
+	try{
+		lock();
+		return getVarDeclaration();
+	}
+	catch(NoticeException &ne){
+		recoil();
+	}
+
+	try{
+		return getFunction();
+	}
+	catch(NoticeException &ne){
+	}
+
+	try{
+		return getExpression();
+	}
+	catch(NoticeException &ne){
+		
+	}
+
+	try{
+		return getBlock();
+	}
+	catch(NoticeException &ne){
+		
+	}
+
+	throw NoticeException("Nothing found!");
+}
+
+BasicNode* Parser::getOperators(){
+	OperatorsNode *result = new OperatorsNode();
+		try{
+			while(true){
+				result->addOperator(getOperator());
+			}
+		}
+		catch(NoticeException &ne){
+			if(ne.what() != "Nothing found!"){
+				throw ne;
+			}
+		}
+		return result;
+}
 
 BasicNode* Parser::getTree(){
 	return this->tree;

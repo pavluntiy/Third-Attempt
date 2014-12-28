@@ -2,6 +2,7 @@
 #define PRINTVISITOR
 
 #include "basicvisitor.hpp"
+
 #include "programnode.hpp"
 #include "operatorsnode.hpp"
 #include "compoundnamenode.hpp"
@@ -9,6 +10,7 @@
 #include "typenode.hpp"
 #include "vardeclarationnode.hpp"
 #include "signaturenode.hpp"
+#include "functiondefinitionnode.hpp"
 
 #include "valuenode.hpp"
 
@@ -25,6 +27,7 @@ public:
 	virtual void visit(ValueNode *node) override;
 	virtual void visit(VarDeclarationNode *node) override;
 	virtual void visit(SignatureNode *node) override;
+	virtual void visit(FunctionDefinitionNode *node) override;
 
 	PrintVisitor(ostream *out);
 

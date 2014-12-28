@@ -24,6 +24,8 @@ def int foo(volatile @int a)
 def int foo(volatile ref int a)
 def foo foo()
 
+def int foo(int , char, int a = 100, string)
+
 //def int foo(string, @int a, char c = 'c'){}
 //def int foo(string, unsigned volatile ref int a, char c = 'c'){}
 def int foo(volatile @int a){}

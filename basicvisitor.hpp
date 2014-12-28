@@ -11,6 +11,7 @@ class CompoundNameNode;
 class ValueNode;
 class VarDeclarationNode;
 class SignatureNode;
+class FunctionDefinitionNode;
 
 
 class BasicVisitor {
@@ -24,6 +25,7 @@ public:
 	virtual void visit(ValueNode *node) = 0;
 	virtual void visit(VarDeclarationNode *node) = 0;
 	virtual void visit(SignatureNode *node) = 0;
+	virtual void visit(FunctionDefinitionNode *node) = 0;
 
 };	
 

@@ -15,6 +15,7 @@
 #include "typenode.hpp"
 #include "vardeclarationnode.hpp"
 #include "signaturenode.hpp"
+#include "functiondefinitionnode.hpp"
 
 #include <vector>
 #include <set>
@@ -133,10 +134,9 @@ BasicNode *getOperators();
 
 BasicNode* getSignature();
 
+BasicNode* getBlock();
 
-// Node *getBLOCK();
-
-// Node *getFUNC_DEF();
+BasicNode* getFunction();
 
 // Node *getIF();
 
