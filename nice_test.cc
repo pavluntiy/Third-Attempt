@@ -68,3 +68,5 @@ for(pass; i != foo(); next(i)) {
 	cout << a;
 	printf("%d", a);
 }
+
+IO.nice[][][100] f

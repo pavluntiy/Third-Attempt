@@ -3,7 +3,7 @@
 
 
 Parser::Parser (Lexer &lexer):
-		lexer(lexer)
+	lexer(lexer)
 	{
 		this->currentPosition = 0;
 		this->currentToken = this->lexer[0];
@@ -13,6 +13,7 @@ Parser::Parser (Lexer &lexer):
 void Parser::lock(){
 	this->history.push(currentPosition);
 }
+
 void Parser::recoil(){
 	if(this->history.empty()){
 		throw ParserException("Incorrect recoiling!");
@@ -895,10 +896,26 @@ BasicNode* Parser::getType(){
 
 		result->addName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
 
+		if(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+			while(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+				get(Token::BRACKET_LEFT);
+				if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
+					result->addDimension(dynamic_cast<ValueNode*>(getValue()));
+					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
+						throw ParserException("Strange type of array!");
+					}
+				}
+				else {
+					result->addDimension(new ValueNode(Token::INT, "0"));
+				}
+				get(Token::BRACKET_RIGHT);
+			}
+		}
+
 		return result;
 	}
-	catch (NoticeException ne){
-		
+	catch (NoticeException &ne){
+			
 		if(result->getStorageModes().size() > 0){
 			throw ParserException("Only Storage Modes, no Type name specified! " + currentToken.getPosition().toString());
 		}
@@ -971,7 +988,12 @@ BasicNode* Parser::getSignature(){
 					TypeNode *type = dynamic_cast<TypeNode*>(getType());
 					CompoundNameNode *name = nullptr;
 					ValueNode *defaultValue = nullptr;
-					if(currentToken != Token(Token::OPERATOR, ",") && !currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+					if(currentToken != Token(Token::OPERATOR, "...") 
+						&&
+						currentToken != Token(Token::OPERATOR, ",") 
+						&& 
+						!currentToken.typeEqualsTo(Token::BRACE_RIGHT)
+					){
 						name = dynamic_cast<CompoundNameNode*>(getName());
 						defaultValue = nullptr;
 						if(currentToken == Token(Token::OPERATOR, "=")){
@@ -984,6 +1006,11 @@ BasicNode* Parser::getSignature(){
 					++counter;
 				}
 				while(currentToken == Token(Token::OPERATOR, ","));
+
+				if(currentToken == Token(Token::OPERATOR, "...")){
+					result->setVarargs();
+					get(Token::OPERATOR);
+				}
 
 			}
 			catch(NoticeException &ne){

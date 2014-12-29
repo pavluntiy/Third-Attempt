@@ -12,6 +12,10 @@ vector<string>& TypeNode::getAccessModes(){
 	return this->accessModes;
 }
 
+vector<ValueNode*>& TypeNode::getDimensions(){
+	return this->dimensions;
+}
+
 CompoundNameNode* TypeNode::getName(){
 	return this->name;
 }
@@ -32,6 +36,10 @@ void TypeNode::addModifier(string what){
 }
 void TypeNode::addAccessMode(string what){
 	this->accessModes.push_back(what);
+}
+
+void TypeNode::addDimension(ValueNode *what){
+	this->dimensions.push_back(what);
 }
 
 void TypeNode::addName(CompoundNameNode *what){

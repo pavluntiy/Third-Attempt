@@ -12,6 +12,7 @@ protected:
 	TypeNode *type;
 	CompoundNameNode *name;
 	vector<ArgumentType> arguments;
+	bool varargs = false;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
@@ -20,7 +21,9 @@ public:
 	TypeNode* getType();
 	CompoundNameNode* getName();
 	vector<ArgumentType>& getArguments();
+	bool getVarargs();
 
+	void setVarargs();
 	void setType(TypeNode*);
 	void setName(CompoundNameNode*);
 	void addArgument(ArgumentType);

@@ -88,6 +88,13 @@ void PrintVisitor::visit(TypeNode *node){
 	}
 	*this->out << endl;
 
+	if(node->getDimensions().size() > 0){
+		*this->out << shift << "ARRAY:\n";
+		for(auto it: node->getDimensions()){
+			it->accept(this);
+		}
+	}
+
 	node->getName()->accept(this);
 
 	this->shift.pop_back();
@@ -121,7 +128,6 @@ void PrintVisitor::visit(VarDeclarationNode *node){
 	*this->out   << shift << ")" << endl;
 }
 
-
 void PrintVisitor::visit(SignatureNode *node){
 
 
@@ -129,6 +135,11 @@ void PrintVisitor::visit(SignatureNode *node){
 		
 	this->shift.push_back(' ');
  	node->getType()->accept(this);
+ 	node->getName()->accept(this);
+
+ 	if(node->getVarargs()){
+ 		*this->out << shift << "VARARGS\n";
+ 	}
 
 	for(auto it: node->getArguments()){
 		get<0>(it)->accept(this);

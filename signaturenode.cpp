@@ -16,6 +16,10 @@ void SignatureNode::setName(CompoundNameNode *what){
 	this->name = what;
 }
 
+void SignatureNode::setVarargs(){
+	this->varargs = true;
+}
+
 void SignatureNode::addArgument(SignatureNode::ArgumentType what){
 	this->arguments.push_back(what);
 }
@@ -30,4 +34,8 @@ CompoundNameNode* SignatureNode::getName(){
 
 vector<SignatureNode::ArgumentType>& SignatureNode::getArguments(){
 	return this->arguments;
+}
+
+bool SignatureNode::getVarargs(){
+	return this->varargs;
 }
