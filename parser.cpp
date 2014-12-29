@@ -810,70 +810,31 @@ BasicNode* Parser::getExpression(){
 	return getCommaExpression();
 }
 
-// Node* Parser::getTYPENAME_OP(){
-// 	Node *result = nullptr;
-// 	if(currentToken.typeEqualsTo(Token::OPERATOR)){
-// 		if(currentToken.getText() == "."){
-// 			result = new Node(Node::OPERATOR, currentToken.getText());
-// 			consume();
-// 			return result;
-// 		}
-// 	}
+CompoundNameNode* Parser::getCompoundName(){
 
-// 	throw NoticeException ("No '.' for COMPOUND_NAME found!");
-// }
+	int counter = 0;
 
-// CompounNameNode* Parser::getCompoundName(BasicNode *left){
-// 	Node *right = nullptr;
-// 	Node *op = nullptr;
-// 	if(left == nullptr){
-// 		try{
-// 			left = getNAME();
-// 			try{
-// 				op = getTYPENAME_OP();
-// 				op->addChild(left);
-// 				right = getNAME();
-// 				op->addChild(right);
-// 				return getCOMPOUND_NAME(op);
-// 			}
-// 			catch(NoticeException ne){
-// 				if(op != nullptr && right == nullptr){
-// 					//visitor.deleteTree (op);
-// 					// visitor.deleteTree(left);
-// 					// visitor.deleteTree(right);
-// 					throw ParserException("Strange '.' in name at " + currentToken.getPosition().toString());
-// 				}
-// 				return left;
-// 			}
-// 		}
-// 		catch(NoticeException ne){
+	CompoundNameNode *result = new CompoundNameNode();
 
-// 		}
-// 	}
-// 	else {	
-// 			try{
-// 				op = getTYPENAME_OP();
-// 				right = getNAME();
-// 				op->addChild(left);
-// 				op->addChild(right);
-// 				return getCOMPOUND_NAME(op);
-// 			}
-// 			catch(NoticeException ne){
-// 				//visitor.deleteTree (op);
-// 				//visitor.deleteTree(right);
-// 			}
-// 			return left;
-// 	}
+	do {
+		if(counter > 0){
+			get(Token::OPERATOR);
+		}
 
-// 	try {
-// 		return getNAME();
-// 	}
-// 	catch(NoticeException ne){
+		if(currentToken.typeEqualsTo(Token::NAME)){
+			result->addName(currentToken.getText());
+			get(Token::NAME);
+		}
+		else {
+			throw NoticeException("No name found!");
+		}
+		++counter;
+	}
+	while(currentToken == Token(Token::OPERATOR, "."));
 
-// 	}
-
-// 	throw NoticeException("No COMPOUND_NAME found!");
-// }
+	return result;
+	
+}
 
 bool Parser::isStorageMode(){
 	return

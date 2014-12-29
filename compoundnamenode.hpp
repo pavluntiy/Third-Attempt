@@ -3,20 +3,26 @@
 
 #include "basicnode.hpp"
 #include "basicvisitor.hpp"
+#include <string>
 
 class CompoundNameNode: public BasicNode {
 protected:
-	string left;
-	CompoundNameNode *right;
+	//string left;
+	//CompoundNameNode *right;
+	vector<string> names;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
 
-	string getLeft();
-	CompoundNameNode* getRight();
+//	string getLeft();
+//	CompoundNameNode* getRight();
+	vector<string>& getNames();
 
-	CompoundNameNode(string left = "", CompoundNameNode *right = nullptr);
+	void addName(string what);
+
+	CompoundNameNode();
+	CompoundNameNode(string left);
 
 };
 

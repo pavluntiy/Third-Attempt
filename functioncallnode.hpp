@@ -19,11 +19,13 @@ public:
 	BasicNode* getFunctionName();
 	vector<BasicNode*>& getFunctionArgs();
 
+	string transformOperators(const Token &token);
+
 	void addArg(BasicNode *node);
 
 	FunctionCallNode();
 	FunctionCallNode(BasicNode *functionName);
-	FunctionCallNode(Token token);
+	FunctionCallNode(const Token &token);
 
 };
 

@@ -146,17 +146,7 @@ bool isReturnKeyword();
 
 BasicNode* getReturn();
 
-// Node *getWHILE();
-
-// Node *getDOWHILE();
-// Node *getFOR();
-
-// bool is_RETURN_keyword();
-
-// Node *getRETURN();
-
-// Node *getSPECIAL();
-
+CompoundNameNode* getCompoundName();
 	
 BasicNode *getTree();
 

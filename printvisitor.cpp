@@ -30,16 +30,35 @@ void PrintVisitor::visit(OperatorsNode *node){
 
 void PrintVisitor::visit(CompoundNameNode *node){
 	*this->out << shift << "( " << node->toString();
-	*this->out << " '" << node->getLeft() << "' ";
+	//*this->out << " '" << node->getLeft() << "' ";
 
-	this->shift.push_back(' ');
-	if(node->getRight()){
-		cout << endl;
-		node->getRight()->accept(this);
+	if(node->getNames().size() > 0){
+		*this->out << ' ';
 	}
-	this->shift.pop_back();
+
+	if(node->getNames().size() > 1){
+		*this->out << endl << shift;
+	}
+
+	for(auto it: node->getNames()){
+		*this->out << "'" <<  it << "' ";
+	}
+	if(node->getNames().size() > 1){
+		*this->out << endl;
+	}
+
+	// this->shift.push_back(' ');
+	// // if(node->getRight()){
+	// // 	cout << endl;
+	// // 	node->getRight()->accept(this);
+	// // }
+	// this->shift.pop_back();
 	
-	*this->out << shift  << ")" << endl;
+	if(node->getNames().size() > 1){
+		*this->out << shift;
+	}
+
+	*this->out  << ")" << endl;
 }
 
 void PrintVisitor::visit(FunctionCallNode *node){

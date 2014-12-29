@@ -14,6 +14,11 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 		return this->functionArgs;
 	}
 
+	string FunctionCallNode::transformOperators(const Token &token){
+		auto text = token.getText();
+		return text;
+	}
+
 
 	void FunctionCallNode::addArg(BasicNode *node){
 		this->functionArgs.push_back(node);
@@ -27,7 +32,6 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 		this->functionName = functionName;
 	}
 
-	FunctionCallNode::FunctionCallNode(Token token){
-		this->functionName = new CompoundNameNode(token.getText());
-		//cout << "OK!";
+	FunctionCallNode::FunctionCallNode(const Token &token){
+		this->functionName = new CompoundNameNode(transformOperators(token));
 	}
