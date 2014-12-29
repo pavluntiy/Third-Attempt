@@ -13,6 +13,8 @@ class VarDeclarationNode;
 class SignatureNode;
 class FunctionDefinitionNode;
 class IfNode;
+class WhileNode;
+class ForNode;
 class ReturnNode;
 
 
@@ -29,6 +31,8 @@ public:
 	virtual void visit(SignatureNode *node) = 0;
 	virtual void visit(FunctionDefinitionNode *node) = 0;
 	virtual void visit(IfNode *node) = 0;
+	virtual void visit(WhileNode *node) = 0;
+	virtual void visit(ForNode *node) = 0;
 	virtual void visit(ReturnNode *node) = 0;
 
 };	

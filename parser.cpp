@@ -893,7 +893,7 @@ BasicNode* Parser::getType(){
 			consume();
 		}
 
-		result->addName(dynamic_cast<CompoundNameNode*>(getName()));
+		result->addName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
 
 		return result;
 	}
@@ -928,7 +928,7 @@ BasicNode* Parser::getVarDeclaration(){
 				get(Token::OPERATOR);
 			}
 
-			auto variable = dynamic_cast<CompoundNameNode*>(getName());
+			auto variable = dynamic_cast<CompoundNameNode*>(getCompoundName());
 			BasicNode *value = nullptr;
 			if(currentToken == Token(Token::OPERATOR, "=")){
 				get(Token::OPERATOR);
@@ -953,7 +953,7 @@ BasicNode* Parser::getSignature(){
 
 	try {
 		result->setType(dynamic_cast<TypeNode*>(getType()));
-		result->setName(dynamic_cast<CompoundNameNode*>(getName()));
+		result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 			throw ParserException("Corrupted function signature at " + currentToken.getPosition().toString());
@@ -1045,6 +1045,72 @@ BasicNode* Parser::getFunction(){
 	}
 }
 
+BasicNode* Parser::getWhile(){
+	get(Token(Token::KEYWORD, "while"));
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw ParserException("Corrupted 'while'!");
+	}
+	get(Token::BRACE_LEFT);
+
+	WhileNode *result = new WhileNode();
+
+	result->setCondition(getExpression());
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		throw ParserException("Corrupted 'while'!");
+	}
+	get(Token::BRACE_RIGHT);
+
+	result->setLoop(getOperator());
+
+	if(currentToken == Token(Token::KEYWORD, "else")){
+		get(Token::KEYWORD);
+		result->setElseBranch(getOperator());
+	}
+
+	return result;
+}
+
+BasicNode* Parser::getFor(){
+	get(Token(Token::KEYWORD, "for"));
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
+		throw ParserException("Corrupted 'for'!");
+	}
+	get(Token::BRACE_LEFT);
+
+	ForNode *result = new ForNode();
+
+	try {
+		lock();
+		result->setInit(getVarDeclaration());
+	}
+	catch (NoticeException &ne){
+		try {
+			recoil();
+			result->setInit(getExpression());
+		}
+		catch (NoticeException &ne){
+			throw ParserException("Corrupted 'for' -- no init ");
+		}
+	}
+
+	get(Token::SEMICOLON);
+	result->setCondition(getExpression());
+	get(Token::SEMICOLON);
+	result->setStep(getExpression());
+
+	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+		throw ParserException("Corrupted 'for'!");
+	}
+	get(Token::BRACE_RIGHT);
+
+	result->setAction(getOperator());
+
+	return result;
+}
+
 BasicNode* Parser::getIf(){
 	get(Token(Token::KEYWORD, "if"));
 
@@ -1121,6 +1187,18 @@ BasicNode* Parser::getOperator(){
 
 	if(currentToken == Token(Token::KEYWORD, "if")){
 		auto result = getIf();
+		consumeSemicolons();
+		return result;
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "while")){
+		auto result = getWhile();
+		consumeSemicolons();
+		return result;
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "for")){
+		auto result = getFor();
 		consumeSemicolons();
 		return result;
 	}

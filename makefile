@@ -12,7 +12,7 @@ SOURCES=header.cpp alphabet.cpp\
 	\
 	basicnode.cpp\
 	operatorsnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
-	typenode.cpp vardeclarationnode.cpp signaturenode.cpp functiondefinitionnode.cpp ifnode.cpp returnnode.cpp\
+	typenode.cpp vardeclarationnode.cpp signaturenode.cpp functiondefinitionnode.cpp ifnode.cpp whilenode.cpp fornode.cpp returnnode.cpp\
 	\
 	parser.cpp\
 	main.cpp

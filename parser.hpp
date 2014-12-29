@@ -19,6 +19,8 @@
 #include "signaturenode.hpp"
 #include "functiondefinitionnode.hpp"
 #include "ifnode.hpp"
+#include "whilenode.hpp"
+#include "fornode.hpp"
 #include "returnnode.hpp"
 
 class Parser{
@@ -141,6 +143,10 @@ BasicNode* getBlock();
 BasicNode* getFunction();
 
 BasicNode* getIf();
+
+BasicNode* getWhile();
+
+BasicNode* getFor();
 
 bool isReturnKeyword();
 

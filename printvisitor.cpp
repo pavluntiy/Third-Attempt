@@ -30,7 +30,6 @@ void PrintVisitor::visit(OperatorsNode *node){
 
 void PrintVisitor::visit(CompoundNameNode *node){
 	*this->out << shift << "( " << node->toString();
-	//*this->out << " '" << node->getLeft() << "' ";
 
 	if(node->getNames().size() > 0){
 		*this->out << ' ';
@@ -46,13 +45,6 @@ void PrintVisitor::visit(CompoundNameNode *node){
 	if(node->getNames().size() > 1){
 		*this->out << endl;
 	}
-
-	// this->shift.push_back(' ');
-	// // if(node->getRight()){
-	// // 	cout << endl;
-	// // 	node->getRight()->accept(this);
-	// // }
-	// this->shift.pop_back();
 	
 	if(node->getNames().size() > 1){
 		*this->out << shift;
@@ -181,6 +173,54 @@ void PrintVisitor::visit(IfNode *node){
 
  	if(node->getElseBranch()){
  		node->getElseBranch()->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
+void PrintVisitor::visit(WhileNode *node){
+
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+ 	
+ 	node->getCondition()->accept(this);
+
+ 	node->getLoop()->accept(this);
+
+ 	if(node->getElseBranch()){
+ 		node->getElseBranch()->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
+void PrintVisitor::visit(ForNode *node){
+
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+ 	
+ 	if(node->getInit()){
+ 		node->getInit()->accept(this);
+ 	}
+
+ 	if(node->getCondition()){
+ 		node->getCondition()->accept(this);
+ 	}
+
+ 	if(node->getStep()){
+ 		node->getStep()->accept(this);
+ 	}
+
+ 	if(node->getAction()){
+ 		node->getAction()->accept(this);
  	}
 
 	this->shift.pop_back();
