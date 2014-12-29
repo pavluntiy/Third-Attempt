@@ -22,6 +22,7 @@
 #include "whilenode.hpp"
 #include "fornode.hpp"
 #include "returnnode.hpp"
+#include "structnode.hpp"
 
 class Parser{
 
@@ -132,6 +133,9 @@ BasicNode* getVarDeclaration();
 
 
 bool consumeSemicolons();
+
+BasicNode *getStruct();
+
 BasicNode *getOperator();
 
 BasicNode *getOperators();

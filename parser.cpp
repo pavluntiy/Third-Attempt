@@ -987,7 +987,7 @@ BasicNode* Parser::getSignature(){
 
 					TypeNode *type = dynamic_cast<TypeNode*>(getType());
 					CompoundNameNode *name = nullptr;
-					ValueNode *defaultValue = nullptr;
+					BasicNode *defaultValue = nullptr;
 					if(currentToken != Token(Token::OPERATOR, "...") 
 						&&
 						currentToken != Token(Token::OPERATOR, ",") 
@@ -998,7 +998,7 @@ BasicNode* Parser::getSignature(){
 						defaultValue = nullptr;
 						if(currentToken == Token(Token::OPERATOR, "=")){
 							get(Token::OPERATOR);
-							defaultValue =dynamic_cast<ValueNode*>(getValue());
+							defaultValue = getTernary();
 						}
 					}
 
@@ -1053,6 +1053,7 @@ BasicNode* Parser::getBlock(){
 	return result;
 
 }
+
 
 BasicNode* Parser::getFunction(){
 	try {
@@ -1193,6 +1194,53 @@ BasicNode* Parser::getReturn(){
 	return result;
 }
 
+
+BasicNode* Parser::getStruct(){
+	if(currentToken != Token(Token::KEYWORD, "struct")){
+		throw ParserException("I shouldn't have got to here!");
+	}
+
+	get(Token::KEYWORD);
+
+	StructNode *result = new StructNode();
+
+	result->setName(getCompoundName());
+
+	if(!currentToken.typeEqualsTo(Token::CURL_LEFT)){
+		return result;
+	}
+
+	get(Token::CURL_LEFT);
+	try{
+		while(true){
+			consumeSemicolons();
+
+			if(currentToken == Token(Token::KEYWORD, "def")){
+				auto tmp = getFunction();
+				consumeSemicolons();
+				result->addFunction(tmp);
+			}
+			else {
+				auto tmp = getVarDeclaration();
+				consumeSemicolons();
+				result->addVariable(tmp);
+			}
+		}
+	}
+	catch(NoticeException &ne){
+		//throw ParserException("Strange struct!");
+	}
+
+	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
+		throw ParserException("In 'struct' got no CURL_RIGHT, got " + currentToken.toString());
+	}
+	get(Token::CURL_RIGHT);
+
+	return result;
+
+
+}
+
 bool Parser::consumeSemicolons(){
 	bool result = false;
 	while(currentToken.typeEqualsTo(Token::SEMICOLON)){
@@ -1226,6 +1274,12 @@ BasicNode* Parser::getOperator(){
 
 	if(currentToken == Token(Token::KEYWORD, "for")){
 		auto result = getFor();
+		consumeSemicolons();
+		return result;
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "struct")){
+		auto result = getStruct();
 		consumeSemicolons();
 		return result;
 	}

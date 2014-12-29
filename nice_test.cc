@@ -69,4 +69,14 @@ for(pass; i != foo(); next(i)) {
 	printf("%d", a);
 }
 
-IO.nice[][][100] f
+IO.ias.nice[][][100] f
+
+struct Point{
+	int x, y;
+
+	def Point Point(int x = 0, int y = -10){
+		this->x = x;
+		this->y = y;
+	}
+
+};;;;;

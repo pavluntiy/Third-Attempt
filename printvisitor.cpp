@@ -255,6 +255,32 @@ void PrintVisitor::visit(ReturnNode *node){
 	*this->out   << shift << ")" << endl;
 }
 
+void PrintVisitor::visit(StructNode *node){
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+
+
+ 	node->getName()->accept(this);
+
+ 	*this->out << shift << "Functions:\n";
+
+ 	for(auto it: node->getFunctions()){
+ 		it->accept(this);
+ 	}
+
+ 	*this->out << shift << "\nVariables:\n";
+
+ 	for(auto it: node->getVariables()){
+ 		it->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+
+}
 
 PrintVisitor::PrintVisitor(ostream *out){
 		this->shift = "";

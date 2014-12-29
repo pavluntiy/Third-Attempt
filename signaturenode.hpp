@@ -7,7 +7,7 @@
 
 class SignatureNode: public BasicNode {
 public:
-	typedef tuple<TypeNode*, CompoundNameNode*, ValueNode*> ArgumentType;
+	typedef tuple<TypeNode*, CompoundNameNode*, BasicNode*> ArgumentType;
 protected:
 	TypeNode *type;
 	CompoundNameNode *name;
