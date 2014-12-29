@@ -6,7 +6,7 @@
 
 class LexerException : public MyException {
 public:
-	LexerException (std::string error);
+	LexerException (std::string error = "", Position position = {0, 0});
 };
 
 #endif

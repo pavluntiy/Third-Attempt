@@ -6,7 +6,7 @@
 
 class NoticeException : public MyException {
 public:
-	NoticeException (std::string error);
+	NoticeException (std::string error = "", Position position = {0, 0});
 };
 
 #endif

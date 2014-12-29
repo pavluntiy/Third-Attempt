@@ -16,7 +16,7 @@ void Parser::lock(){
 
 void Parser::recoil(){
 	if(this->history.empty()){
-		throw ParserException("Incorrect recoiling!");
+		throw ParserException("Incorrect recoiling!", currentToken.getPosition());
 	}
 
 	this->currentPosition = this->history.top();
@@ -57,7 +57,7 @@ void Parser::tryAndGet(Token token){
 void Parser::get(Token token){
 	if(currentToken != token){
 		throw NoticeException ("No " + token.toString() + " found, got " + currentToken.toString() + 
-			"instead at " + currentToken.getPosition().toString());
+			"instead", currentToken.getPosition());
 	}
 	consume();
 }
@@ -65,7 +65,7 @@ void Parser::get(Token token){
 void Parser::get(Token::Type type){
 	if(!currentToken.typeEqualsTo(type)){
 		throw NoticeException ("No " + Token(type).toString() + " found, got " + currentToken.toString() + 
-			"instead at " + currentToken.getPosition().toString());
+			"instead", currentToken.getPosition());
 	}
 	consume();
 }
@@ -73,12 +73,14 @@ void Parser::get(Token::Type type){
 
 BasicNode* Parser::getCommaExpression(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool commaFound = false;
 		try {
 			if(left == nullptr){
 				left = getAssignment();
 			}
 
 			if(currentToken == Token(Token::OPERATOR, ",")){
+				commaFound = true;
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -90,7 +92,10 @@ BasicNode* Parser::getCommaExpression(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			throw NoticeException("corrupted Comma expression (" + ne.what() + ") at" + currentToken.getPosition().toString());
+			if(commaFound){
+				throw ParserException("corrupted Comma expression", currentToken.getPosition());
+			}
+			throw NoticeException("Comma expression not found");
 		}
 }
 
@@ -132,9 +137,13 @@ bool Parser::isAssignmentOp(){
 BasicNode* Parser::getAssignment(){
 	BasicNode *left = nullptr;
 	FunctionCallNode *op = nullptr;
+	bool opFound = false;
+	string opName = "";
 	try{
 		left = getTernary();
 		if(isAssignmentOp()){
+			opFound = true;
+			opName = currentToken.getText();
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
 			op->addArg(left);
@@ -146,7 +155,10 @@ BasicNode* Parser::getAssignment(){
 		}
 	}
 	catch(NoticeException ne){
-		throw NoticeException("Corrupted assignment operator  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+		if(opFound){
+			throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+		}
+		throw NoticeException("No assignment found!");
 	}
 }
 
@@ -156,15 +168,18 @@ BasicNode* Parser::getAssignment(){
 BasicNode* Parser::getTernary(){
 	FunctionCallNode *op = nullptr;
 	BasicNode *cond = nullptr;
+	bool thenBranchFound = false, questionMarkFound = false;
 	try {
 		cond = getInIsExpression();
 		if(currentToken == Token(Token::OPERATOR, "?")){
+			questionMarkFound = true;
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
 			op->addArg(cond);
 			op->addArg(getTernary());
+			thenBranchFound = true;
 			if(currentToken != Token(Token::OPERATOR, ":")){
-				throw ParserException("Corrupted ternary operator at " + currentToken.getPosition().toString());
+				throw ParserException("No 'else' branch found for ternary ", currentToken.getPosition());
 			}
 			get(Token::OPERATOR);
 			op->addArg(getTernary());
@@ -175,7 +190,14 @@ BasicNode* Parser::getTernary(){
 		}
 	}
 	catch (NoticeException &ne){
-		throw NoticeException("corrupted  ternary operator  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+
+		if(thenBranchFound){
+			throw ParserException("No 'else' branch found for ternary ", currentToken.getPosition());
+		}
+		if(questionMarkFound){
+			throw ParserException("No 'then' branch found for ternary ", currentToken.getPosition());
+		}
+		throw NoticeException("No ternary found");
 	}
 }
 
@@ -189,6 +211,8 @@ bool Parser::isInIsExpressionOp(){
 
 BasicNode* Parser::getInIsExpression(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool opFound = false;
+		string opName = "";
 		try {
 			if(left == nullptr){
 				left = getLogicalOr();
@@ -196,6 +220,8 @@ BasicNode* Parser::getInIsExpression(BasicNode *left){
 
 			if(isInIsExpressionOp()){
 				op = new FunctionCallNode(currentToken);
+				opFound = true;
+				opName = currentToken.getText();
 				get(Token::KEYWORD);
 				op->addArg(left);
 				op->addArg(getLogicalOr());
@@ -207,18 +233,25 @@ BasicNode* Parser::getInIsExpression(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw NoticeException("corrupted  Is/In expression  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("no Is/In found");
 		}
 }
 
 BasicNode* Parser::getLogicalOr(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool opFound = false;
+		string opName = "";
 		try {
 			if(left == nullptr){
 				left = getLogicalAnd();
 			}
 
 			if(currentToken == Token(Token::OPERATOR, "||")){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -230,19 +263,26 @@ BasicNode* Parser::getLogicalOr(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			throw NoticeException("corrupted '||' (" + ne.what() + ") at" + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No logical or found");
 		}
 }
 
 
 BasicNode* Parser::getLogicalAnd(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool opFound = false;
+		string opName = "";
 		try {
 			if(left == nullptr){
 				left = getBitwiseOr();
 			}
 
 			if(currentToken == Token(Token::OPERATOR, "&&")){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -254,19 +294,26 @@ BasicNode* Parser::getLogicalAnd(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			throw NoticeException("corrupted '&&' (" + ne.what() + ") at" + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No logical and found");
 		}
 }
 
 
 BasicNode* Parser::getBitwiseOr(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool opFound = false;
+		string opName = "";
 		try {
 			if(left == nullptr){
 				left = getBitwiseXor();
 			}
 
 			if(currentToken == Token(Token::OPERATOR, "|")){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -278,11 +325,16 @@ BasicNode* Parser::getBitwiseOr(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			throw NoticeException("corrupted '|' (" + ne.what() + ") at" + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No bitwise or found");
 		}
 }
 
 BasicNode* Parser::getBitwiseXor(BasicNode *left){
+		bool opFound = false;
+		string opName = "";
 		FunctionCallNode *op = nullptr;	
 		try {
 			if(left == nullptr){
@@ -290,6 +342,8 @@ BasicNode* Parser::getBitwiseXor(BasicNode *left){
 			}
 
 			if(currentToken == Token(Token::OPERATOR, "^")){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -301,12 +355,17 @@ BasicNode* Parser::getBitwiseXor(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			throw NoticeException("corrupted '^' (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No bitwise xor found");
 		}
 }
 
 
 BasicNode* Parser::getBitwiseAnd(BasicNode *left){
+		bool opFound = false;
+		string opName = "";
 		FunctionCallNode *op = nullptr;	
 		try {
 			if(left == nullptr){
@@ -314,6 +373,8 @@ BasicNode* Parser::getBitwiseAnd(BasicNode *left){
 			}
 
 			if(currentToken == Token(Token::OPERATOR, "&")){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -325,7 +386,10 @@ BasicNode* Parser::getBitwiseAnd(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
-			throw NoticeException("corrupted '&' (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No bitwise and found");
 		}
 }
 
@@ -343,12 +407,16 @@ bool Parser::isComparisonOp(){
 
 BasicNode* Parser::getComparison(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool opFound = false;
+		string opName = "";
 		try {
 			if(left == nullptr){
 				left = getStrictComparison();
 			}
 
 			if(isComparisonOp()){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -360,7 +428,10 @@ BasicNode* Parser::getComparison(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw NoticeException("corrupted  Comparison  (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No comparison found");
 		}
 }
 
@@ -375,6 +446,8 @@ bool Parser::isStrictComparisonOp(){
 }
 
 BasicNode* Parser::getStrictComparison(BasicNode *left){
+		bool opFound = false;
+		string opName = "";
 		FunctionCallNode *op = nullptr;	
 		try {
 			if(left == nullptr){
@@ -382,6 +455,8 @@ BasicNode* Parser::getStrictComparison(BasicNode *left){
 			}
 
 			if(isStrictComparisonOp()){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -393,7 +468,10 @@ BasicNode* Parser::getStrictComparison(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw NoticeException("corrupted Strict Comparison (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No strict comparison found");
 		}
 }
 
@@ -410,6 +488,8 @@ bool Parser::isShiftOp(){
 }
 
 BasicNode* Parser::getShift(BasicNode *left){
+		bool opFound = false;
+		string opName = "";
 		FunctionCallNode *op = nullptr;	
 		try {
 			if(left == nullptr){
@@ -417,6 +497,8 @@ BasicNode* Parser::getShift(BasicNode *left){
 			}
 
 			if(isShiftOp()){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -428,7 +510,10 @@ BasicNode* Parser::getShift(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw NoticeException("corrupted SHIFT (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No shift found");
 		}
 }
 
@@ -442,6 +527,8 @@ bool Parser::isExpr6Op(){
 }
 
 BasicNode* Parser::getExpr6(BasicNode *left){
+		bool opFound = false;
+		string opName = "";
 		FunctionCallNode *op = nullptr;	
 		try {
 			if(left == nullptr){
@@ -449,6 +536,8 @@ BasicNode* Parser::getExpr6(BasicNode *left){
 			}
 
 			if(isExpr6Op()){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -460,7 +549,10 @@ BasicNode* Parser::getExpr6(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw NoticeException("corrupted EXPR6 (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No EXPR6 found");
 		}
 }
 
@@ -477,12 +569,16 @@ bool Parser::isExpr7Op(){
 
 BasicNode* Parser::getExpr7(BasicNode *left){
 		FunctionCallNode *op = nullptr;	
+		bool opFound = false;
+		string opName = "";
 		try {
 			if(left == nullptr){
 				left = getExpr8();
 			}
 
 			if(isExpr7Op()){
+				opFound = true;
+				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
 				op->addArg(left);
@@ -494,7 +590,10 @@ BasicNode* Parser::getExpr7(BasicNode *left){
 			}
 		}
 		catch (NoticeException ne){
-			throw NoticeException("corrupted EXPR7 (" + ne.what() + ") at " + currentToken.getPosition().toString());
+			if(opFound){
+				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+			}
+			throw NoticeException("No EXPR7 found");
 		}
 }
 
@@ -506,9 +605,13 @@ bool Parser::isExpr8Op(){
 BasicNode* Parser::getExpr8(){
 	BasicNode *left = nullptr;
 	FunctionCallNode *op = nullptr;
+	bool opFound = false;
+	string opName = "";
 	try{
 		left = getExpr9();
 		if(isExpr8Op()){
+			opFound = true;
+			opName = currentToken.getText();
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
 			op->addArg(left);
@@ -520,6 +623,9 @@ BasicNode* Parser::getExpr8(){
 		}
 	}
 	catch(NoticeException ne){
+		if(opFound){
+			throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
+		}
 		throw NoticeException("No EXPR8 found!");
 	}
 }
@@ -548,7 +654,7 @@ BasicNode* Parser::getAtom(){
 
 	}
 
-	throw NoticeException("No ATOM found at " + currentToken.getPosition().toString() + " got " + currentToken.toString());
+	throw NoticeException("No ATOM found");
 
 }
 
@@ -565,33 +671,32 @@ BasicNode* Parser::getName(){
 
 BasicNode* Parser::getFunctionCalls(BasicNode *left){
 
+		bool commaFound = false;
 		FunctionCallNode *result = nullptr;
 		if(currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 					get(Token::BRACE_LEFT);
 					try{	
 							result = new FunctionCallNode(left);
-							result->addArg(getExpression());
+							result->addArg(getAssignment());
 							cout << currentToken;
 							while(currentToken == Token(Token::OPERATOR, ",")){
-								//cout << "mimi!";
 								get(Token::OPERATOR);
-								result->addArg(getExpression());
-								//SHould I check here for 'foo(arg1, )'
-								//cout << "hshs!";
+								commaFound = true;
+								result->addArg(getAssignment());
+								commaFound = false;
 							}
 					}
-					catch (NoticeException  &ne){};
+					catch (NoticeException  &ne){
+						if(commaFound){
+							throw ParserException("Missing argument after comma at " + currentToken.getPosition().toString());
+						}
+					};
 					if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
 						throw ParserException("Missed BRACE_RIGHT at " + currentToken.getPosition().toString());
 					}
 					get(Token::BRACE_RIGHT);
 
-					//try {
-						return getFunctionCalls(result);
-					// }
-					// catch(NoticeException ne){
-
-					// }
+					return getFunctionCalls(result);
 		}
 	
 		return left;
@@ -660,17 +765,22 @@ bool Parser::isExpr9SuffixOp(){
 BasicNode* Parser::getExpr9Suffix(BasicNode *left){
 	FunctionCallNode *op = nullptr;
 
-	if(left == nullptr){
-		left = getExpr10();
+	try{
+		if(left == nullptr){
+			left = getExpr10();
+		}
+	}
+	catch (NoticeException &ne){
+		throw NoticeException("No EXPR10 found at "+ currentToken.getPosition().toString());
 	}
 
-		if(isExpr9SuffixOp()){
-			auto tmpToken = Token(Token::OPERATOR, "_" +currentToken.getText());
-			op = new FunctionCallNode(tmpToken);
-			get(Token::OPERATOR);	
-			op->addArg(getExpr9Suffix(left));
-			return op;
-		}
+	if(isExpr9SuffixOp()){
+		auto tmpToken = Token(Token::OPERATOR, "_" +currentToken.getText());
+		op = new FunctionCallNode(tmpToken);
+		get(Token::OPERATOR);	
+		op->addArg(getExpr9Suffix(left));
+		return op;
+	}
 
 	return left;
 }
@@ -697,25 +807,24 @@ bool Parser::isExpr9Op(){
 
 BasicNode* Parser::getExpr9(){
 	FunctionCallNode *op = nullptr;
+	string opName = "";
 
 	if(isExpr9Op()){
 		op = new FunctionCallNode(currentToken);
+		opName = currentToken.getText();
 		get(Token::OPERATOR);
-		op->addArg(getExpr9());
-		return op;
+		try{
+			op->addArg(getExpr9());
+			return op;
+		}
+		catch (NoticeException &ne){
+			throw ParserException("Corrupted expression: " + opName, currentToken.getPosition());
+		}
 	}
 
-	return getExpr9Suffix();
-	// }
-	// catch (NoticeException ne){
-	// 	//cout << "OH YEAH!\n\n";
-	// }
+	
+		return getExpr9Suffix();
 
-	// if(op == nullptr){
-	// 	throw NoticeException("No EXPR9 found!");
-	// }
-
-	// return op;
 }
 
 bool Parser::isExpr10Op(){
@@ -732,6 +841,9 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 	BasicNode *right = nullptr;
 	FunctionCallNode *op = nullptr;
 
+	bool opFound = false;
+	string opName = "";
+
 	if(left == nullptr){
 		try{
 			left = getAtom();
@@ -740,7 +852,9 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 			//cout << "Tyakulli!";
 				if(isExpr10Op()){
 					op = new FunctionCallNode(currentToken);
+					opName = currentToken.getText();
 					get(Token::OPERATOR);
+					opFound = true;
 					right = getAtom();
 					op->addArg(left);
 					op->addArg(right);
@@ -752,7 +866,10 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 				}
 			}
 			catch(NoticeException &ne){
-				//cout << ne.what() <<"OMg #1";
+				if(opFound){
+					throw ParserException("Found " + opName + ", but missing an argument " + currentToken.getPosition().toString());
+				}
+
 			}
 
 	}
@@ -814,20 +931,26 @@ BasicNode* Parser::getExpression(){
 CompoundNameNode* Parser::getCompoundName(){
 
 	int counter = 0;
+	bool dotFound = false;
 
 	CompoundNameNode *result = new CompoundNameNode();
 
 	do {
 		if(counter > 0){
+			dotFound = true;
 			get(Token::OPERATOR);
 		}
 
 		if(currentToken.typeEqualsTo(Token::NAME)){
 			result->addName(currentToken.getText());
 			get(Token::NAME);
+			dotFound = false;
 		}
 		else {
-			throw NoticeException("No name found!");
+			if(dotFound){
+				throw ParserException("Found '.', but missing an name in compound name", currentToken.getPosition());
+			}
+			throw NoticeException("No compound name found!");
 		}
 		++counter;
 	}
@@ -902,7 +1025,7 @@ BasicNode* Parser::getType(){
 				if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
 					result->addDimension(dynamic_cast<ValueNode*>(getValue()));
 					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
-						throw ParserException("Strange type of array!");
+						throw ParserException("Missing ']' in type ", currentToken.getPosition());
 					}
 				}
 				else {
@@ -917,15 +1040,15 @@ BasicNode* Parser::getType(){
 	catch (NoticeException &ne){
 			
 		if(result->getStorageModes().size() > 0){
-			throw ParserException("Only Storage Modes, no Type name specified! " + currentToken.getPosition().toString());
+			throw ParserException("Only Storage Modes, no Type name specified! ", currentToken.getPosition());
 		}
 
 		if(result->getModifiers().size() > 0){
-			throw ParserException("Only Modifiers, no Type name specified! " + currentToken.getPosition().toString());
+			throw ParserException("Only Modifiers, no Type name specified! ", currentToken.getPosition());
 		}
 
 		if(result->getAccessModes().size() > 0){
-			throw ParserException("Only Access Modes, no Type name specified! " + currentToken.getPosition().toString());
+			throw ParserException("Only Access Modes, no Type name specified! ", currentToken.getPosition());
 		}
 
 		throw NoticeException("Not TYPE found!");
@@ -964,24 +1087,35 @@ BasicNode* Parser::getVarDeclaration(){
 }
 
 BasicNode* Parser::getSignature(){
+	if(currentToken != Token(Token::KEYWORD, "def")){
+		throw ParserException("I shouldn't have got here!", currentToken.getPosition());
+	}
 	get(Token(Token::KEYWORD, "def"));
+
+	bool typeFound = false;
+	bool nameFound = false;
+	bool eqFound = false;
 
 	SignatureNode *result = new SignatureNode();
 
 	try {
 		result->setType(dynamic_cast<TypeNode*>(getType()));
+		typeFound = true;
 		result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
+		nameFound = true;
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-			throw ParserException("Corrupted function signature at " + currentToken.getPosition().toString());
+			throw ParserException("No '(' in function signature", currentToken.getPosition());
 		}
 		get(Token::BRACE_LEFT);
 
+		bool commaFound = false;
 		if(currentToken != Token(Token::KEYWORD, "void")){
 			try{
 				int counter = 0;
 				do{
 					if(counter > 0){
+						commaFound = true;
 						get(Token::OPERATOR);
 					}
 
@@ -997,6 +1131,7 @@ BasicNode* Parser::getSignature(){
 						name = dynamic_cast<CompoundNameNode*>(getName());
 						defaultValue = nullptr;
 						if(currentToken == Token(Token::OPERATOR, "=")){
+							eqFound = true;
 							get(Token::OPERATOR);
 							defaultValue = getTernary();
 						}
@@ -1004,6 +1139,8 @@ BasicNode* Parser::getSignature(){
 
 					result->addArgument(make_tuple(type, name, defaultValue));
 					++counter;
+					commaFound = false;
+					eqFound = false;
 				}
 				while(currentToken == Token(Token::OPERATOR, ","));
 
@@ -1014,6 +1151,14 @@ BasicNode* Parser::getSignature(){
 
 			}
 			catch(NoticeException &ne){
+				
+				if(eqFound){
+					throw ParserException("In function signature got '=', but no defaultValue ", currentToken.getPosition());
+				}
+
+				if(commaFound){
+					throw ParserException("In function signature got ',', but no argument", currentToken.getPosition());
+				}
 
 			}
 		}
@@ -1022,7 +1167,7 @@ BasicNode* Parser::getSignature(){
 		}
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-			throw ParserException("No BRACE_RIGHT, got " +  currentToken.toString());
+			throw ParserException("No ')' in function signature", currentToken.getPosition());
 		}
 		get(Token::BRACE_RIGHT);
 
@@ -1030,7 +1175,9 @@ BasicNode* Parser::getSignature(){
 
 	}
 	catch (NoticeException &ne){
-
+		if(typeFound && !nameFound){
+			throw ParserException("In function signature got type, but no name ", currentToken.getPosition());
+		}
 	}
 
 	throw NoticeException("No function signature found!");
@@ -1077,7 +1224,7 @@ BasicNode* Parser::getWhile(){
 	get(Token(Token::KEYWORD, "while"));
 
 	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-		throw ParserException("Corrupted 'while'!");
+		throw ParserException("Missing '(' for 'while'", currentToken.getPosition());
 	}
 	get(Token::BRACE_LEFT);
 
@@ -1086,7 +1233,7 @@ BasicNode* Parser::getWhile(){
 	result->setCondition(getExpression());
 
 	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-		throw ParserException("Corrupted 'while'!");
+		throw ParserException("Missing ')' for 'while'", currentToken.getPosition());
 	}
 	get(Token::BRACE_RIGHT);
 
@@ -1103,47 +1250,73 @@ BasicNode* Parser::getWhile(){
 BasicNode* Parser::getFor(){
 	get(Token(Token::KEYWORD, "for"));
 
+	bool initFound = false;
+	bool condFound = false;
+	bool stepFound = false;
+
 	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-		throw ParserException("Corrupted 'for'!");
+		throw ParserException("Missing '(' for 'for'", currentToken.getPosition());
 	}
 	get(Token::BRACE_LEFT);
 
 	ForNode *result = new ForNode();
-
-	try {
-		lock();
-		result->setInit(getVarDeclaration());
-	}
-	catch (NoticeException &ne){
+	try{
 		try {
-			recoil();
-			result->setInit(getExpression());
+			lock();
+			result->setInit(getVarDeclaration());
 		}
 		catch (NoticeException &ne){
-			throw ParserException("Corrupted 'for' -- no init ");
+			try {
+				recoil();
+				result->setInit(getExpression());
+			}
+			catch (NoticeException &ne){
+				throw ParserException("Missing init in 'for'", currentToken.getPosition());
+			}
 		}
+		initFound = true;
+
+		get(Token::SEMICOLON);
+		result->setCondition(getExpression());
+		condFound = true;
+
+
+		get(Token::SEMICOLON);
+		result->setStep(getExpression());
+		stepFound = true;
+
+		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			throw ParserException("Missing ')' for 'for'", currentToken.getPosition());
+		}
+		get(Token::BRACE_RIGHT);
+
+
+		result->setAction(getOperator());
+
+		return result;
+	}	
+	catch (NoticeException &ne){
+		if(stepFound){
+			throw ParserException("No 'action' found in 'for'", currentToken.getPosition());
+		}
+
+		if(condFound){
+			throw ParserException("No step found in 'for'", currentToken.getPosition());
+		}
+
+		if(initFound){
+			throw ParserException("No condition found in 'for'", currentToken.getPosition());
+		}
+
+		throw ParserException("Something strange happened in 'for'", currentToken.getPosition());
 	}
-
-	get(Token::SEMICOLON);
-	result->setCondition(getExpression());
-	get(Token::SEMICOLON);
-	result->setStep(getExpression());
-
-	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-		throw ParserException("Corrupted 'for'!");
-	}
-	get(Token::BRACE_RIGHT);
-
-	result->setAction(getOperator());
-
-	return result;
 }
 
 BasicNode* Parser::getIf(){
 	get(Token(Token::KEYWORD, "if"));
 
 	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
-		throw ParserException("Corrupted 'if'!");
+		throw ParserException("Missing '(' for 'if'", currentToken.getPosition());
 	}
 	get(Token::BRACE_LEFT);
 
@@ -1152,7 +1325,7 @@ BasicNode* Parser::getIf(){
 	result->setCondition(getExpression());
 
 	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-		throw ParserException("Corrupted 'if'!");
+		throw ParserException("Missing ')' for 'if'", currentToken.getPosition());
 	}
 	get(Token::BRACE_RIGHT);
 
@@ -1188,7 +1361,6 @@ BasicNode* Parser::getReturn(){
 		result->setResult(getExpression());
 	}
 	catch(NoticeException &ne){
-
 	}
 
 	return result;
@@ -1204,7 +1376,12 @@ BasicNode* Parser::getStruct(){
 
 	StructNode *result = new StructNode();
 
-	result->setName(getCompoundName());
+	try{
+		result->setName(getCompoundName());
+	}
+	catch (NoticeException &ne){
+		throw ParserException("No name for 'struct' found ", currentToken.getPosition());
+	}
 
 	if(!currentToken.typeEqualsTo(Token::CURL_LEFT)){
 		return result;
@@ -1228,11 +1405,10 @@ BasicNode* Parser::getStruct(){
 		}
 	}
 	catch(NoticeException &ne){
-		//throw ParserException("Strange struct!");
 	}
 
 	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
-		throw ParserException("In 'struct' got no CURL_RIGHT, got " + currentToken.toString());
+		throw ParserException("In 'struct' got no ')'", currentToken.getPosition());
 	}
 	get(Token::CURL_RIGHT);
 
@@ -1333,9 +1509,9 @@ BasicNode* Parser::getOperators(){
 			}
 		}
 		catch(NoticeException &ne){
-			if(ne.what() != "Nothing found!"){
-				throw ne;
-			}
+			//if(ne.what() != "Nothing found!"){
+			//	throw ne;
+			//}
 		}
 		return result;
 }
@@ -1363,6 +1539,6 @@ void Parser::buildTree(){
 		get(Token::END);
 	}
 	catch(NoticeException &ne){
-		throw ParserException("Program structure corrupted: " + ne.what());
+		throw ParserException("Program structure corrupted: " + ne.what(), currentToken.getPosition());
 	}
 }

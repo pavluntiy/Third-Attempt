@@ -1,5 +1,5 @@
 #include "parserexception.hpp"
-	ParserException::ParserException (std::string error):
-	MyException(error)
+	ParserException::ParserException (std::string error, Position position):
+	MyException(error, position)
 	{
 	}

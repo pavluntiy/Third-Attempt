@@ -4,13 +4,17 @@
 #include <exception>
 #include <string>
 
+#include "header.hpp"
+
 class MyException : public std::exception {
-	std::string error;
+	string error;
+	Position position;
+
 public:
 
 	
-	MyException (std::string error);
-	std::string what();
+	MyException (string error = "", Position position = {0, 0});
+	string what();
 };
 
 #endif

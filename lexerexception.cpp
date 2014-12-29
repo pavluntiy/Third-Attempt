@@ -2,9 +2,8 @@
 
 #include "lexerexception.hpp"
 
-
-	LexerException::LexerException (std::string error):
-	MyException(error)
+LexerException::LexerException (std::string error, Position position):
+	MyException(error, position)
 	{
 	}
 
