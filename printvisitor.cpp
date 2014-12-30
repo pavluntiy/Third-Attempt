@@ -3,13 +3,13 @@
 void PrintVisitor::visit(ProgramNode *node){
 	*this->out << shift << "( " << node->toString();
 	if(node->getChild()){
-		cout << endl;
+		*this->out << endl;
 		this->shift.push_back(' ');
 		node->getChild()->accept(this);
 		this->shift.pop_back();
 	}
 
-	*this->out   << ")" << endl;	
+	*this->out << ")" << endl;	
 }
 
 void PrintVisitor::visit(OperatorsNode *node){
@@ -285,4 +285,8 @@ void PrintVisitor::visit(StructNode *node){
 PrintVisitor::PrintVisitor(ostream *out){
 		this->shift = "";
 		this->out = out;
+}
+
+PrintVisitor::~PrintVisitor(){
+
 }

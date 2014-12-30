@@ -37,6 +37,8 @@ public:
 	virtual void visit(ReturnNode *node) = 0;
 	virtual void visit(StructNode *node) = 0;
 
+	virtual ~BasicVisitor();
+
 };	
 
 #endif

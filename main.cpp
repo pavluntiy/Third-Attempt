@@ -4,10 +4,8 @@
 #include <string>
 #include "lexer.hpp"
 #include "parser.hpp"
-// #include "printvisitor.hpp"
-//#include "treeprinter.hpp"
-
 #include "printvisitor.hpp"
+#include "deletevisitor.hpp"
 
 using namespace std;
 
@@ -64,6 +62,15 @@ int main (int argc, char **argv) {
 	PrintVisitor *printVisitor = new PrintVisitor(out);
 
 	parser.getTree()->accept(printVisitor);
+
+	delete printVisitor;
+
+	DeleteVisitor *deleteVisitor = new DeleteVisitor();
+
+	parser.getTree()->accept(deleteVisitor);
+	delete deleteVisitor;
+
+
 
 
 	return 0;

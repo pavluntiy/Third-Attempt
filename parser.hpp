@@ -24,6 +24,8 @@
 #include "returnnode.hpp"
 #include "structnode.hpp"
 
+#include "deletevisitor.hpp"
+
 class Parser{
 
 protected: 
@@ -35,8 +37,11 @@ protected:
 	int currentPosition;
 	Token currentToken;
 
+	DeleteVisitor *deleteVisitor;
+
 public:
 	Parser (Lexer &lexer);
+	~Parser();
 
 void lock();
 void recoil();

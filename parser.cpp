@@ -8,7 +8,11 @@ Parser::Parser (Lexer &lexer):
 		this->currentPosition = 0;
 		this->currentToken = this->lexer[0];
 		this->history.push(currentPosition);
+		this->deleteVisitor = new DeleteVisitor;
 	}
+Parser::~Parser(){
+	delete this->deleteVisitor;
+}
 
 void Parser::lock(){
 	this->history.push(currentPosition);
@@ -92,7 +96,12 @@ BasicNode* Parser::getCommaExpression(BasicNode *left){
 			}
 		}
 		catch (NoticeException &ne){
+			
+
 			if(commaFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("corrupted Comma expression", currentToken.getPosition());
 			}
 			throw NoticeException("Comma expression not found");
@@ -156,6 +165,9 @@ BasicNode* Parser::getAssignment(){
 	}
 	catch(NoticeException ne){
 		if(opFound){
+			if(op){
+				op->accept(this->deleteVisitor);
+			}
 			throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 		}
 		throw NoticeException("No assignment found!");
@@ -190,11 +202,17 @@ BasicNode* Parser::getTernary(){
 		}
 	}
 	catch (NoticeException &ne){
-
+		
 		if(thenBranchFound){
+			if(op){
+				op->accept(this->deleteVisitor);
+			}
 			throw ParserException("No 'else' branch found for ternary ", currentToken.getPosition());
 		}
 		if(questionMarkFound){
+			if(op){
+				op->accept(this->deleteVisitor);
+			}
 			throw ParserException("No 'then' branch found for ternary ", currentToken.getPosition());
 		}
 		throw NoticeException("No ternary found");
@@ -232,8 +250,11 @@ BasicNode* Parser::getInIsExpression(BasicNode *left){
 				return left;
 			}
 		}
-		catch (NoticeException ne){
+		catch (NoticeException ne){		
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("no Is/In found");
@@ -264,6 +285,9 @@ BasicNode* Parser::getLogicalOr(BasicNode *left){
 		}
 		catch (NoticeException &ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No logical or found");
@@ -295,6 +319,9 @@ BasicNode* Parser::getLogicalAnd(BasicNode *left){
 		}
 		catch (NoticeException &ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No logical and found");
@@ -356,6 +383,9 @@ BasicNode* Parser::getBitwiseXor(BasicNode *left){
 		}
 		catch (NoticeException &ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No bitwise xor found");
@@ -385,8 +415,11 @@ BasicNode* Parser::getBitwiseAnd(BasicNode *left){
 				return left;
 			}
 		}
-		catch (NoticeException &ne){
+		catch (NoticeException &ne){	
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No bitwise and found");
@@ -429,6 +462,9 @@ BasicNode* Parser::getComparison(BasicNode *left){
 		}
 		catch (NoticeException ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No comparison found");
@@ -469,6 +505,9 @@ BasicNode* Parser::getStrictComparison(BasicNode *left){
 		}
 		catch (NoticeException ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No strict comparison found");
@@ -511,6 +550,9 @@ BasicNode* Parser::getShift(BasicNode *left){
 		}
 		catch (NoticeException ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No shift found");
@@ -550,6 +592,9 @@ BasicNode* Parser::getExpr6(BasicNode *left){
 		}
 		catch (NoticeException ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No EXPR6 found");
@@ -591,6 +636,9 @@ BasicNode* Parser::getExpr7(BasicNode *left){
 		}
 		catch (NoticeException ne){
 			if(opFound){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
 				throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 			}
 			throw NoticeException("No EXPR7 found");
@@ -624,6 +672,9 @@ BasicNode* Parser::getExpr8(){
 	}
 	catch(NoticeException ne){
 		if(opFound){
+			if(op){
+				op->accept(this->deleteVisitor);
+			}
 			throw ParserException("Found '" + opName + "', but missing an argument ", currentToken.getPosition());
 		}
 		throw NoticeException("No EXPR8 found!");
@@ -678,7 +729,6 @@ BasicNode* Parser::getFunctionCalls(BasicNode *left){
 					try{	
 							result = new FunctionCallNode(left);
 							result->addArg(getAssignment());
-							cout << currentToken;
 							while(currentToken == Token(Token::OPERATOR, ",")){
 								get(Token::OPERATOR);
 								commaFound = true;
@@ -688,11 +738,17 @@ BasicNode* Parser::getFunctionCalls(BasicNode *left){
 					}
 					catch (NoticeException  &ne){
 						if(commaFound){
+							if(result){
+								result->accept(this->deleteVisitor);
+							}
 							throw ParserException("Missing argument after comma at " + currentToken.getPosition().toString());
 						}
 					};
 					if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-						throw ParserException("Missed BRACE_RIGHT at " + currentToken.getPosition().toString());
+						if(result){
+							result->accept(this->deleteVisitor);
+						}
+						throw ParserException("Missed ')' at " + currentToken.getPosition().toString());
 					}
 					get(Token::BRACE_RIGHT);
 
@@ -707,10 +763,10 @@ BasicNode* Parser::getAccessArgs(){
 		return getExpression();
 	}
 	catch (NoticeException ne){
-
+		throw ParserException("Empty expression is not allowed in '[]'", currentToken.getPosition());
 	}
 
-	throw NoticeException("No FUNCARGS found!");
+	throw NoticeException("No  '[EXPRESION]' found!");
 }
 
 BasicNode* Parser::getAccesses(BasicNode *left){
@@ -730,6 +786,14 @@ BasicNode* Parser::getAccesses(BasicNode *left){
 					return getAccesses(result);
 			}
 			catch(NoticeException ne){
+				if(result){
+					result->accept(this->deleteVisitor);
+				}
+
+				if(left){
+					left->accept(this->deleteVisitor);
+				}	
+		
 				throw ParserException("corrupted Access at " + currentToken.getPosition().toString());
 			}
 		}
@@ -818,6 +882,7 @@ BasicNode* Parser::getExpr9(){
 			return op;
 		}
 		catch (NoticeException &ne){
+			op->accept(this->deleteVisitor);
 			throw ParserException("Corrupted expression: " + opName, currentToken.getPosition());
 		}
 	}
@@ -844,12 +909,11 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 	bool opFound = false;
 	string opName = "";
 
+
 	if(left == nullptr){
 		try{
 			left = getAtom();
-			//
 			left = getBraced(left);
-			//cout << "Tyakulli!";
 				if(isExpr10Op()){
 					op = new FunctionCallNode(currentToken);
 					opName = currentToken.getText();
@@ -866,6 +930,19 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 				}
 			}
 			catch(NoticeException &ne){
+				if(op){
+					op->accept(this->deleteVisitor);
+				}
+				if(left){
+					left->accept(this->deleteVisitor);
+				}	
+				if(currentToken.typeEqualsTo(Token::BRACKET_LEFT)){
+					throw ParserException("Strange '['", currentToken.getPosition());
+				}
+
+				if(currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
+					throw ParserException("Strange ']'", currentToken.getPosition());
+				}
 				if(opFound){
 					throw ParserException("Found " + opName + ", but missing an argument " + currentToken.getPosition().toString());
 				}
@@ -886,16 +963,21 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 					return getExpr10(op);
 				}
 				else {
-					//cout << "OMg #2" << currentToken;
 					return getBraced(left);
 				}
 			}
 			catch(NoticeException &ne){
-				//cout << ne.what() << "OMg #3";
 				return getAtom();
 			}
 			return left;
 	}
+
+	if(op){
+		op->accept(this->deleteVisitor);
+	}
+	if(left){
+		left->accept(this->deleteVisitor);
+	}	
 
 	throw NoticeException("No EXPR10 found!");
 }
@@ -948,6 +1030,9 @@ CompoundNameNode* Parser::getCompoundName(){
 		}
 		else {
 			if(dotFound){
+				if(result){
+					result->accept(this->deleteVisitor);
+				}	
 				throw ParserException("Found '.', but missing an name in compound name", currentToken.getPosition());
 			}
 			throw NoticeException("No compound name found!");
@@ -1038,16 +1123,21 @@ BasicNode* Parser::getType(){
 		return result;
 	}
 	catch (NoticeException &ne){
+
+		
 			
 		if(result->getStorageModes().size() > 0){
+			result->accept(this->deleteVisitor);
 			throw ParserException("Only Storage Modes, no Type name specified! ", currentToken.getPosition());
 		}
 
 		if(result->getModifiers().size() > 0){
+			result->accept(this->deleteVisitor);
 			throw ParserException("Only Modifiers, no Type name specified! ", currentToken.getPosition());
 		}
 
 		if(result->getAccessModes().size() > 0){
+			result->accept(this->deleteVisitor);
 			throw ParserException("Only Access Modes, no Type name specified! ", currentToken.getPosition());
 		}
 
@@ -1097,6 +1187,9 @@ BasicNode* Parser::getSignature(){
 	bool eqFound = false;
 
 	SignatureNode *result = new SignatureNode();
+	TypeNode *type = nullptr;
+	CompoundNameNode *name = nullptr;
+	BasicNode *defaultValue = nullptr;
 
 	try {
 		result->setType(dynamic_cast<TypeNode*>(getType()));
@@ -1130,9 +1223,9 @@ BasicNode* Parser::getSignature(){
 						get(Token::OPERATOR);
 					}
 
-					TypeNode *type = dynamic_cast<TypeNode*>(getType());
-					CompoundNameNode *name = nullptr;
-					BasicNode *defaultValue = nullptr;
+					type = dynamic_cast<TypeNode*>(getType());
+					name = nullptr;
+					defaultValue = nullptr;
 					if(currentToken != Token(Token::OPERATOR, "...") 
 						&&
 						currentToken != Token(Token::OPERATOR, ",") 
@@ -1162,12 +1255,13 @@ BasicNode* Parser::getSignature(){
 
 			}
 			catch(NoticeException &ne){
-				
 				if(eqFound){
+					result->accept(this->deleteVisitor);
 					throw ParserException("In function signature got '=', but no defaultValue ", currentToken.getPosition());
 				}
 
 				if(commaFound){
+					result->accept(this->deleteVisitor);
 					throw ParserException("In function signature got ',', but no argument", currentToken.getPosition());
 				}
 
@@ -1178,6 +1272,9 @@ BasicNode* Parser::getSignature(){
 		}
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			if(result){
+				result->accept(this->deleteVisitor);
+			}
 			throw ParserException("No ')' in function signature", currentToken.getPosition());
 		}
 		get(Token::BRACE_RIGHT);
@@ -1186,7 +1283,11 @@ BasicNode* Parser::getSignature(){
 
 	}
 	catch (NoticeException &ne){
+		// if(result){
+		// 	result->accept(this->deleteVisitor);
+		// }
 		if(typeFound && !nameFound){
+			result->accept(this->deleteVisitor);
 			throw ParserException("In function signature got type, but no name ", currentToken.getPosition());
 		}
 	}
@@ -1204,7 +1305,8 @@ BasicNode* Parser::getBlock(){
 	auto result =  getOperators();
 
 	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
-		throw ParserException("Corrupted block at " + currentToken.getPosition().toString());
+		result->accept(this->deleteVisitor);
+		throw ParserException("Missing '}' in block" + currentToken.getPosition().toString());
 	}
 	get(Token::CURL_RIGHT);
 
@@ -1212,6 +1314,7 @@ BasicNode* Parser::getBlock(){
 }
 
 BasicNode* Parser::getFunction(){
+	FunctionDefinitionNode *result = nullptr;
 	try {
 		auto signature = dynamic_cast<SignatureNode*>(getSignature());
 		
@@ -1219,12 +1322,15 @@ BasicNode* Parser::getFunction(){
 			return signature;
 		}
 
-		FunctionDefinitionNode *result = new FunctionDefinitionNode();
+		result = new FunctionDefinitionNode();
 		result->setSignature(signature);
 		result->setOperators(dynamic_cast<OperatorsNode*> (getBlock()));
 		return result;
 	}
 	catch (NoticeException &ne){
+		if(result){
+			result->accept(this->deleteVisitor);
+		}
 		throw NoticeException("No function definition found!");
 	}
 }
@@ -1262,11 +1368,14 @@ BasicNode* Parser::getWhile(){
 		return result;
 	}
 	catch (NoticeException &ne){
+
 		if(loopFound){
+			//result->accept(this->deleteVisitor);
 			throw ParserException("Corrupted 'else' branch in 'while' ", currentToken.getPosition());
 		}
 
 		if(conditionFound){
+			//result->accept(this->deleteVisitor);
 			throw ParserException("Corrupted 'loop' in 'while' (if you want an empty operator, put ';')", currentToken.getPosition());
 		}
 
@@ -1581,7 +1690,7 @@ void Parser::buildTree(){
 			//this->tree->addChild(getVarDeclaration());
 		}
 		catch(NoticeException &ne){
-			cout << ne.what();
+			//cout << ne.what();
 		}
 
 		get(Token::END);

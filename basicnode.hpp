@@ -13,6 +13,8 @@ public:
 	virtual void addChild(BasicNode *){}
 	virtual string getText();
 
+	virtual ~BasicNode();
+
 };
 
 #endif

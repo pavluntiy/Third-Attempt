@@ -1,5 +1,5 @@
-#ifndef PRINTVISITOR
-#define PRINTVISITOR
+#ifndef	DELETEVISITOR
+#define DELETEVISITOR
 
 #include "basicvisitor.hpp"
 
@@ -19,10 +19,7 @@
 
 #include "valuenode.hpp"
 
-class PrintVisitor: public BasicVisitor{
-protected:
-	string shift;
-	ostream *out;
+class DeleteVisitor: public BasicVisitor{
 public:
 	virtual void visit(ProgramNode *node) override;
 	virtual void visit(OperatorsNode *node) override;
@@ -39,8 +36,7 @@ public:
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
 
-	PrintVisitor(ostream *out);
-	virtual ~PrintVisitor() override;
+	virtual ~DeleteVisitor() override;
 };
 
 

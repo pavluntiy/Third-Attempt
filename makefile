@@ -8,7 +8,8 @@ SOURCES=header.cpp alphabet.cpp\
 	lexer.cpp\
 	data.cpp\
 	\
-	printvisitor.cpp\
+	basicvisitor.cpp\
+	printvisitor.cpp deletevisitor.cpp\
 	\
 	basicnode.cpp\
 	operatorsnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
