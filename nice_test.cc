@@ -44,6 +44,9 @@ if(a > 0){
 	//Parsed in a very strange way...
 }
 
+if(a){}else{}
+
+
 
 if(a != 0);
 else ;
@@ -79,4 +82,15 @@ struct Point{
 		this->y = y;
 	}
 
+	def void doSomething();
+
 };;;;;
+
+def void Point.doSomething(){
+	printf("done something", this->x, this->y);
+}
+
+
+def extern int operator + (const int, const int);
+
+

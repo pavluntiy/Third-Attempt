@@ -3,6 +3,7 @@
 
 #include "basicnode.hpp"
 #include "basicvisitor.hpp"
+#include "token.hpp"
 #include <string>
 
 class CompoundNameNode: public BasicNode {
@@ -17,10 +18,13 @@ public:
 
 //	string getLeft();
 //	CompoundNameNode* getRight();
+
+	string transformOperators(const Token &token);
 	vector<string>& getNames();
 
 	void addName(string what);
 
+	CompoundNameNode(const Token &token);
 	CompoundNameNode();
 	CompoundNameNode(string left);
 

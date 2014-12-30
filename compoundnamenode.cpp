@@ -3,6 +3,14 @@
 void CompoundNameNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }
+
+
+	string CompoundNameNode::transformOperators(const Token &token){
+		auto text = token.getText();
+		return text;
+	}
+
+
 	string CompoundNameNode::toString(){
 		return "COMPOUND_NAME";
 	}
@@ -15,13 +23,9 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 		this->names.push_back(what);
 	}
 
-	// string CompoundNameNode::getLeft(){
-	// 	return this->left;
-	// }
-	
-	// CompoundNameNode* CompoundNameNode::getRight(){
-	// 	return this->right;
-	// }
+	CompoundNameNode::CompoundNameNode(const Token &token){
+		this->names.push_back(transformOperators(token));
+	}
 
 	CompoundNameNode::CompoundNameNode(){}
 

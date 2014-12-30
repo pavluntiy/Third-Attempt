@@ -1101,7 +1101,18 @@ BasicNode* Parser::getSignature(){
 	try {
 		result->setType(dynamic_cast<TypeNode*>(getType()));
 		typeFound = true;
-		result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
+
+		if(currentToken == Token(Token::KEYWORD, "operator")){
+			get(Token::KEYWORD);
+			if(!currentToken.typeEqualsTo(Token::OPERATOR)){
+				throw ParserException("Corrupted 'operator' signature (missing OPERATOR name)", currentToken.getPosition());
+			}
+			result->setName(new CompoundNameNode(currentToken));
+			get(Token::OPERATOR);
+		}
+		else {
+			result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
+		}	
 		nameFound = true;
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
@@ -1110,7 +1121,7 @@ BasicNode* Parser::getSignature(){
 		get(Token::BRACE_LEFT);
 
 		bool commaFound = false;
-		if(currentToken != Token(Token::KEYWORD, "void")){
+		if(currentToken != Token(Token::NAME, "void")){
 			try{
 				int counter = 0;
 				do{
@@ -1198,9 +1209,7 @@ BasicNode* Parser::getBlock(){
 	get(Token::CURL_RIGHT);
 
 	return result;
-
 }
-
 
 BasicNode* Parser::getFunction(){
 	try {
@@ -1223,6 +1232,9 @@ BasicNode* Parser::getFunction(){
 BasicNode* Parser::getWhile(){
 	get(Token(Token::KEYWORD, "while"));
 
+	bool conditionFound = false;
+	bool loopFound = false;
+
 	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 		throw ParserException("Missing '(' for 'while'", currentToken.getPosition());
 	}
@@ -1230,21 +1242,36 @@ BasicNode* Parser::getWhile(){
 
 	WhileNode *result = new WhileNode();
 
-	result->setCondition(getExpression());
+	try{
+		result->setCondition(getExpression());
+		conditionFound = true;
 
-	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-		throw ParserException("Missing ')' for 'while'", currentToken.getPosition());
+		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			throw ParserException("Missing ')' for 'while'", currentToken.getPosition());
+		}
+		get(Token::BRACE_RIGHT);
+
+		result->setLoop(getOperator());
+		loopFound = true;
+
+		if(currentToken == Token(Token::KEYWORD, "else")){
+			get(Token::KEYWORD);
+			result->setElseBranch(getOperator());
+		}
+
+		return result;
 	}
-	get(Token::BRACE_RIGHT);
+	catch (NoticeException &ne){
+		if(loopFound){
+			throw ParserException("Corrupted 'else' branch in 'while' ", currentToken.getPosition());
+		}
 
-	result->setLoop(getOperator());
+		if(conditionFound){
+			throw ParserException("Corrupted 'loop' in 'while' (if you want an empty operator, put ';')", currentToken.getPosition());
+		}
 
-	if(currentToken == Token(Token::KEYWORD, "else")){
-		get(Token::KEYWORD);
-		result->setElseBranch(getOperator());
-	}
-
-	return result;
+		throw ParserException("Empty expressions are not allowed in 'while'", currentToken.getPosition());
+	}		
 }
 
 BasicNode* Parser::getFor(){
@@ -1315,6 +1342,9 @@ BasicNode* Parser::getFor(){
 BasicNode* Parser::getIf(){
 	get(Token(Token::KEYWORD, "if"));
 
+	bool conditionFound = false;
+	bool thenBranchFound = false;
+
 	if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 		throw ParserException("Missing '(' for 'if'", currentToken.getPosition());
 	}
@@ -1322,21 +1352,36 @@ BasicNode* Parser::getIf(){
 
 	IfNode *result = new IfNode();
 
-	result->setCondition(getExpression());
+	try{
+		result->setCondition(getExpression());
+		conditionFound = true;
 
-	if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
-		throw ParserException("Missing ')' for 'if'", currentToken.getPosition());
+		if(!currentToken.typeEqualsTo(Token::BRACE_RIGHT)){
+			throw ParserException("Missing ')' for 'if'", currentToken.getPosition());
+		}
+		get(Token::BRACE_RIGHT);
+
+		result->setThenBranch(getOperator());
+		thenBranchFound = true;
+
+		if(currentToken == Token(Token::KEYWORD, "else")){
+			get(Token::KEYWORD);
+			result->setElseBranch(getOperator());
+		}
+
+		return result;
 	}
-	get(Token::BRACE_RIGHT);
+	catch (NoticeException &ne){
+		if(thenBranchFound){
+			throw ParserException("Corrupted 'else' branch in 'if' ", currentToken.getPosition());
+		}
 
-	result->setThenBranch(getOperator());
+		if(conditionFound){
+			throw ParserException("Corrupted 'then' branch in 'if' (if you want an empty operator, put ';')", currentToken.getPosition());
+		}
 
-	if(currentToken == Token(Token::KEYWORD, "else")){
-		get(Token::KEYWORD);
-		result->setElseBranch(getOperator());
+		throw ParserException("Empty expressions are not allowed in 'if'", currentToken.getPosition());
 	}
-
-	return result;
 }
 
 bool Parser::isReturnKeyword(){
@@ -1413,8 +1458,6 @@ BasicNode* Parser::getStruct(){
 	get(Token::CURL_RIGHT);
 
 	return result;
-
-
 }
 
 bool Parser::consumeSemicolons(){
@@ -1470,6 +1513,11 @@ BasicNode* Parser::getOperator(){
 		auto result = getReturn();
 		consumeSemicolons();
 		return result;
+	}
+
+
+	if(currentToken.typeEqualsTo(Token::KEYWORD) && currentToken != Token(Token::KEYWORD, "else")){
+		throw ParserException("Strange keyword '" + currentToken.getText() + "' ", currentToken.getPosition());
 	}
 
 

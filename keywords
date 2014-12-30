@@ -23,6 +23,9 @@ const
 ref
 
 struct
+
+operator
+
 class
 extend
 extends
@@ -47,7 +50,6 @@ throws
 
 type
 def
-void
 var
 func
 

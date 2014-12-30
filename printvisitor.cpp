@@ -270,7 +270,7 @@ void PrintVisitor::visit(StructNode *node){
  		it->accept(this);
  	}
 
- 	*this->out << shift << "\nVariables:\n";
+ 	*this->out << "\n" << shift << "Variables:\n";
 
  	for(auto it: node->getVariables()){
  		it->accept(this);
