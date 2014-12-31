@@ -39,3 +39,11 @@ vector<SignatureNode::ArgumentType>& SignatureNode::getArguments(){
 bool SignatureNode::getVarargs(){
 	return this->varargs;
 }
+
+FunctionScope* SignatureNode::getFunctionScope(){
+	return this->functionScope;
+}
+
+void SignatureNode::setFunctionScope(FunctionScope *functionScope){
+	this->functionScope = functionScope;
+}

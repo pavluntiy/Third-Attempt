@@ -11,18 +11,18 @@ class FunctionSymbol: public BasicSymbol{
 
 Type* returnType;
 vector<Type*> arguments;
-FunctionScope *functionScope;
+BasicScope *functionScope;
 string functionLabel;
 public:
 
 	void setReturnType(Type *type);
 	void addArgument(Type *type);
-	void setFunctionScope(FunctionScope *scope);
+	void setFunctionScope(BasicScope *scope);
 	void setFunctionLabel(string str);
 
 	Type* getReturnType();
 	vector<Type*> getArguments();
-	FunctionScope* getFunctionScope();
+	BasicScope* getFunctionScope();
 	string getFunctionLabel();
 
 

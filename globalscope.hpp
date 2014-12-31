@@ -18,7 +18,7 @@ public:
 	virtual void declareType(Type type) override;
 
 	GlobalScope();
-	virtual void dump(ostream *out) override;
+	virtual void dump(ostream *out, string shift = "") override;
 };
 
 #endif

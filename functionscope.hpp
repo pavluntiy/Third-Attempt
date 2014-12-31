@@ -8,6 +8,7 @@
 
 class FunctionScope: public BasicScope {
 
+string name;
 Type *returnType;
 public:
 	virtual FunctionSymbol* resolveFunction(string name) override;
@@ -20,10 +21,13 @@ public:
 	virtual void declareFunction(FunctionSymbol function) override;
 	virtual void declareVariable(VariableSymbol variable) override;
 	virtual void declareType(Type type) override;
+
+	void setName(string name);
+	string getName();
 	FunctionScope(string name);
 	FunctionScope();
 	FunctionScope(BasicScope *scope);
-	virtual void dump(ostream *out) override;
+	virtual void dump(ostream *out, string shift = "") override;
 
 };
 

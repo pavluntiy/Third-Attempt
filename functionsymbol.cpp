@@ -9,7 +9,7 @@ void FunctionSymbol::addArgument(Type *type){
 	this->arguments.push_back(type);
 }
 
-void FunctionSymbol::setFunctionScope(FunctionScope *scope){
+void FunctionSymbol::setFunctionScope(BasicScope *scope){
 	this->functionScope = scope;
 }
 
@@ -25,7 +25,7 @@ vector<Type*> FunctionSymbol::getArguments(){
 	return this->arguments;
 }
 
-FunctionScope* FunctionSymbol::getFunctionScope(){
+BasicScope* FunctionSymbol::getFunctionScope(){
 	return this->functionScope;
 }
 

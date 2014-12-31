@@ -27,6 +27,8 @@ public:
 	virtual Type* resolveType(string name) = 0;
 	virtual Type* resolveType(Type) = 0;
 
+
+
 	virtual void declareFunction(FunctionSymbol function) = 0;
 	virtual void declareVariable(VariableSymbol variable) = 0;
 	virtual void declareType(Type type) = 0;
@@ -34,9 +36,10 @@ public:
 	// virtual string getName() = 0;
 	// virtual void setName(string str) = 0;
 
-	
+	virtual void setParentScope(BasicScope *parentScope);
+	virtual BasicScope* getParentScope();
 
-	virtual void dump(ostream *out) = 0;
+	virtual void dump(ostream *out, string shift = "") = 0;
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include "basicnode.hpp"
 #include "basicvisitor.hpp"
 #include "typenode.hpp"
+#include "functionscope.hpp"
 
 class SignatureNode: public BasicNode {
 public:
@@ -13,6 +14,8 @@ protected:
 	CompoundNameNode *name;
 	vector<ArgumentType> arguments;
 	bool varargs = false;
+
+	FunctionScope *functionScope;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
@@ -25,8 +28,11 @@ public:
 
 	void setVarargs();
 	void setType(TypeNode*);
+	void setFunctionScope(FunctionScope *scope);
+
 	void setName(CompoundNameNode*);
 	void addArgument(ArgumentType);
+	FunctionScope* getFunctionScope();
 
 
 };

@@ -60,17 +60,18 @@ GlobalScope::GlobalScope(){
 	this->declareType(Type("char", 1));
 }
 
-void GlobalScope::dump(ostream *out){
-	*out << " Global Scope:\n";
+void GlobalScope::dump(ostream *out, string shift){
+	*out << shift << "Global Scope:\n";
 
-	*out << "\tTypes:\n";
+	*out << shift << "\tTypes:\n";
 	for(auto it: this->types){
-		*out << "\t\t" << it.first << "\n";
+		*out << shift << "\t\t" << it.first << "\n";
 	}
 
 	*out << "\tFunctions:\n";
 	for(auto it: this->functions){
 		*out << "\t\t" << it.first << "\n";
+		it.second.getFunctionScope()->dump(out, shift + "\t\t");
 	}
 
 	*out << "\tVariables:\n";
@@ -78,7 +79,7 @@ void GlobalScope::dump(ostream *out){
 		*out << "\t\t" << it.first << "\n";
 	}
 
-	*out << "end of global scope ';\n=====\n";
+	*out << "end of global scope;\n=====\n";
 
 }
 

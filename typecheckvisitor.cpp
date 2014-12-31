@@ -56,10 +56,15 @@ void TypeVisitor::visit(SignatureNode *node){
 
 	FunctionScope *functionScope = new FunctionScope(currentScope);
 
+	functionScope->setParentScope(currentScope);
+
 	functionScope->setReturnType(returnType);
 	function.setFunctionScope(functionScope);
 
 	function.setName(node->getName()->getNames()[0]);
+	functionScope->setName(node->getName()->getNames()[0]);
+
+	node->setFunctionScope(functionScope);
 
 	for(auto it: node->getArguments()){
 		function.addArgument(currentScope->resolveType(get<0>(it)));
@@ -77,8 +82,11 @@ void TypeVisitor::visit(SignatureNode *node){
 void TypeVisitor::visit(FunctionDefinitionNode *node){
  	node->getSignature()->accept(this);
 
-
- 	//node->getOperators()->accept(this);
+ 	this->scopes.push(currentScope);
+ 	currentScope = node->getSignature()->getFunctionScope();
+ 	node->getOperators()->accept(this);
+ 	currentScope = this->scopes.top();
+ 	this->scopes.pop();
 }
 
 void TypeVisitor::visit(IfNode *node){

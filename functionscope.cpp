@@ -36,7 +36,7 @@ Type* FunctionScope::resolveType(string name){
 	if(this->types.count(name)){
 		return &types[name];
 	}
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared type '"+ name + "'!");
 }
 
 Type* FunctionScope::resolveType(Type type){
@@ -45,7 +45,7 @@ Type* FunctionScope::resolveType(Type type){
 		//if(all specs bla-bla-bla)
 		return &types[name];
 	}
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared type'"+ name + "'!");
 }
 
 FunctionScope::FunctionScope(string name){
@@ -61,25 +61,33 @@ void FunctionScope::setReturnType(Type *type){
 	this->returnType = type;
 }
 
-void FunctionScope::dump(ostream *out){
-//	*out << "Scope of function '" << this->getName() << "':\n";
+void FunctionScope::setName(string name){
+	this->name = name;
+}
+string FunctionScope::getName(){
+	return this->name;
+}
 
-	*out << "\tTypes:\n";
+void FunctionScope::dump(ostream *out, string shift){
+	*out << shift << "Scope of function '" << this->getName() << "':\n";
+
+	*out << shift << "\tTypes:\n";
 	for(auto it: this->types){
-		*out << "\t\t" << it.first << "\n";
+		*out << shift << "\t\t" << it.first << "\n";
 	}
 
-	*out << "\tFunctions:\n";
+	*out << shift << "\tFunctions:\n";
 	for(auto it: this->functions){
-		*out << "\t\t" << it.first << "\n";
+		*out << shift << "\t\t" << it.first << "\n";
+		it.second.getFunctionScope()->dump(out, shift + "\t\t");
 	}
 
-	*out << "\tVariables:\n";
+	*out << shift << "\tVariables:\n";
 	for(auto it: this->variables){
-		*out << "\t\t" << it.first << "\n";
+		*out << shift << "\t\t" << it.first << "\n";
 	}
 
-//	*out << "end of scope '" << this->getName() << "';\n=====\n";
+	*out << shift <<  "end of scope '" << this->getName() << "';\n=====\n";
 
 }
 

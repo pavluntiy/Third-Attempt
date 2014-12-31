@@ -24,3 +24,4 @@ Type* BasicSymbol::getType(){
 BasicScope* BasicSymbol::getDefinitionScope(){
 	return this->definitionScope;
 }
+
