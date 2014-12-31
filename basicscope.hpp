@@ -11,6 +11,7 @@ class Type;
 
 class BasicScope {
 protected:
+BasicScope *parentScope;
 string name;
 map<string, Type> types;
 //map<string, vector<FunctionSymbol>> functions;
@@ -21,7 +22,6 @@ string base;
 int currentOffset;
 
 public:
-
 	virtual FunctionSymbol* resolveFunction(string name) = 0;
 	virtual VariableSymbol* resolveVariable(string name) = 0;
 	virtual Type* resolveType(string name) = 0;
@@ -34,6 +34,7 @@ public:
 	// virtual string getName() = 0;
 	// virtual void setName(string str) = 0;
 
+	
 
 	virtual void dump(ostream *out) = 0;
 };

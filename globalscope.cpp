@@ -1,7 +1,13 @@
 #include "globalscope.hpp"
 
 void GlobalScope::declareFunction(FunctionSymbol function){
-	throw NoticeException("No nested functions are allowed!");
+	string name = function.getName();
+
+	if(this->variables.count(name) || this->functions.count(name)){
+		throw NoticeException("Function '" + name + "' redeclaration!");
+	}
+
+	this->functions[name] = function;
 }
 
 void GlobalScope::declareVariable(VariableSymbol variable){

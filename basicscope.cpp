@@ -1,7 +1,6 @@
 #include "basicscope.hpp"
 
 
-
 // string BasicScope::getName(){
 // 	return this->name;
 // }

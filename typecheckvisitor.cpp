@@ -48,23 +48,37 @@ void TypeVisitor::visit(VarDeclarationNode *node){
 }
 
 void TypeVisitor::visit(SignatureNode *node){
- 	node->getType()->accept(this);
- 	node->getName()->accept(this);
+
+	Type* returnType = currentScope->resolveType(node->getType());
+
+	FunctionSymbol function;
+	function.setReturnType(returnType);
+
+	FunctionScope *functionScope = new FunctionScope(currentScope);
+
+	functionScope->setReturnType(returnType);
+	function.setFunctionScope(functionScope);
+
+	function.setName(node->getName()->getNames()[0]);
 
 	for(auto it: node->getArguments()){
-		get<0>(it)->accept(this);
+		function.addArgument(currentScope->resolveType(get<0>(it)));
 		if(get<1>(it)){
-			get<1>(it)->accept(this);
+			functionScope->declareVariable(VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getNames()[0]));
 		}
-	 	if(get<2>(it)){
-	 		get<2>(it)->accept(this);
-	 	}
+	 	// if(get<2>(it)){
+	 	// 	get<2>(it)->accept(this);
+	 	// }
 	}	
+
+	currentScope->declareFunction(function);
 }
 
 void TypeVisitor::visit(FunctionDefinitionNode *node){
  	node->getSignature()->accept(this);
- 	node->getOperators()->accept(this);
+
+
+ 	//node->getOperators()->accept(this);
 }
 
 void TypeVisitor::visit(IfNode *node){

@@ -53,6 +53,14 @@ FunctionScope::FunctionScope(string name){
 }
 FunctionScope::FunctionScope(){}
 
+FunctionScope::FunctionScope(BasicScope *scope){
+	this->parentScope = scope;
+}
+
+void FunctionScope::setReturnType(Type *type){
+	this->returnType = type;
+}
+
 void FunctionScope::dump(ostream *out){
 //	*out << "Scope of function '" << this->getName() << "':\n";
 
