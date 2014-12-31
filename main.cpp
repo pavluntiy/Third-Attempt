@@ -6,6 +6,7 @@
 #include "parser.hpp"
 #include "printvisitor.hpp"
 #include "deletevisitor.hpp"
+#include "typecheckvisitor.hpp"
 
 using namespace std;
 

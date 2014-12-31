@@ -2,7 +2,7 @@ COMPILER=g++
 CFLAGS=-std=c++11 -g -c -Wall -Wextra --pedantic
 SOURCES=header.cpp alphabet.cpp\
 	myexception.cpp\
-	noticeexception.cpp parserexception.cpp lexerexception.cpp dataexception.cpp\
+	noticeexception.cpp parserexception.cpp lexerexception.cpp dataexception.cpp typeexception.cpp\
 	\
 	token.cpp\
 	lexer.cpp\
@@ -17,6 +17,11 @@ SOURCES=header.cpp alphabet.cpp\
 	structnode.cpp returnnode.cpp\
 	\
 	parser.cpp\
+	\
+	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp\
+	type.cpp\
+	\
+	basicscope.cpp functionscope.cpp\
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=prog
