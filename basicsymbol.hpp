@@ -3,6 +3,8 @@
 
 #include "header.hpp"
 #include "type.hpp"
+#include "noticeexception.hpp"
+#include "typeexception.hpp"
 
 class BasicScope;
 
@@ -21,7 +23,7 @@ public:
 	virtual string getName();
 	virtual Type* getType();
 	virtual BasicScope* getDefinitionScope();
-	virtual bool operator== (const BasicSymbol &b) const = 0;
+	//virtual bool operator== (const BasicSymbol &b) const;
 };
 
 //

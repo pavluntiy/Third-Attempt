@@ -18,13 +18,18 @@
 #include "structnode.hpp"
 #include "valuenode.hpp"
 
+#include "noticeexception.hpp"
 #include "type.hpp"
 #include "functionsymbol.hpp"
 
-#include "fucntionscope.hpp"
+#include "functionscope.hpp"
+#include "globalscope.hpp"
 
 
 class TypeVisitor: public BasicVisitor{
+protected:
+	GlobalScope globalScope;
+	BasicScope *currentScope;
 public:
 	virtual void visit(ProgramNode *node) override;
 	virtual void visit(OperatorsNode *node) override;
@@ -41,7 +46,10 @@ public:
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
 
+	TypeVisitor();
 	virtual ~TypeVisitor() override;
+
+	void dump(ostream *out);
 };
 
 

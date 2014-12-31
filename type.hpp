@@ -1,6 +1,7 @@
 #ifndef TYPE
 #define TYPE
 #include "header.hpp"
+#include "typenode.hpp"
 
 
 class Type{
@@ -21,6 +22,10 @@ public:
 
 	string getName();
 	int getSize();
+
+	Type(string name, int size);
+	Type();
+	Type(TypeNode*);
 
 };
 

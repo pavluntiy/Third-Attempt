@@ -1,61 +1,53 @@
-#include "deletevisitor.hpp"
+#include "typecheckvisitor.hpp"
 
-void DeleteVisitor::visit(ProgramNode *node){
+void TypeVisitor::visit(ProgramNode *node){
 	if(node->getChild()){
 		node->getChild()->accept(this);
 	}
-	delete node;
-	node = nullptr;
 }
 
-void DeleteVisitor::visit(OperatorsNode *node){
+void TypeVisitor::visit(OperatorsNode *node){
 	for(auto it : node->getChildren()){
 		it->accept(this);
 	}
-	delete node;
-	node = nullptr;
 }
 
-void DeleteVisitor::visit(CompoundNameNode *node){
-	delete node;
-	node = nullptr;
+void TypeVisitor::visit(CompoundNameNode *node){
 }
 
-void DeleteVisitor::visit(FunctionCallNode *node){
+void TypeVisitor::visit(FunctionCallNode *node){
 	for(auto it: node->getFunctionArgs()){
 		it->accept(this);
 	}
-	delete node;
-	node = nullptr;
 }
 
-void DeleteVisitor::visit(TypeNode *node){
+void TypeVisitor::visit(TypeNode *node){
 	for(auto it: node->getDimensions()){
 		it->accept(this);
 	}
-	
+}
+
+void TypeVisitor::visit(ValueNode *node){
 	delete node;
 	node = nullptr;
 }
 
-void DeleteVisitor::visit(ValueNode *node){
-	delete node;
-	node = nullptr;
-}
+void TypeVisitor::visit(VarDeclarationNode *node){
+	//node->getType()->accept(this);
+	Type *type = this->currentScope->resolveType(Type(node->getType()));
 
-void DeleteVisitor::visit(VarDeclarationNode *node){
-	node->getType()->accept(this);
 	for(auto it: node->getVariables()){
-		it.first->accept(this);
-		if(it.second){
-			it.second->accept(this);
-		}
+		//it.first->accept(this);
+		currentScope->declareVariable(VariableSymbol(type, it.first->getNames()[0]));
+
+		// if(it.second){
+		// 	it.second->accept(this);
+		// }
 	}	
-	delete node;
-	node = nullptr;
+
 }
 
-void DeleteVisitor::visit(SignatureNode *node){
+void TypeVisitor::visit(SignatureNode *node){
  	node->getType()->accept(this);
  	node->getName()->accept(this);
 
@@ -68,18 +60,14 @@ void DeleteVisitor::visit(SignatureNode *node){
 	 		get<2>(it)->accept(this);
 	 	}
 	}	
-	delete node;
-	node = nullptr;
 }
 
-void DeleteVisitor::visit(FunctionDefinitionNode *node){
+void TypeVisitor::visit(FunctionDefinitionNode *node){
  	node->getSignature()->accept(this);
  	node->getOperators()->accept(this);
-	delete node;
-	node = nullptr;
 }
 
-void DeleteVisitor::visit(IfNode *node){
+void TypeVisitor::visit(IfNode *node){
  	
  	node->getCondition()->accept(this);
 
@@ -88,11 +76,9 @@ void DeleteVisitor::visit(IfNode *node){
  	if(node->getElseBranch()){
  		node->getElseBranch()->accept(this);
  	}
- 	delete node;
- 	node = nullptr;
 }
 
-void DeleteVisitor::visit(WhileNode *node){
+void TypeVisitor::visit(WhileNode *node){
 
  	node->getCondition()->accept(this);
 
@@ -101,11 +87,9 @@ void DeleteVisitor::visit(WhileNode *node){
  	if(node->getElseBranch()){
  		node->getElseBranch()->accept(this);
  	}
- 	delete node;
- 	node = nullptr;
 }
 
-void DeleteVisitor::visit(ForNode *node){
+void TypeVisitor::visit(ForNode *node){
 
  	if(node->getInit()){
  		node->getInit()->accept(this);
@@ -122,21 +106,16 @@ void DeleteVisitor::visit(ForNode *node){
  	if(node->getAction()){
  		node->getAction()->accept(this);
  	}
- 	delete node;
- 	node = nullptr;
 }
 
-void DeleteVisitor::visit(ReturnNode *node){
+void TypeVisitor::visit(ReturnNode *node){
 
  	if(node->getResult()){
  		node->getResult()->accept(this);
  	}
-
-	delete node;
-	node = nullptr;
 }
 
-void DeleteVisitor::visit(StructNode *node){
+void TypeVisitor::visit(StructNode *node){
  	node->getName()->accept(this);
 
  	for(auto it: node->getFunctions()){
@@ -146,10 +125,16 @@ void DeleteVisitor::visit(StructNode *node){
  	for(auto it: node->getVariables()){
  		it->accept(this);
  	}
-
- 	delete node;
- 	node = nullptr;
 }
-DeleteVisitor::~DeleteVisitor(){
 
+TypeVisitor::TypeVisitor(){
+	currentScope = &globalScope;
+}
+
+TypeVisitor::~TypeVisitor(){
+
+}
+
+void TypeVisitor::dump(ostream *out){
+	currentScope->dump(out);
 }

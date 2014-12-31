@@ -66,12 +66,26 @@ int main (int argc, char **argv) {
 
 	delete printVisitor;
 
+	TypeVisitor *typevisitor = new TypeVisitor();
+
+	try{
+		parser.getTree()->accept(typevisitor);
+	}
+	catch (NoticeException &ne){
+		*err << ne.what() << '\n';
+	}
+	catch (TypeException &te){
+		*err << te.what() << '\n';
+	}
+
+	typevisitor->dump(out);
+
+
+
 	DeleteVisitor *deleteVisitor = new DeleteVisitor();
 
 	parser.getTree()->accept(deleteVisitor);
 	delete deleteVisitor;
-
-
 
 
 	return 0;

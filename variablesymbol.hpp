@@ -20,6 +20,9 @@ public:
 	string getBase();
 	int getOfsset();
 	int getSize();
+
+	VariableSymbol();
+	VariableSymbol(Type *type, string name);
 };
 
 #endif

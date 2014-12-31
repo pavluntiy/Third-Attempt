@@ -21,7 +21,8 @@ SOURCES=header.cpp alphabet.cpp\
 	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp\
 	type.cpp\
 	\
-	basicscope.cpp functionscope.cpp\
+	typecheckvisitor.cpp\
+	basicscope.cpp globalscope.cpp functionscope.cpp\
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=prog

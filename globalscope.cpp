@@ -1,10 +1,10 @@
-#include "functionscope.hpp"
+#include "globalscope.hpp"
 
-void FunctionScope::declareFunction(FunctionSymbol function){
+void GlobalScope::declareFunction(FunctionSymbol function){
 	throw NoticeException("No nested functions are allowed!");
 }
 
-void FunctionScope::declareVariable(VariableSymbol variable){
+void GlobalScope::declareVariable(VariableSymbol variable){
 	string name = variable.getName();
 
 	if(this->variables.count(name) || this->functions.count(name)){
@@ -14,47 +14,48 @@ void FunctionScope::declareVariable(VariableSymbol variable){
 	this->variables[name] = variable;
 }
 
-void FunctionScope::declareType(Type type){
-	throw NoticeException("No nested types are allowed!");
+void GlobalScope::declareType(Type type){
+	this->types[type.getName()] = type;
 }
 
-FunctionSymbol* FunctionScope::resolveFunction(string name){
+FunctionSymbol* GlobalScope::resolveFunction(string name){
 	if(this->functions.count(name)){
 		return &functions[name];
 	}
 	throw NoticeException("Undeclared function '"+ name + "'!");
 }
 
-VariableSymbol* FunctionScope::resolveVariable(string name){
+VariableSymbol* GlobalScope::resolveVariable(string name){
 	if(this->variables.count(name)){
 		return &variables[name];
 	}
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared variable '"+ name + "'!");
 }
 
-Type* FunctionScope::resolveType(string name){
+Type* GlobalScope::resolveType(string name){
 	if(this->types.count(name)){
 		return &types[name];
 	}
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared type '"+ name + "'!");
 }
 
-Type* FunctionScope::resolveType(Type type){
+Type* GlobalScope::resolveType(Type type){
 	string name = type.getName();
 	if(this->types.count(name)){
 		//if(all specs bla-bla-bla)
 		return &types[name];
 	}
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared type '"+ name + "'!");
 }
 
-FunctionScope::FunctionScope(string name){
-	this->name = name;
+GlobalScope::GlobalScope(){
+	this->name = "global";
+	this->declareType(Type("int", 8));
+	this->declareType(Type("char", 1));
 }
-FunctionScope::FunctionScope(){}
 
-void FunctionScope::dump(ostream *out){
-//	*out << "Scope of function '" << this->getName() << "':\n";
+void GlobalScope::dump(ostream *out){
+	*out << " Global Scope:\n";
 
 	*out << "\tTypes:\n";
 	for(auto it: this->types){
@@ -71,8 +72,7 @@ void FunctionScope::dump(ostream *out){
 		*out << "\t\t" << it.first << "\n";
 	}
 
-//	*out << "end of scope '" << this->getName() << "';\n=====\n";
+	*out << "end of global scope ';\n=====\n";
 
 }
-
 

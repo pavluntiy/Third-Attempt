@@ -23,3 +23,10 @@ int VariableSymbol::getOfsset(){
 int VariableSymbol::getSize(){
 	return this->type->getSize();
 }
+
+VariableSymbol::VariableSymbol(){}
+
+VariableSymbol::VariableSymbol(Type *type, string name){
+	this->name = name;
+	this->type = type;
+}
