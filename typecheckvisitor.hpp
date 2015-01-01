@@ -50,6 +50,9 @@ public:
 	TypeVisitor();
 	virtual ~TypeVisitor() override;
 
+	void setCurrentScope(AbstractScope*);
+	void restoreCurrentScope();
+
 	void dump(ostream *out);
 };
 

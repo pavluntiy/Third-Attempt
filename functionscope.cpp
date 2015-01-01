@@ -1,8 +1,18 @@
 #include "functionscope.hpp"
 
 
+// void FunctionScope::declareFunction(FunctionSymbol function){
+// 	throw NoticeException("No nested functions are allowed!");
+// }
+
 void FunctionScope::declareFunction(FunctionSymbol function){
-	throw NoticeException("No nested functions are allowed!");
+	string name = function.getName();
+
+	if(this->variables.count(name) || this->functions.count(name)){
+		throw NoticeException("Function '" + name + "' redeclaration!");
+	}
+
+	this->functions[name] = function;
 }
 
 void FunctionScope::declareVariable(VariableSymbol variable){
@@ -18,36 +28,6 @@ void FunctionScope::declareVariable(VariableSymbol variable){
 void FunctionScope::declareType(Type type){
 	throw NoticeException("No nested types are allowed!");
 }
-
-// FunctionSymbol* FunctionScope::resolveFunction(string name){
-// 	if(this->functions.count(name)){
-// 		return &functions[name];
-// 	}
-// 	throw NoticeException("Undeclared function '"+ name + "'!");
-// }
-
-// VariableSymbol* FunctionScope::resolveVariable(string name){
-// 	if(this->variables.count(name)){
-// 		return &variables[name];
-// 	}
-// 	throw NoticeException("Undeclared variable '"+ name + "'!");
-// }
-
-// Type* FunctionScope::resolveType(string name){
-// 	if(this->types.count(name)){
-// 		return &types[name];
-// 	}
-// 	throw NoticeException("Undeclared type '"+ name + "'!");
-// }
-
-// Type* FunctionScope::resolveType(Type type){
-// 	string name = type.getName();
-// 	if(this->types.count(name)){
-// 		//if(all specs bla-bla-bla)
-// 		return &types[name];
-// 	}
-// 	throw NoticeException("Undeclared type '"+ name + "'!");
-// }
 
 void FunctionScope::dump(ostream *out, string shift){
 	*out << shift << "Scope of function '" << this->getName() << "':\n";
@@ -75,8 +55,9 @@ void FunctionScope::dump(ostream *out, string shift){
 
 FunctionScope::FunctionScope(){}
 
-FunctionScope::FunctionScope(AbstractScope *scope){
-	this->parentScope = scope;
+FunctionScope::FunctionScope(AbstractScope *scope, string name):BasicScope(scope, name)
+{
+
 }
 
 void FunctionScope::setReturnType(Type *type){

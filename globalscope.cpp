@@ -24,39 +24,8 @@ void GlobalScope::declareType(Type type){
 	this->types[type.getName()] = type;
 }
 
-// FunctionSymbol* GlobalScope::resolveFunction(string name){
-// 	if(this->functions.count(name)){
-// 		return &functions[name];
-// 	}
-// 	throw NoticeException("Undeclared function '"+ name + "'!");
-// }
-
-// VariableSymbol* GlobalScope::resolveVariable(string name){
-// 	if(this->variables.count(name)){
-// 		return &variables[name];
-// 	}
-// 	throw NoticeException("Undeclared variable '"+ name + "'!");
-// }
-
-// Type* GlobalScope::resolveType(string name){
-// 	if(this->types.count(name)){
-// 		return &types[name];
-// 	}
-// 	throw NoticeException("Undeclared type '"+ name + "'!");
-// }
-
-// Type* GlobalScope::resolveType(Type type){
-// 	string name = type.getName();
-// 	if(this->types.count(name)){
-// 		//if(all specs bla-bla-bla)
-// 		return &types[name];
-// 	}
-// 	throw NoticeException("Undeclared type '"+ name + "'!");
-// }
-
-GlobalScope::GlobalScope(){
-	this->parentScope = nullptr;
-	this->name = "global";
+GlobalScope::GlobalScope():BasicScope(nullptr, "global")
+{
 	this->declareType(Type("int", 8));
 	this->declareType(Type("char", 1));
 }

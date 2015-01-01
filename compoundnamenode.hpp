@@ -12,6 +12,7 @@ protected:
 	//CompoundNameNode *right;
 	vector<string> names;
 
+
 public: 
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
@@ -27,6 +28,10 @@ public:
 	CompoundNameNode(const Token &token);
 	CompoundNameNode();
 	CompoundNameNode(string left);
+
+	string getName();
+	string getSimpleName();
+	bool isSimpleName();
 
 };
 

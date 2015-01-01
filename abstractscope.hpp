@@ -4,6 +4,7 @@
 #include "header.hpp"
 #include "noticeexception.hpp"
 #include "typeexception.hpp"
+#include "compoundnamenode.hpp"
 
 class FunctionSymbol;
 class VariableSymbol;
@@ -14,6 +15,7 @@ class AbstractScope {
 protected:
 AbstractScope *parentScope;
 string name;
+map<string, AbstractScope*> namedScopes;
 map<string, Type> types;
 //map<string, vector<FunctionSymbol>> functions;
 map<string, FunctionSymbol> functions;
@@ -23,6 +25,7 @@ string base;
 int currentOffset;
 
 public:
+	virtual AbstractScope* resolveNamedScope(CompoundNameNode*) = 0;
 	virtual FunctionSymbol* resolveFunction(string name) = 0;
 	virtual VariableSymbol* resolveVariable(string name) = 0;
 	virtual Type* resolveType(string name) = 0;
@@ -31,6 +34,7 @@ public:
 	virtual map<string, Type>& getTypes() = 0;
 	virtual map<string, FunctionSymbol>& getFunctions() = 0;
 	virtual map<string, VariableSymbol>& getVariables() = 0;
+	virtual map<string, AbstractScope*>& getNamedScopes() = 0;
 
 
 

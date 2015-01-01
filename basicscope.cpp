@@ -32,6 +32,10 @@ map<string, VariableSymbol>& BasicScope::getVariables(){
 	return this->variables;
 }
 
+map<string, AbstractScope*>& BasicScope::getNamedScopes(){
+	return this->namedScopes;
+}
+
 FunctionSymbol* BasicScope::resolveFunction(string name){
 	AbstractScope *currentScope = this;
 	while(currentScope != nullptr){
@@ -79,6 +83,44 @@ Type* BasicScope::resolveType(Type type){
 	}
 	
 	throw NoticeException("Undeclared type'"+ name + "'!");
+}
+
+AbstractScope* BasicScope::resolveNamedScope(CompoundNameNode* node){
+
+	AbstractScope *currentScope = this;
+
+	if(node->isSimpleName()){
+		return currentScope;
+	}
+
+	string name = node->getName();
+	string foundNames = "";
+
+	auto nodeNames = node->getNames();
+	while(currentScope != nullptr){
+		if(currentScope->getNamedScopes().count(nodeNames[0])){
+			for(int i = 0; i < static_cast<int>(nodeNames.size()) - 1; ++i){
+				if(!currentScope->getNamedScopes().count(nodeNames[i])){
+					throw NoticeException("No " + nodeNames[i] + " found in " +foundNames);
+				}
+				currentScope = currentScope->getNamedScopes()[nodeNames[i]];
+				foundNames += "." + nodeNames[i];
+			}
+			return currentScope;
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	
+	throw NoticeException("Undeclared name in named scopes'"+ name + "'!");
+}
+
+BasicScope::BasicScope(){
+
+}
+
+BasicScope::BasicScope(AbstractScope *parentScope, string name){
+	this->parentScope = parentScope;
+	this->name = name;
 }
 
 

@@ -15,23 +15,14 @@
 #include "type.hpp"
 
 class BasicScope: public AbstractScope{
-protected:
-AbstractScope *parentScope;
-string name;
-map<string, Type> types;
-//map<string, vector<FunctionSymbol>> functions;
-map<string, FunctionSymbol> functions;
-map<string, VariableSymbol> variables;
-
-string base;
-int currentOffset;
-
 public:
+	virtual AbstractScope* resolveNamedScope(CompoundNameNode* ) override;
 	virtual FunctionSymbol* resolveFunction(string name) override;
 	virtual VariableSymbol* resolveVariable(string name) override;
 	virtual Type* resolveType(string name) override;
 	virtual Type* resolveType(Type) override;
 
+	virtual map<string, AbstractScope*>& getNamedScopes()override;
 	virtual map<string, Type>& getTypes() override;
 	virtual map<string, FunctionSymbol>& getFunctions() override;
 	virtual map<string, VariableSymbol>& getVariables() override;
@@ -49,6 +40,9 @@ public:
 	virtual AbstractScope* getParentScope() override;
 
 	virtual void dump(ostream *out, string shift = "") = 0;
+
+	BasicScope();
+	BasicScope(AbstractScope *, string name = "");
 };
 
 #endif

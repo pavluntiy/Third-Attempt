@@ -32,3 +32,19 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 	CompoundNameNode::CompoundNameNode(string what){
 		this->names.push_back(what);
 	}
+
+	bool CompoundNameNode::isSimpleName(){
+		return this->names.size() == 1;
+	}
+
+	string CompoundNameNode::getName(){
+		string result = "";
+		for(auto it: this->names){
+			result += "." + it;
+		}
+		return result;
+	}
+
+	string CompoundNameNode::getSimpleName(){
+		return *(end(this->names) - 1);
+	}

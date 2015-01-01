@@ -49,27 +49,32 @@ void TypeVisitor::visit(VarDeclarationNode *node){
 
 void TypeVisitor::visit(SignatureNode *node){
 
+	CompoundNameNode *name = node->getName();
+	string functionName = name->getSimpleName();
+
+
+	setCurrentScope(currentScope->resolveNamedScope(name));
+
 	Type* returnType = currentScope->resolveType(node->getType());
 
 	FunctionSymbol function;
 	function.setReturnType(returnType);
 
-	FunctionScope *functionScope = new FunctionScope(currentScope);
+	FunctionScope *functionScope = new FunctionScope(currentScope, functionName);
 
-	functionScope->setParentScope(currentScope);
+//	functionScope->setParentScope(currentScope);
 
 	functionScope->setReturnType(returnType);
 	function.setFunctionScope(functionScope);
 
 	function.setName(node->getName()->getNames()[0]);
-	functionScope->setName(node->getName()->getNames()[0]);
-
+	functionScope->setName(functionName);
 	node->setFunctionScope(functionScope);
 
 	for(auto it: node->getArguments()){
 		function.addArgument(currentScope->resolveType(get<0>(it)));
 		if(get<1>(it)){
-			functionScope->declareVariable(VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getNames()[0]));
+			functionScope->declareVariable(VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName()));
 		}
 	 	// if(get<2>(it)){
 	 	// 	get<2>(it)->accept(this);
@@ -77,6 +82,8 @@ void TypeVisitor::visit(SignatureNode *node){
 	}	
 
 	currentScope->declareFunction(function);
+
+	restoreCurrentScope();
 }
 
 void TypeVisitor::visit(FunctionDefinitionNode *node){
@@ -159,4 +166,14 @@ TypeVisitor::~TypeVisitor(){
 
 void TypeVisitor::dump(ostream *out){
 	currentScope->dump(out);
+}
+
+void TypeVisitor::setCurrentScope(AbstractScope* scope){
+	this->scopes.push(currentScope);
+	currentScope = scope;
+}
+
+void TypeVisitor::restoreCurrentScope(){
+	currentScope = this->scopes.top();
+	this->scopes.pop();
 }

@@ -32,7 +32,7 @@ public:
 	// AbstractScope *getParentScope();
 	// FunctionScope(string name);
 	FunctionScope();
-	FunctionScope(AbstractScope *scope);
+	FunctionScope(AbstractScope *scope, string name = "");
 	virtual void dump(ostream *out, string shift = "") override;
 
 };
