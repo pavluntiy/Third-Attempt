@@ -11,10 +11,10 @@ class FunctionScope: public BasicScope {
 string name;
 Type *returnType;
 public:
-	virtual FunctionSymbol* resolveFunction(string name) override;
-	virtual VariableSymbol* resolveVariable(string name) override;
-	virtual Type* resolveType(string name) override;
-	virtual Type* resolveType(Type) override;
+	// virtual FunctionSymbol* resolveFunction(string name) override;
+	// virtual VariableSymbol* resolveVariable(string name) override;
+	// virtual Type* resolveType(string name) override;
+	// virtual Type* resolveType(Type) override;
 
 	void setReturnType(Type *type);
 
@@ -22,11 +22,17 @@ public:
 	virtual void declareVariable(VariableSymbol variable) override;
 	virtual void declareType(Type type) override;
 
-	void setName(string name);
-	string getName();
-	FunctionScope(string name);
+	// virtual map<string, Type>& getTypes() override;
+	// virtual map<string, FunctionSymbol>& getFunctions() override;
+	// virtual map<string, VariableSymbol>& getVariables() override;
+
+	// void setName(string name);
+	// string getName();
+	// void setParentScope(AbstractScope *);
+	// AbstractScope *getParentScope();
+	// FunctionScope(string name);
 	FunctionScope();
-	FunctionScope(BasicScope *scope);
+	FunctionScope(AbstractScope *scope);
 	virtual void dump(ostream *out, string shift = "") override;
 
 };

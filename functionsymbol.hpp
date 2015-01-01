@@ -5,24 +5,25 @@
 #include "type.hpp"
 //#include "functionscope.hpp"
 #include "basicsymbol.hpp"
+#include "abstractscope.hpp"
 
 class FunctionScope;
 class FunctionSymbol: public BasicSymbol{
 
 Type* returnType;
 vector<Type*> arguments;
-BasicScope *functionScope;
+AbstractScope *functionScope;
 string functionLabel;
 public:
 
 	void setReturnType(Type *type);
 	void addArgument(Type *type);
-	void setFunctionScope(BasicScope *scope);
+	void setFunctionScope(AbstractScope *scope);
 	void setFunctionLabel(string str);
 
 	Type* getReturnType();
 	vector<Type*> getArguments();
-	BasicScope* getFunctionScope();
+	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
 

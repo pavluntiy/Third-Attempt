@@ -1162,7 +1162,7 @@ BasicNode* Parser::getVarDeclaration(){
 			BasicNode *value = nullptr;
 			if(currentToken == Token(Token::OPERATOR, "=")){
 				get(Token::OPERATOR);
-				value = getExpression();
+				value = getAssignment();
 			}
 			result->addVariable(make_pair(variable, value));
 			++count;

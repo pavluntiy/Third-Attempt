@@ -29,8 +29,8 @@
 class TypeVisitor: public BasicVisitor{
 protected:
 	GlobalScope globalScope;
-	BasicScope *currentScope;
-	stack<BasicScope*> scopes;
+	AbstractScope *currentScope;
+	stack<AbstractScope*> scopes;
 public:
 	virtual void visit(ProgramNode *node) override;
 	virtual void visit(OperatorsNode *node) override;

@@ -5,13 +5,18 @@
 #include "noticeexception.hpp"
 #include "typeexception.hpp"
 
-class FunctionSymbol;
-class VariableSymbol;
-class Type;
+// class FunctionSymbol;
+// class VariableSymbol;
+// class Type;
 
-class BasicScope {
+#include "abstractscope.hpp"
+#include "functionsymbol.hpp"
+#include "variablesymbol.hpp"
+#include "type.hpp"
+
+class BasicScope: public AbstractScope{
 protected:
-BasicScope *parentScope;
+AbstractScope *parentScope;
 string name;
 map<string, Type> types;
 //map<string, vector<FunctionSymbol>> functions;
@@ -22,10 +27,14 @@ string base;
 int currentOffset;
 
 public:
-	virtual FunctionSymbol* resolveFunction(string name) = 0;
-	virtual VariableSymbol* resolveVariable(string name) = 0;
-	virtual Type* resolveType(string name) = 0;
-	virtual Type* resolveType(Type) = 0;
+	virtual FunctionSymbol* resolveFunction(string name) override;
+	virtual VariableSymbol* resolveVariable(string name) override;
+	virtual Type* resolveType(string name) override;
+	virtual Type* resolveType(Type) override;
+
+	virtual map<string, Type>& getTypes() override;
+	virtual map<string, FunctionSymbol>& getFunctions() override;
+	virtual map<string, VariableSymbol>& getVariables() override;
 
 
 
@@ -33,11 +42,11 @@ public:
 	virtual void declareVariable(VariableSymbol variable) = 0;
 	virtual void declareType(Type type) = 0;
 
-	// virtual string getName() = 0;
-	// virtual void setName(string str) = 0;
+	virtual string getName() override;
+	virtual void setName(string str) override;
 
-	virtual void setParentScope(BasicScope *parentScope);
-	virtual BasicScope* getParentScope();
+	virtual void setParentScope(AbstractScope *parentScope) override;
+	virtual AbstractScope* getParentScope() override;
 
 	virtual void dump(ostream *out, string shift = "") = 0;
 };
