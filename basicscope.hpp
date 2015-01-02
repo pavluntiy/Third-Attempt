@@ -17,12 +17,13 @@
 
 class BasicScope: public AbstractScope{
 public:
+	virtual AbstractScope* resolveNamedScope(const vector<string>& longName);
 	virtual AbstractScope* resolveNamedScope(CompoundNameNode* ) override;
 	virtual FunctionSymbol* resolveFunction(CompoundNameNode *name) override;
 	virtual VariableSymbol* resolveVariable(CompoundNameNode *name) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
-	virtual Type* resolveType(Type) override;
+	virtual Type* resolveType(const Type&) override;
 
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
 	virtual map<string, Type*>& getTypes() override;

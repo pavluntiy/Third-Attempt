@@ -14,6 +14,7 @@ protected:
 	string name;
 	Type *type;
 	BasicScope *definitionScope;
+	Position position;
 
 public:
 	virtual void setName(string name);
@@ -23,7 +24,10 @@ public:
 	virtual string getName();
 	virtual Type* getType();
 	virtual BasicScope* getDefinitionScope();
+	void setPosition(Position position);
+	Position getPosition();
 	//virtual bool operator== (const BasicSymbol &b) const;
+	BasicSymbol(Position position = {0, 0});
 };
 
 //

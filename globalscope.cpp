@@ -54,6 +54,7 @@ GlobalScope::GlobalScope():BasicScope(nullptr, "global")
 {
 	this->declareType(new Type("int", 8));
 	this->declareType(new Type("char", 1));
+	this->declareNamedScope(this);
 }
 
 void GlobalScope::dump(ostream *out, string shift){
@@ -61,18 +62,19 @@ void GlobalScope::dump(ostream *out, string shift){
 
 	*out << shift << "\tTypes:\n";
 	for(auto it: this->types){
-		*out << shift << "\t\t" << it.first << "\n";
+		*out << shift << "\t\t" << it.second->toString() << "\n";
 	}
 
 	*out << "\tFunctions:\n";
 	for(auto it: this->functions){
-		*out << "\t\t" << it.first << "\n";
+		*out << "\t\t" << it.second->toString() << "\n";
+		*out << "\t\t" << it.second->argumentsToString() << "\n";
 		it.second->getFunctionScope()->dump(out, shift + "\t\t");
 	}
 
 	*out << "\tVariables:\n";
 	for(auto it: this->variables){
-		*out << "\t\t" << it.first << "\n";
+		*out << "\t\t" << it.second->toString() << "\n";
 	}
 
 	*out << "\tStructures:\n";
@@ -81,7 +83,7 @@ void GlobalScope::dump(ostream *out, string shift){
 		it.second->getStructureScope()->dump(out, shift + "\t\t");
 	}
 
-	*out << "end of global scope;\n=====\n";
+	*out << "end of global scope;\n" << shift << "=====\n";
 
 }
 

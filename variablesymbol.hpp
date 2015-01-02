@@ -24,6 +24,7 @@ public:
 
 	VariableSymbol();
 	VariableSymbol(Type *type, string name);
+	string toString();
 };
 
 #endif

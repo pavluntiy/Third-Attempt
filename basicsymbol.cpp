@@ -25,3 +25,15 @@ BasicScope* BasicSymbol::getDefinitionScope(){
 	return this->definitionScope;
 }
 
+void BasicSymbol::setPosition(Position position){
+	this->position = position;
+}
+
+Position BasicSymbol::getPosition(){
+	return this->position;
+}
+
+BasicSymbol::BasicSymbol(Position position){
+	this->position = position;
+}
+

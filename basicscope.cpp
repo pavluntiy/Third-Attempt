@@ -78,7 +78,7 @@ Type* BasicScope::resolveType(CompoundNameNode *name){
 
 Type* BasicScope::resolveType(Type *type){
 	string name = type->getName();
-	AbstractScope *currentScope = this;
+	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
 			return currentScope->getTypes()[name];
@@ -89,9 +89,9 @@ Type* BasicScope::resolveType(Type *type){
 	throw NoticeException("Undeclared type'"+ name + "'!");
 }
 
-Type* BasicScope::resolveType(Type type){
+Type* BasicScope::resolveType(const Type &type){
 	string name = type.getName();
-	AbstractScope *currentScope = this;
+	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
 			return currentScope->getTypes()[name];
@@ -100,6 +100,33 @@ Type* BasicScope::resolveType(Type type){
 	}
 	
 	throw NoticeException("Undeclared type'"+ name + "'!");
+}
+
+AbstractScope* BasicScope::resolveNamedScope(const vector<string>& longName){
+
+	AbstractScope *currentScope = this;
+
+	if(longName.size() == 1){
+		return currentScope;
+	}
+
+	string foundNames = "";
+
+	while(currentScope != nullptr){
+		if(currentScope->getNamedScopes().count(longName[0])){
+			for(int i = 0; i < static_cast<int>(longName.size()) - 1; ++i){
+				if(!currentScope->getNamedScopes().count(longName[i])){
+					throw NoticeException("No " + longName[i] + " found in " +foundNames);
+				}
+				currentScope = currentScope->getNamedScopes()[longName[i]];
+				foundNames += "." + longName[i];
+			}
+			return currentScope;
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	
+	throw NoticeException("Undeclared name in named scopes'"+ foundNames + "'!");
 }
 
 AbstractScope* BasicScope::resolveNamedScope(CompoundNameNode* node){

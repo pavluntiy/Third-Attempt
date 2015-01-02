@@ -30,3 +30,11 @@ VariableSymbol::VariableSymbol(Type *type, string name){
 	this->name = name;
 	this->type = type;
 }
+
+string VariableSymbol::toString(){
+	stringstream result;
+	result << "'" << this->getName() << "' at ";
+	result << this;
+	result << " of " << this->getType()->toString();
+	return result.str();
+}

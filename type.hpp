@@ -21,12 +21,21 @@ protected:
 
 public:
 
-	string getName();
-	int getSize();
+	string getName() const;
+	int getSize() const;
 	Type(string name, int size = 0);
 	Type();
 	Type(TypeNode*);
 
+	vector<string>& getStorageModes();
+	vector<string>& getModifiers();
+	vector<string>& getAccessModes();
+	vector<int>& getDimensions();
+
+	const vector<string>& getFullName() const;
+	string toString();
+
 };
+
 
 #endif

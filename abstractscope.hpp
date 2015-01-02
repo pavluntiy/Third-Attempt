@@ -27,12 +27,13 @@ string base;
 int currentOffset;
 
 public:
+	virtual AbstractScope* resolveNamedScope(const vector<string>& longName) = 0;
 	virtual AbstractScope* resolveNamedScope(CompoundNameNode*) = 0;
 	virtual FunctionSymbol* resolveFunction(CompoundNameNode*) = 0;
 	virtual VariableSymbol* resolveVariable(CompoundNameNode*) = 0;
 	virtual Type* resolveType(CompoundNameNode*) = 0;
 	virtual Type* resolveType(Type*) = 0;
-	virtual Type* resolveType(Type) = 0;
+	virtual Type* resolveType(const Type&) = 0;
 
 	virtual map<string, Type*>& getTypes() = 0;
 	virtual map<string, FunctionSymbol*>& getFunctions() = 0;

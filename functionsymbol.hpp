@@ -26,6 +26,8 @@ public:
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
+	string toString();
+	string argumentsToString();
 
 
 };

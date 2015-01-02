@@ -40,5 +40,15 @@ struct Vector{
 	def Vector operator + (ref Vector other)
 }
 
+str.str q, b, c
+
+struct str1{
+	def int bar()
+	def int global.bar()
+	def int global.Vector.bar()
+	//def int global.str1.bar()
+}
+
+
 
 

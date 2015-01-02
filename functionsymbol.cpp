@@ -32,3 +32,29 @@ AbstractScope* FunctionSymbol::getFunctionScope(){
 string FunctionSymbol::getFunctionLabel(){
 	return this->functionLabel;
 }
+
+string FunctionSymbol::toString(){
+	stringstream result;
+
+	result << "'" << this->getName() << "' ";
+	result <<  "( returns " << this->getReturnType()->toString() << ") ";
+
+	// result << "\nArguments:\n";
+	// for(auto it: this->arguments){
+	// 	result << it->toString();
+	// }
+
+	result << " at " << this;
+	return result.str();
+}
+
+string FunctionSymbol::argumentsToString(){
+	stringstream result;
+
+
+	result << "'" + this->getName() + "' arguments:";
+	for(auto it: this->arguments){
+	 	result << it->toString() << 	"; ";
+	}
+	return result.str();
+}
