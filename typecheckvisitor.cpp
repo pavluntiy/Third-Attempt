@@ -34,11 +34,11 @@ void TypeVisitor::visit(ValueNode *node){
 
 void TypeVisitor::visit(VarDeclarationNode *node){
 	//node->getType()->accept(this);
-	Type *type = this->currentScope->resolveType(Type(node->getType()));
+	Type *type = this->currentScope->resolveType(new Type(node->getType()));
 
 	for(auto it: node->getVariables()){
 		//it.first->accept(this);
-		currentScope->declareVariable(VariableSymbol(type, it.first->getNames()[0]));
+		currentScope->declareVariable(new VariableSymbol(type, it.first->getNames()[0]));
 
 		// if(it.second){
 		// 	it.second->accept(this);
@@ -55,26 +55,24 @@ void TypeVisitor::visit(SignatureNode *node){
 
 	setCurrentScope(currentScope->resolveNamedScope(name));
 
-	Type* returnType = currentScope->resolveType(node->getType());
+	Type* returnType = currentScope->resolveType(Type(node->getType()));
 
-	FunctionSymbol function;
-	function.setReturnType(returnType);
+	FunctionSymbol *function = new FunctionSymbol();
+	function->setReturnType(returnType);
 
 	FunctionScope *functionScope = new FunctionScope(currentScope, functionName);
 
-//	functionScope->setParentScope(currentScope);
-
 	functionScope->setReturnType(returnType);
-	function.setFunctionScope(functionScope);
+	function->setFunctionScope(functionScope);
 
-	function.setName(node->getName()->getNames()[0]);
+	function->setName(functionName);
 	functionScope->setName(functionName);
-	node->setFunctionScope(functionScope);
+	node->setFunctionSymbol(function);
 
 	for(auto it: node->getArguments()){
-		function.addArgument(currentScope->resolveType(get<0>(it)));
+		function->addArgument(currentScope->resolveType(Type(get<0>(it))));
 		if(get<1>(it)){
-			functionScope->declareVariable(VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName()));
+			functionScope->declareVariable(new VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName()));
 		}
 	 	// if(get<2>(it)){
 	 	// 	get<2>(it)->accept(this);
@@ -90,7 +88,7 @@ void TypeVisitor::visit(FunctionDefinitionNode *node){
  	node->getSignature()->accept(this);
 
  	this->scopes.push(currentScope);
- 	currentScope = node->getSignature()->getFunctionScope();
+ 	currentScope = node->getSignature()->getFunctionSymbol()->getFunctionScope();
  	node->getOperators()->accept(this);
  	currentScope = this->scopes.top();
  	this->scopes.pop();
@@ -145,7 +143,18 @@ void TypeVisitor::visit(ReturnNode *node){
 }
 
 void TypeVisitor::visit(StructNode *node){
- 	node->getName()->accept(this);
+	
+ 	//node->getName()->accept(this);
+ 	Type *type = new Type(node->getName()->getSimpleName());
+ 	FunctionScope *structureScope = new FunctionScope();
+ 	StructureSymbol *structure = new StructureSymbol(type, structureScope);
+
+ 	AbstractScope *parentScope = currentScope->resolveNamedScope(node->getName());
+ 	structureScope->setParentScope(parentScope);
+ 	setCurrentScope(parentScope);
+ 	currentScope->declareType(type);
+ 	currentScope->declareStructure(structure);
+ 	setCurrentScope(structureScope);
 
  	for(auto it: node->getFunctions()){
  		it->accept(this);
@@ -154,6 +163,10 @@ void TypeVisitor::visit(StructNode *node){
  	for(auto it: node->getVariables()){
  		it->accept(this);
  	}
+
+ 	
+ 	restoreCurrentScope();
+ 	restoreCurrentScope();
 }
 
 TypeVisitor::TypeVisitor(){

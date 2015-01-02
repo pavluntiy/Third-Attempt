@@ -4,6 +4,7 @@
 #include "header.hpp"
 #include "type.hpp"
 #include "basicsymbol.hpp"
+#include "abstractscope.hpp"
 
 
 class VariableSymbol: public BasicSymbol{

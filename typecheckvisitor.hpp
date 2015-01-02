@@ -24,6 +24,7 @@
 
 #include "functionscope.hpp"
 #include "globalscope.hpp"
+#include "structuresymbol.hpp"
 
 
 class TypeVisitor: public BasicVisitor{

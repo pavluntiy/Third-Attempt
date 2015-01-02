@@ -13,25 +13,29 @@
 #include "functionsymbol.hpp"
 #include "variablesymbol.hpp"
 #include "type.hpp"
+#include "structuresymbol.hpp"
 
 class BasicScope: public AbstractScope{
 public:
 	virtual AbstractScope* resolveNamedScope(CompoundNameNode* ) override;
-	virtual FunctionSymbol* resolveFunction(string name) override;
-	virtual VariableSymbol* resolveVariable(string name) override;
-	virtual Type* resolveType(string name) override;
+	virtual FunctionSymbol* resolveFunction(CompoundNameNode *name) override;
+	virtual VariableSymbol* resolveVariable(CompoundNameNode *name) override;
+	virtual Type* resolveType(CompoundNameNode *name) override;
+	virtual Type* resolveType(Type*) override;
 	virtual Type* resolveType(Type) override;
 
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
-	virtual map<string, Type>& getTypes() override;
-	virtual map<string, FunctionSymbol>& getFunctions() override;
-	virtual map<string, VariableSymbol>& getVariables() override;
+	virtual map<string, Type*>& getTypes() override;
+	virtual map<string, FunctionSymbol*>& getFunctions() override;
+	virtual map<string, VariableSymbol*>& getVariables() override;
+	virtual map<string, StructureSymbol*>& getStructures() override;
 
 
 
-	virtual void declareFunction(FunctionSymbol function) = 0;
-	virtual void declareVariable(VariableSymbol variable) = 0;
-	virtual void declareType(Type type) = 0;
+	virtual void declareFunction(FunctionSymbol *function) = 0;
+	virtual void declareVariable(VariableSymbol *variable) = 0;
+	virtual void declareType(Type *type) = 0;
+	virtual void declareStructure(StructureSymbol *structure) = 0;
 
 	virtual string getName() override;
 	virtual void setName(string str) override;

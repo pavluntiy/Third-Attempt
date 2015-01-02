@@ -6,13 +6,14 @@
 
 class Type{
 protected:
-	Type *parentType;
+	//Type *parentType;
 
 	vector<string> storageModes;
 	vector<string> modifiers;
 	vector<string> accessModes;
 	vector<int> dimensions;
 
+	vector<string> fullName;
 	string name;
 	int size;
 
@@ -22,8 +23,7 @@ public:
 
 	string getName();
 	int getSize();
-
-	Type(string name, int size);
+	Type(string name, int size = 0);
 	Type();
 	Type(TypeNode*);
 

@@ -6,11 +6,13 @@
 #include "token.hpp"
 #include <string>
 
+class BasicSymbol;
 class CompoundNameNode: public BasicNode {
 protected:
 	//string left;
 	//CompoundNameNode *right;
 	vector<string> names;
+	BasicSymbol *symbol;
 
 
 public: 
@@ -32,7 +34,7 @@ public:
 	string getName();
 	string getSimpleName();
 	bool isSimpleName();
-
+	BasicSymbol* getSymbol();
 };
 
 #endif

@@ -4,8 +4,9 @@
 #include "basicnode.hpp"
 #include "basicvisitor.hpp"
 #include "typenode.hpp"
-#include "functionscope.hpp"
 
+
+class FunctionSymbol;
 class SignatureNode: public BasicNode {
 public:
 	typedef tuple<TypeNode*, CompoundNameNode*, BasicNode*> ArgumentType;
@@ -15,7 +16,7 @@ protected:
 	vector<ArgumentType> arguments;
 	bool varargs = false;
 
-	FunctionScope *functionScope;
+	FunctionSymbol *functionSymbol;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
@@ -28,11 +29,11 @@ public:
 
 	void setVarargs();
 	void setType(TypeNode*);
-	void setFunctionScope(FunctionScope *scope);
+	void setFunctionSymbol(FunctionSymbol *symbol);
 
 	void setName(CompoundNameNode*);
 	void addArgument(ArgumentType);
-	FunctionScope* getFunctionScope();
+	FunctionSymbol* getFunctionSymbol();
 
 
 };

@@ -40,10 +40,10 @@ bool SignatureNode::getVarargs(){
 	return this->varargs;
 }
 
-FunctionScope* SignatureNode::getFunctionScope(){
-	return this->functionScope;
+FunctionSymbol* SignatureNode::getFunctionSymbol(){
+	return this->functionSymbol;
 }
 
-void SignatureNode::setFunctionScope(FunctionScope *functionScope){
-	this->functionScope = functionScope;
+void SignatureNode::setFunctionSymbol(FunctionSymbol *functionSymbol){
+	this->functionSymbol = functionSymbol;
 }

@@ -5,8 +5,8 @@
 // 	throw NoticeException("No nested functions are allowed!");
 // }
 
-void FunctionScope::declareFunction(FunctionSymbol function){
-	string name = function.getName();
+void FunctionScope::declareFunction(FunctionSymbol *function){
+	string name = function->getName();
 
 	if(this->variables.count(name) || this->functions.count(name)){
 		throw NoticeException("Function '" + name + "' redeclaration!");
@@ -15,8 +15,8 @@ void FunctionScope::declareFunction(FunctionSymbol function){
 	this->functions[name] = function;
 }
 
-void FunctionScope::declareVariable(VariableSymbol variable){
-	string name = variable.getName();
+void FunctionScope::declareVariable(VariableSymbol *variable){
+	string name = variable->getName();
 
 	if(this->variables.count(name) || this->functions.count(name)){
 		throw NoticeException("Variable '" + name + "' redeclaration!");
@@ -25,8 +25,12 @@ void FunctionScope::declareVariable(VariableSymbol variable){
 	this->variables[name] = variable;
 }
 
-void FunctionScope::declareType(Type type){
+void FunctionScope::declareType(Type *type){
 	throw NoticeException("No nested types are allowed!");
+}
+
+void FunctionScope::declareStructure(StructureSymbol *structure){
+	throw NoticeException("No nested structures are allowed!");
 }
 
 void FunctionScope::dump(ostream *out, string shift){
@@ -40,7 +44,7 @@ void FunctionScope::dump(ostream *out, string shift){
 	*out << shift << "\tFunctions:\n";
 	for(auto it: this->functions){
 		*out << shift << "\t\t" << it.first << "\n";
-		it.second.getFunctionScope()->dump(out, shift + "\t\t");
+		it.second->getFunctionScope()->dump(out, shift + "\t\t");
 	}
 
 	*out << shift << "\tVariables:\n";

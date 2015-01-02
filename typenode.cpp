@@ -45,3 +45,11 @@ void TypeNode::addDimension(ValueNode *what){
 void TypeNode::addName(CompoundNameNode *what){
 	this->name = what;
 }
+
+Type*  TypeNode::getTypeSymbol(){
+	return this->type;
+}
+
+void TypeNode::setTypeSymbol(Type *type){
+	this->type = type;
+}

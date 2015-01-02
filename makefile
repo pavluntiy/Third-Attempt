@@ -18,7 +18,7 @@ SOURCES=header.cpp alphabet.cpp\
 	\
 	parser.cpp\
 	\
-	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp\
+	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp structuresymbol.cpp\
 	type.cpp\
 	\
 	typecheckvisitor.cpp\

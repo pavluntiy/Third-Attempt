@@ -20,15 +20,15 @@ AbstractScope* BasicScope::getParentScope(){
 	return this->parentScope;
 }
 
-map<string, Type>& BasicScope::getTypes(){
+map<string, Type*>& BasicScope::getTypes(){
 	return this->types;
 }
 
-map<string, FunctionSymbol>& BasicScope::getFunctions(){
+map<string, FunctionSymbol*>& BasicScope::getFunctions(){
 	return this->functions;
 }
 
-map<string, VariableSymbol>& BasicScope::getVariables(){
+map<string, VariableSymbol*>& BasicScope::getVariables(){
 	return this->variables;
 }
 
@@ -36,40 +36,57 @@ map<string, AbstractScope*>& BasicScope::getNamedScopes(){
 	return this->namedScopes;
 }
 
-FunctionSymbol* BasicScope::resolveFunction(string name){
-	AbstractScope *currentScope = this;
+map<string, StructureSymbol*>& BasicScope::getStructures(){
+	return this->structures;
+}
+
+FunctionSymbol* BasicScope::resolveFunction(CompoundNameNode *name){
+	AbstractScope *currentScope = resolveNamedScope(name);
+	string simpleName = name->getSimpleName();
 	while(currentScope != nullptr){
-		if(currentScope->getFunctions().count(name)){
-			return &currentScope->getFunctions()[name];
+		if(currentScope->getFunctions().count(simpleName)){
+			return currentScope->getFunctions()[simpleName];
 		}
 		currentScope = currentScope->getParentScope();
 	}
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared function '"+ simpleName + "'!");
 }
 
-VariableSymbol* BasicScope::resolveVariable(string name){
-	AbstractScope *currentScope = this;
-
+VariableSymbol* BasicScope::resolveVariable(CompoundNameNode *name){
+	AbstractScope *currentScope = resolveNamedScope(name);
+	string simpleName = name->getSimpleName();
 	while(currentScope != nullptr){
-		if(currentScope->getVariables().count(name)){
-			return &currentScope->getVariables()[name];
+		if(currentScope->getVariables().count(simpleName)){
+			return currentScope->getVariables()[simpleName];
 		}
 		currentScope = currentScope->getParentScope();
 	}
-
-	throw NoticeException("Undeclared function '"+ name + "'!");
+	throw NoticeException("Undeclared variable '"+ simpleName + "'!");
 }
 
-Type* BasicScope::resolveType(string name){
+Type* BasicScope::resolveType(CompoundNameNode *name){
+	AbstractScope *currentScope = resolveNamedScope(name);
+	string simpleName = name->getSimpleName();
+	while(currentScope != nullptr){
+		if(currentScope->getTypes().count(simpleName)){
+			return currentScope->getTypes()[simpleName];
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	throw NoticeException("Undeclared type '"+ simpleName + "'!");
+}
+
+Type* BasicScope::resolveType(Type *type){
+	string name = type->getName();
 	AbstractScope *currentScope = this;
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
-			return &currentScope->getTypes()[name];
+			return currentScope->getTypes()[name];
 		}
 		currentScope = currentScope->getParentScope();
 	}
 	
-	throw NoticeException("Undeclared type '"+ name + "'!");
+	throw NoticeException("Undeclared type'"+ name + "'!");
 }
 
 Type* BasicScope::resolveType(Type type){
@@ -77,7 +94,7 @@ Type* BasicScope::resolveType(Type type){
 	AbstractScope *currentScope = this;
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
-			return &currentScope->getTypes()[name];
+			return currentScope->getTypes()[name];
 		}
 		currentScope = currentScope->getParentScope();
 	}

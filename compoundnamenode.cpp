@@ -48,3 +48,7 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 	string CompoundNameNode::getSimpleName(){
 		return *(end(this->names) - 1);
 	}
+
+	BasicSymbol* CompoundNameNode::getSymbol(){
+		return this->symbol;
+	}

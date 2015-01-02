@@ -8,8 +8,5 @@ Position BasicNode::getPosition(){
 	return this->position;
 }
 
-BasicSymbol* BasicNode::getSymbol(){
-	return this->symbol;
-}
 
 BasicNode::~BasicNode(){}

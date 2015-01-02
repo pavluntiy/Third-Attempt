@@ -15,10 +15,11 @@ Type::Type(string name, int size){
 Type::Type(){}
 
 Type::Type(TypeNode *node){
-	this->name = node->getName()->getNames()[0];
+	this->name = node->getName()->getSimpleName();
 	this->storageModes = node->getStorageModes();
 	this->modifiers = node->getModifiers();
 	this->accessModes = node->getAccessModes();
+	this->fullName = node->getName()->getNames();
 	for(auto it: node->getDimensions()){
 		this->dimensions.push_back(stoi(it->getText()));
 	}
