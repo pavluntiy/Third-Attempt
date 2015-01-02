@@ -276,6 +276,13 @@ void PrintVisitor::visit(StructNode *node){
  		it->accept(this);
  	}
 
+ 	*this->out << "\n" << shift << "Structures:\n";
+
+ 	for(auto it: node->getStructures()){
+ 		it->accept(this);
+ 	}
+
+
 	this->shift.pop_back();
 
 	*this->out   << shift << ")" << endl;

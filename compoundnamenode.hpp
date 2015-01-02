@@ -35,6 +35,7 @@ public:
 	string getSimpleName();
 	bool isSimpleName();
 	BasicSymbol* getSymbol();
+	void setSymbol(BasicSymbol *symbol);
 };
 
 #endif

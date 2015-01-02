@@ -46,6 +46,7 @@ public:
 	virtual void declareVariable(VariableSymbol *variable) = 0;
 	virtual void declareType(Type *type) = 0;
 	virtual void declareStructure(StructureSymbol *structure) = 0;
+	virtual void declareNamedScope(AbstractScope *scope) = 0;
 
 	virtual string getName() = 0;
 	virtual void setName(string str) = 0;
@@ -54,6 +55,7 @@ public:
 	virtual AbstractScope* getParentScope() = 0;
 
 	virtual void dump(ostream *out, string shift = "") = 0;
+
 
 };
 

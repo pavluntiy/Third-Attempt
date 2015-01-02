@@ -22,7 +22,7 @@ SOURCES=header.cpp alphabet.cpp\
 	type.cpp\
 	\
 	typecheckvisitor.cpp\
-	basicscope.cpp globalscope.cpp functionscope.cpp\
+	basicscope.cpp globalscope.cpp functionscope.cpp structurescope.cpp\
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=prog

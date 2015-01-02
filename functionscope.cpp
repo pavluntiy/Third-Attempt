@@ -1,14 +1,9 @@
 #include "functionscope.hpp"
 
-
-// void FunctionScope::declareFunction(FunctionSymbol function){
-// 	throw NoticeException("No nested functions are allowed!");
-// }
-
 void FunctionScope::declareFunction(FunctionSymbol *function){
 	string name = function->getName();
 
-	if(this->variables.count(name) || this->functions.count(name)){
+	if(this->isDefined(name)){
 		throw NoticeException("Function '" + name + "' redeclaration!");
 	}
 
@@ -18,11 +13,21 @@ void FunctionScope::declareFunction(FunctionSymbol *function){
 void FunctionScope::declareVariable(VariableSymbol *variable){
 	string name = variable->getName();
 
-	if(this->variables.count(name) || this->functions.count(name)){
+	if(this->isDefined(name)){
 		throw NoticeException("Variable '" + name + "' redeclaration!");
 	}
 
 	this->variables[name] = variable;
+}
+
+void FunctionScope::declareNamedScope(AbstractScope *scope){
+	string name = scope->getName();
+
+	if(this->isDefined(name)){
+		throw NoticeException("Named scope '" + name + "' redeclaration!");
+	}
+
+	this->namedScopes[name] = scope;
 }
 
 void FunctionScope::declareType(Type *type){

@@ -24,6 +24,7 @@
 
 #include "functionscope.hpp"
 #include "globalscope.hpp"
+#include "structurescope.hpp"
 #include "structuresymbol.hpp"
 
 

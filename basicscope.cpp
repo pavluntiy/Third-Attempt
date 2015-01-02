@@ -104,6 +104,7 @@ Type* BasicScope::resolveType(Type type){
 
 AbstractScope* BasicScope::resolveNamedScope(CompoundNameNode* node){
 
+
 	AbstractScope *currentScope = this;
 
 	if(node->isSimpleName()){
@@ -138,6 +139,18 @@ BasicScope::BasicScope(){
 BasicScope::BasicScope(AbstractScope *parentScope, string name){
 	this->parentScope = parentScope;
 	this->name = name;
+}
+
+bool BasicScope::isDefined(string name){
+	return
+		this->variables.count(name) 
+		|| 
+		this->functions.count(name) 
+		|| 
+		this->namedScopes.count(name) 
+		||
+		this->structures.count(name) 
+	;
 }
 
 

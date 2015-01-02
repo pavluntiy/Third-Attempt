@@ -147,6 +147,10 @@ void DeleteVisitor::visit(StructNode *node){
  		it->accept(this);
  	}
 
+ 	for(auto it: node->getStructures()){
+ 		it->accept(this);
+ 	}
+
  	delete node;
  	node = nullptr;
 }

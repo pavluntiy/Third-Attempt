@@ -16,6 +16,10 @@ void StructNode::addFunction(BasicNode *what){
 // 	this->declarations.push_back(what);
 // }
 
+void StructNode::addStructure(BasicNode *what){
+	this->structures.push_back(what);
+}
+
 void StructNode::addVariable(BasicNode *what){
 	this->variables.push_back(what);
 }
@@ -30,6 +34,10 @@ CompoundNameNode* StructNode::getName(){
 
 vector<BasicNode*>& StructNode::getFunctions(){
 	return this->functions;
+}
+
+vector<BasicNode*>& StructNode::getStructures(){
+	return this->structures;
 }
 
 // vector<SignatureNode*>& StructNode::getDeclarations(){

@@ -36,6 +36,7 @@ public:
 	virtual void declareVariable(VariableSymbol *variable) = 0;
 	virtual void declareType(Type *type) = 0;
 	virtual void declareStructure(StructureSymbol *structure) = 0;
+	virtual void declareNamedScope(AbstractScope *scope) = 0;
 
 	virtual string getName() override;
 	virtual void setName(string str) override;
@@ -47,6 +48,8 @@ public:
 
 	BasicScope();
 	BasicScope(AbstractScope *, string name = "");
+
+	bool isDefined(string name);
 };
 
 #endif

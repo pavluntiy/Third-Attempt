@@ -6,7 +6,6 @@
 #include "basicsymbol.hpp"
 #include "abstractscope.hpp"
 
-
 class StructureSymbol: public BasicSymbol{
 protected:
 	AbstractScope *structureScope;

@@ -3,7 +3,7 @@
 void GlobalScope::declareFunction(FunctionSymbol *function){
 	string name = function->getName();
 
-	if(this->variables.count(name) || this->functions.count(name)){
+	if(this->isDefined(name)){
 		throw NoticeException("Function '" + name + "' redeclaration!");
 	}
 
@@ -13,7 +13,7 @@ void GlobalScope::declareFunction(FunctionSymbol *function){
 void GlobalScope::declareVariable(VariableSymbol *variable){
 	string name = variable->getName();
 
-	if(this->variables.count(name) || this->functions.count(name)){
+	if(this->isDefined(name)){
 		throw NoticeException("Variable '" + name + "' redeclaration!");
 	}
 
@@ -21,13 +21,34 @@ void GlobalScope::declareVariable(VariableSymbol *variable){
 }
 
 void GlobalScope::declareType(Type *type){
-	this->types[type->getName()] = type;
+	string name = type->getName();
+
+	if(this->isDefined(name)){
+		throw NoticeException("Type '" + name + "' redeclaration!");
+	}
+
+	this->types[name] = type;
 }
 
 void GlobalScope::declareStructure(StructureSymbol *structure){
-	//this->namedScopes[]
-	this->structures[structure->getName()] = structure;
+	string name = structure->getName();
+	if(this->isDefined(name)){
+		throw NoticeException("Structure '" + name + "' redeclaration!");
+	}
+	this->structures[name] = structure;
+	this->namedScopes[name] = structure->getStructureScope();
 }
+
+void GlobalScope::declareNamedScope(AbstractScope *scope){
+	string name = scope->getName();
+
+	if(this->isDefined(name)){
+		throw NoticeException("Named scope '" + name + "' redeclaration!");
+	}
+
+	this->namedScopes[name] = scope;
+}
+
 
 GlobalScope::GlobalScope():BasicScope(nullptr, "global")
 {

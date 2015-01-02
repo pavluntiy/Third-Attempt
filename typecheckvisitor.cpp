@@ -33,16 +33,23 @@ void TypeVisitor::visit(ValueNode *node){
 }
 
 void TypeVisitor::visit(VarDeclarationNode *node){
-	//node->getType()->accept(this);
+	
+
 	Type *type = this->currentScope->resolveType(new Type(node->getType()));
 
 	for(auto it: node->getVariables()){
 		//it.first->accept(this);
-		currentScope->declareVariable(new VariableSymbol(type, it.first->getNames()[0]));
+		CompoundNameNode *name = it.first;
+		string varName = name->getSimpleName();
+		setCurrentScope(currentScope->resolveNamedScope(name));
+		auto variable = new VariableSymbol(type, varName);
+		currentScope->declareVariable(variable);
+		it.first->setSymbol(variable);
 
 		// if(it.second){
 		// 	it.second->accept(this);
 		// }
+		restoreCurrentScope();
 	}	
 
 }
@@ -80,7 +87,7 @@ void TypeVisitor::visit(SignatureNode *node){
 	}	
 
 	currentScope->declareFunction(function);
-
+	node->setFunctionSymbol(function);
 	restoreCurrentScope();
 }
 
@@ -143,18 +150,21 @@ void TypeVisitor::visit(ReturnNode *node){
 }
 
 void TypeVisitor::visit(StructNode *node){
-	
- 	//node->getName()->accept(this);
- 	Type *type = new Type(node->getName()->getSimpleName());
- 	FunctionScope *structureScope = new FunctionScope();
- 	StructureSymbol *structure = new StructureSymbol(type, structureScope);
 
+
+ 	Type *type = new Type(node->getName()->getSimpleName()); 	
  	AbstractScope *parentScope = currentScope->resolveNamedScope(node->getName());
- 	structureScope->setParentScope(parentScope);
+ 	StructureScope *structureScope = new StructureScope(parentScope);
+ 	StructureSymbol *structure = new StructureSymbol(type, structureScope);
  	setCurrentScope(parentScope);
  	currentScope->declareType(type);
  	currentScope->declareStructure(structure);
- 	setCurrentScope(structureScope);
+ 	//currentScope->declareNamedScope(structure->getStructureScope());
+ 	setCurrentScope(structure->getStructureScope());
+
+ 	for(auto it: node->getStructures()){
+ 		it->accept(this);
+ 	}
 
  	for(auto it: node->getFunctions()){
  		it->accept(this);
@@ -163,7 +173,6 @@ void TypeVisitor::visit(StructNode *node){
  	for(auto it: node->getVariables()){
  		it->accept(this);
  	}
-
  	
  	restoreCurrentScope();
  	restoreCurrentScope();

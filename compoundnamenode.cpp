@@ -52,3 +52,7 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 	BasicSymbol* CompoundNameNode::getSymbol(){
 		return this->symbol;
 	}
+
+	void CompoundNameNode::setSymbol(BasicSymbol *symbol){
+		this->symbol = symbol;
+	}

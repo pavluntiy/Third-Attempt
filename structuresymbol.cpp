@@ -2,7 +2,7 @@
 
 
 int StructureSymbol::getOfsset(string name){
-
+	return 200;
 }
 int StructureSymbol::getSize(){
 	return 100500;
@@ -14,10 +14,11 @@ string StructureSymbol::getName(){
 	return this->name;
 }
 
-StructureSymbol::StructureSymbol(Type *type, AbstractScope *scope){
+StructureSymbol::StructureSymbol(Type *type, AbstractScope *structureScope){
 	this->name = type->getName();
+	this->structureScope = structureScope;
+	this->structureScope->setName(this->name);
 	this->type = type;
-	this->structureScope = scope;
 }
 
 AbstractScope* StructureSymbol::getStructureScope(){

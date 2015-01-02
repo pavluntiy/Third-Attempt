@@ -1551,6 +1551,12 @@ BasicNode* Parser::getStruct(){
 				consumeSemicolons();
 				result->addFunction(tmp);
 			}
+			else 
+			if(currentToken == Token(Token::KEYWORD, "struct")){
+				auto tmp = getStruct();
+				consumeSemicolons();
+				result->addStructure(tmp);
+			}
 			else {
 				auto tmp = getVarDeclaration();
 				consumeSemicolons();

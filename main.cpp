@@ -34,23 +34,23 @@ int main (int argc, char **argv) {
 
 
 	 Lexer lexer(*in);
-	int i = 0;
-		try{
+	// int i = 0;
+	// 	try{
 
-			while(!lexer.closed()){
-				try{
-					*out << lexer[i];
-					out->flush(); 
-				}	
-				catch(DataException de){
-					*err << "Data exception: " << de.what() << '\n';
-				}
-				++i;
-			}
-		}
-		catch (LexerException e){
-			*err << e.what() << '\n';
-		}
+	// 		while(!lexer.closed()){
+	// 			try{
+	// 				*out << lexer[i];
+	// 				out->flush(); 
+	// 			}	
+	// 			catch(DataException de){
+	// 				*err << "Data exception: " << de.what() << '\n';
+	// 			}
+	// 			++i;
+	// 		}
+	// 	}
+	// 	catch (LexerException e){
+	// 		*err << e.what() << '\n';
+	// 	}
 
 	Parser parser(lexer);
 	try{
@@ -60,11 +60,11 @@ int main (int argc, char **argv) {
 		*err << e.what() << '\n';
 	}
 
-	PrintVisitor *printVisitor = new PrintVisitor(out);
+//	PrintVisitor *printVisitor = new PrintVisitor(out);
+//
+//	parser.getTree()->accept(printVisitor);
 
-	parser.getTree()->accept(printVisitor);
-
-	delete printVisitor;
+//	delete printVisitor;
 
 	TypeVisitor *typevisitor = new TypeVisitor();
 
