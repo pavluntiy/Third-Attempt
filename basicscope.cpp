@@ -40,6 +40,14 @@ map<string, StructureSymbol*>& BasicScope::getStructures(){
 	return this->structures;
 }
 
+vector<AbstractScope*>& BasicScope::getAnonymousScopes(){
+	return this->anonymousScopes;
+}
+
+void BasicScope::declareAnonymousScope(AbstractScope *scope){
+	this->anonymousScopes.push_back(scope);
+}
+
 FunctionSymbol* BasicScope::resolveFunction(CompoundNameNode *name){
 	AbstractScope *currentScope = resolveNamedScope(name);
 	string simpleName = name->getSimpleName();
@@ -64,6 +72,8 @@ VariableSymbol* BasicScope::resolveVariable(CompoundNameNode *name){
 	throw NoticeException("Undeclared variable '"+ simpleName + "'!");
 }
 
+
+
 Type* BasicScope::resolveType(CompoundNameNode *name){
 	AbstractScope *currentScope = resolveNamedScope(name);
 	string simpleName = name->getSimpleName();
@@ -87,6 +97,19 @@ Type* BasicScope::resolveType(Type *type){
 	}
 	
 	throw NoticeException("Undeclared type'"+ name + "'!");
+}
+
+StructureSymbol* BasicScope::resolveStructure(const string &name){
+
+	AbstractScope *currentScope = this;
+	while(currentScope != nullptr){
+		if(currentScope->getStructures().count(name)){
+			return currentScope->getStructures()[name];
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	
+	throw NoticeException("Undeclared structure;'"+ name + "'!");
 }
 
 Type* BasicScope::resolveType(const Type &type){

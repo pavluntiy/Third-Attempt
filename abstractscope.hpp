@@ -17,6 +17,7 @@ protected:
 AbstractScope *parentScope;
 string name;
 map<string, AbstractScope*> namedScopes;
+vector<AbstractScope*> anonymousScopes;
 map<string, Type*> types;
 //map<string, vector<FunctionSymbol>> functions;
 map<string, FunctionSymbol*> functions;
@@ -34,11 +35,16 @@ public:
 	virtual Type* resolveType(CompoundNameNode*) = 0;
 	virtual Type* resolveType(Type*) = 0;
 	virtual Type* resolveType(const Type&) = 0;
+	virtual StructureSymbol* resolveStructure(const string &name) = 0;
+
+	virtual BasicSymbol* resolve(string name) = 0;
+
 
 	virtual map<string, Type*>& getTypes() = 0;
 	virtual map<string, FunctionSymbol*>& getFunctions() = 0;
 	virtual map<string, VariableSymbol*>& getVariables() = 0;
 	virtual map<string, AbstractScope*>& getNamedScopes() = 0;
+	virtual vector<AbstractScope*>& getAnonymousScopes() = 0;
 	virtual map<string, StructureSymbol*>& getStructures() = 0;
 
 
@@ -48,6 +54,8 @@ public:
 	virtual void declareType(Type *type) = 0;
 	virtual void declareStructure(StructureSymbol *structure) = 0;
 	virtual void declareNamedScope(AbstractScope *scope) = 0;
+
+	virtual void declareAnonymousScope(AbstractScope *scope) = 0;
 
 	virtual string getName() = 0;
 	virtual void setName(string str) = 0;

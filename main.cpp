@@ -60,11 +60,11 @@ int main (int argc, char **argv) {
 		*err << e.what() << '\n';
 	}
 
-//	PrintVisitor *printVisitor = new PrintVisitor(out);
-//
-//	parser.getTree()->accept(printVisitor);
+	// PrintVisitor *printVisitor = new PrintVisitor(out);
 
-//	delete printVisitor;
+	// parser.getTree()->accept(printVisitor);
+
+	// delete printVisitor;
 
 	TypeVisitor *typevisitor = new TypeVisitor();
 

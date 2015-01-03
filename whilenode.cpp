@@ -1,9 +1,13 @@
 #include "whilenode.hpp"
 
-WhileNode::WhileNode(){}
+WhileNode::WhileNode(){
+	this->loop = nullptr;
+	this->elseBranch = nullptr;
+}
 WhileNode::WhileNode(Position position):BasicNode(position)
 {
-
+	this->loop = nullptr;
+	this->elseBranch = nullptr;
 }
 
 

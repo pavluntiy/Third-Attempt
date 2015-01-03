@@ -1,9 +1,17 @@
 #include "fornode.hpp"
 
-ForNode::ForNode(){}
+ForNode::ForNode(){
+	this->init = nullptr;
+	this->condition = nullptr;
+	this->step = nullptr;
+	this->action = nullptr;
+}
 ForNode::ForNode(Position position):BasicNode(position)
 {
-
+	this->init = nullptr;
+	this->condition = nullptr;
+	this->step = nullptr;
+	this->action = nullptr;
 }
 
 void ForNode::accept(BasicVisitor *visitor){

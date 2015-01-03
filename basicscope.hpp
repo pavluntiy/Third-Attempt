@@ -24,9 +24,11 @@ public:
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
 	virtual Type* resolveType(const Type&) override;
+	virtual StructureSymbol* resolveStructure(const string &name) override;
 
-	BasicSymbol* resolve(string name);
+	virtual BasicSymbol* resolve(string name) override;
 
+	virtual vector<AbstractScope*>& getAnonymousScopes() override;
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
 	virtual map<string, Type*>& getTypes() override;
 	virtual map<string, FunctionSymbol*>& getFunctions() override;
@@ -40,6 +42,7 @@ public:
 	virtual void declareType(Type *type) = 0;
 	virtual void declareStructure(StructureSymbol *structure) = 0;
 	virtual void declareNamedScope(AbstractScope *scope) = 0;
+	virtual void declareAnonymousScope(AbstractScope *scope) override;
 
 	virtual string getName() override;
 	virtual void setName(string str) override;

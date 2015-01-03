@@ -1,9 +1,13 @@
 #include "ifnode.hpp"
 
-IfNode::IfNode(){}
+IfNode::IfNode(){
+	this->thenBranch = nullptr;
+	this->elseBranch = nullptr;
+}
 IfNode::IfNode(Position position):BasicNode(position)
 {
-
+	this->thenBranch = nullptr;
+	this->elseBranch = nullptr;
 }
 
 void IfNode::accept(BasicVisitor *visitor){

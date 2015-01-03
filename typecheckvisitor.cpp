@@ -1,6 +1,7 @@
 #include "typecheckvisitor.hpp"
 
 void TypeVisitor::visit(ProgramNode *node){
+	node->setScope(globalScope);
 	if(node->getChild()){
 		node->getChild()->accept(this);
 	}
@@ -28,8 +29,6 @@ void TypeVisitor::visit(TypeNode *node){
 }
 
 void TypeVisitor::visit(ValueNode *node){
-	delete node;
-	node = nullptr;
 }
 
 void TypeVisitor::visit(VarDeclarationNode *node){
@@ -109,27 +108,55 @@ void TypeVisitor::visit(FunctionDefinitionNode *node){
 
 void TypeVisitor::visit(IfNode *node){
  	
+
+ 	
  	node->getCondition()->accept(this);
 
+ 	LocalScope *thenScope = new LocalScope(currentScope);
+ 	node->getThenBranch()->setScope(thenScope);
+ 	currentScope->declareAnonymousScope(thenScope);
+ 	setCurrentScope(thenScope);
  	node->getThenBranch()->accept(this);
+ 	restoreCurrentScope();
 
  	if(node->getElseBranch()){
+ 		LocalScope *elseScope = new LocalScope(currentScope);
+ 		node->getElseBranch()->setScope(elseScope);
+ 		currentScope->declareAnonymousScope(elseScope);
+ 		setCurrentScope(elseScope);
  		node->getElseBranch()->accept(this);
+ 		restoreCurrentScope();
  	}
+
 }
 
 void TypeVisitor::visit(WhileNode *node){
 
- 	node->getCondition()->accept(this);
+	node->getCondition()->accept(this);
 
+ 	LocalScope *loopScope = new LocalScope(currentScope);
+ 	node->getLoop()->setScope(loopScope);
+ 	currentScope->declareAnonymousScope(loopScope);
+ 	setCurrentScope(loopScope);
  	node->getLoop()->accept(this);
+ 	restoreCurrentScope();
 
  	if(node->getElseBranch()){
+ 		LocalScope *elseScope = new LocalScope(currentScope);
+ 		node->getElseBranch()->setScope(elseScope);
+ 		currentScope->declareAnonymousScope(elseScope);
+ 		setCurrentScope(elseScope);
  		node->getElseBranch()->accept(this);
+ 		restoreCurrentScope();
  	}
 }
 
 void TypeVisitor::visit(ForNode *node){
+
+	LocalScope *loopScope = new LocalScope(currentScope);
+ 	node->setScope(loopScope);	
+ 	currentScope->declareAnonymousScope(loopScope);
+ 	setCurrentScope(loopScope);
 
  	if(node->getInit()){
  		node->getInit()->accept(this);
@@ -146,6 +173,8 @@ void TypeVisitor::visit(ForNode *node){
  	if(node->getAction()){
  		node->getAction()->accept(this);
  	}
+
+ 	restoreCurrentScope();
 }
 
 void TypeVisitor::visit(ReturnNode *node){
@@ -165,7 +194,7 @@ void TypeVisitor::visit(StructNode *node){
  	setCurrentScope(parentScope);
  	//currentScope->declareType(type);
  	currentScope->declareStructure(structure);
- 	structure->setPosition(node->getPosition());
+ 	structure = currentScope->resolveStructure(structure->getName());
  	//currentScope->declareNamedScope(structure->getStructureScope());
  	setCurrentScope(structure->getStructureScope());
 
@@ -188,13 +217,17 @@ void TypeVisitor::visit(StructNode *node){
  	if(isDefinition){
  		structure->define(node->getPosition());
  	}
+ 	else {
+ 		structure->setPosition(node->getPosition());
+ 	}
  	
  	restoreCurrentScope();
  	restoreCurrentScope();
 }
 
 TypeVisitor::TypeVisitor(){
-	currentScope = &globalScope;
+	this->globalScope = new GlobalScope();
+	currentScope = globalScope;
 }
 
 TypeVisitor::~TypeVisitor(){

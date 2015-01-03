@@ -25,12 +25,13 @@
 #include "functionscope.hpp"
 #include "globalscope.hpp"
 #include "structurescope.hpp"
+#include "localscope.hpp"
 #include "structuresymbol.hpp"
 
 
 class TypeVisitor: public BasicVisitor{
 protected:
-	GlobalScope globalScope;
+	GlobalScope *globalScope;
 	AbstractScope *currentScope;
 	stack<AbstractScope*> scopes;
 public:

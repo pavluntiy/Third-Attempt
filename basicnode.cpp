@@ -19,3 +19,11 @@ BasicNode::BasicNode(){}
 BasicNode::BasicNode(Position position){
 	this->position = position;
 }
+
+AbstractScope* BasicNode::getScope(){
+	return this->scope;
+}
+
+void BasicNode::setScope(AbstractScope *scope){
+	this->scope = scope;
+}
