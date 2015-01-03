@@ -1,5 +1,11 @@
 #include "typenode.hpp"
 
+TypeNode::TypeNode(){}
+TypeNode::TypeNode(Position position):BasicNode(position)
+{
+
+}
+
 vector<string>& TypeNode::getStorageModes(){
 	return this->storageModes;
 }

@@ -1,5 +1,11 @@
 #include "signaturenode.hpp"
 
+SignatureNode::SignatureNode(){}
+SignatureNode::SignatureNode(Position position):BasicNode(position)
+{
+
+}
+
 void SignatureNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

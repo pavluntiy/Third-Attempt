@@ -1,5 +1,12 @@
 #include "valuenode.hpp"
 
+ValueNode::ValueNode(){}
+ValueNode::ValueNode(Position position):BasicNode(position)
+{
+
+}
+
+
 	void ValueNode::accept(BasicVisitor *visitor){
 		visitor->visit(this);
 	}

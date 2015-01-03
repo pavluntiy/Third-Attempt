@@ -1,5 +1,11 @@
 #include "fornode.hpp"
 
+ForNode::ForNode(){}
+ForNode::ForNode(Position position):BasicNode(position)
+{
+
+}
+
 void ForNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

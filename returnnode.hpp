@@ -19,6 +19,9 @@ public:
 
 	void setName(string);
 	void setResult(BasicNode*);
+
+	ReturnNode(Position position);
+	ReturnNode();
 };
 
 #endif

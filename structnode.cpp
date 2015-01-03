@@ -1,5 +1,11 @@
 #include "structnode.hpp"
 
+StructNode::StructNode(){}
+StructNode::StructNode(Position position):BasicNode(position)
+{
+
+}
+
 void StructNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

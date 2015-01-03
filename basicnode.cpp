@@ -10,3 +10,8 @@ Position BasicNode::getPosition(){
 
 
 BasicNode::~BasicNode(){}
+
+BasicNode::BasicNode(){}
+BasicNode::BasicNode(Position position){
+	this->position = position;
+}

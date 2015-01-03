@@ -15,6 +15,9 @@ public:
 	vector<BasicNode*>& getChildren();
 	void addOperator(BasicNode*);
 
+	OperatorsNode(Position position);
+	OperatorsNode();
+
 
 };
 

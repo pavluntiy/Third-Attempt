@@ -1,5 +1,11 @@
 #include "returnnode.hpp"
 
+ReturnNode::ReturnNode(){}
+ReturnNode::ReturnNode(Position position):BasicNode(position)
+{
+
+}
+
 
 void ReturnNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);

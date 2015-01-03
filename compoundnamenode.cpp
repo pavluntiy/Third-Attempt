@@ -1,5 +1,11 @@
 #include "compoundnamenode.hpp"
 
+CompoundNameNode::CompoundNameNode(){}
+CompoundNameNode::CompoundNameNode(Position position):BasicNode(position)
+{
+
+}
+
 void CompoundNameNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }
@@ -26,8 +32,6 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 	CompoundNameNode::CompoundNameNode(const Token &token){
 		this->names.push_back(transformOperators(token));
 	}
-
-	CompoundNameNode::CompoundNameNode(){}
 
 	CompoundNameNode::CompoundNameNode(string what){
 		this->names.push_back(what);

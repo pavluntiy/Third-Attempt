@@ -21,6 +21,9 @@ public:
 	BasicNode* getLoop();
 	BasicNode* getElseBranch();
 
+	WhileNode(Position position);
+	WhileNode();
+
 
 	void setCondition(BasicNode*);
 	void setLoop(BasicNode*);

@@ -15,6 +15,9 @@ public:
 	string toString() override;
 	string getType();
 
+	ProgramNode(Position position);
+	ProgramNode();
+
 	BasicNode* getChild();
 	void addChild(BasicNode *node);
 

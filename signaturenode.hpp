@@ -35,6 +35,9 @@ public:
 	void addArgument(ArgumentType);
 	FunctionSymbol* getFunctionSymbol();
 
+	SignatureNode(Position position);
+	SignatureNode();
+
 
 };
 

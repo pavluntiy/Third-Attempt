@@ -1,5 +1,11 @@
 #include "operatorsnode.hpp"
 
+OperatorsNode::OperatorsNode(){}
+OperatorsNode::OperatorsNode(Position position):BasicNode(position)
+{
+
+}
+
 void OperatorsNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

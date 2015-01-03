@@ -38,6 +38,9 @@ public:
 	CompoundNameNode* getName();
 	Type* getTypeSymbol();
 
+	TypeNode(Position position);
+	TypeNode();
+
 
 };
 

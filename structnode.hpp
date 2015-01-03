@@ -34,6 +34,9 @@ public:
 	//vector<SignatureNode*>& getDeclarations();
 	vector<BasicNode*>& getVariables();
 	vector<BasicNode*>& getStructures();
+
+	StructNode(Position position);
+	StructNode();
 };
 
 #endif

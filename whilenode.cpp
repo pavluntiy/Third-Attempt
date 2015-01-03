@@ -1,5 +1,12 @@
 #include "whilenode.hpp"
 
+WhileNode::WhileNode(){}
+WhileNode::WhileNode(Position position):BasicNode(position)
+{
+
+}
+
+
 void WhileNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

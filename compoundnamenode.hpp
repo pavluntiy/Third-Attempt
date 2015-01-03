@@ -28,8 +28,10 @@ public:
 	void addName(string what);
 
 	CompoundNameNode(const Token &token);
+	CompoundNameNode(Position position);
 	CompoundNameNode();
 	CompoundNameNode(string left);
+	
 
 	string getName();
 	string getSimpleName();

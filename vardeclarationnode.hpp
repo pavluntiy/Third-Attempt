@@ -23,6 +23,9 @@ public:
 	TypeNode* getType();
 	vector<VariableListType>& getVariables();
 
+	VarDeclarationNode(Position position);
+	VarDeclarationNode();
+
 };
 
 #endif

@@ -1,6 +1,12 @@
 
 #include "vardeclarationnode.hpp"
 
+VarDeclarationNode::VarDeclarationNode(){}
+VarDeclarationNode::VarDeclarationNode(Position position):BasicNode(position)
+{
+
+}
+
 void VarDeclarationNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

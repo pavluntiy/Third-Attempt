@@ -1,5 +1,11 @@
 #include "ifnode.hpp"
 
+IfNode::IfNode(){}
+IfNode::IfNode(Position position):BasicNode(position)
+{
+
+}
+
 void IfNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

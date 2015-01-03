@@ -16,6 +16,9 @@ public:
 
 	virtual ~BasicNode();
 
+	BasicNode();
+	BasicNode(Position position);
+
 	Position getPosition();
 
 };

@@ -17,6 +17,8 @@ public:
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
 
+	ForNode(Position position);
+	ForNode();
 	
 	BasicNode* getInit();
 	BasicNode* getCondition();

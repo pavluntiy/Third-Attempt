@@ -23,6 +23,7 @@ public:
 
 	void addArg(BasicNode *node);
 
+	FunctionCallNode(Position position);
 	FunctionCallNode();
 	FunctionCallNode(BasicNode *functionName);
 	FunctionCallNode(const Token &token);

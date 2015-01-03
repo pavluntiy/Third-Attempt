@@ -1,5 +1,12 @@
 #include "functiondefinitionnode.hpp"
 
+FunctionDefinitionNode::FunctionDefinitionNode(){}
+FunctionDefinitionNode::FunctionDefinitionNode(Position position):BasicNode(position)
+{
+
+}
+
+
 void FunctionDefinitionNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }

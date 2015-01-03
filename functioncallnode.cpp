@@ -1,5 +1,11 @@
 #include "functioncallnode.hpp"
 
+FunctionCallNode::FunctionCallNode(){}
+FunctionCallNode::FunctionCallNode(Position position):BasicNode(position)
+{
+
+}
+
 void FunctionCallNode::accept(BasicVisitor *visitor){
 	visitor->visit(this);
 }
@@ -19,9 +25,6 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 		this->functionArgs.push_back(node);
 	}
 
-	FunctionCallNode::FunctionCallNode(){
-
-	}
 
 	FunctionCallNode::FunctionCallNode(BasicNode *functionName){
 		this->functionName = functionName;

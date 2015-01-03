@@ -1,5 +1,11 @@
 #include "programnode.hpp"
 
+ProgramNode::ProgramNode(){}
+ProgramNode::ProgramNode(Position position):BasicNode(position)
+{
+
+}
+
 	void ProgramNode::accept(BasicVisitor *visitor){
 		visitor->visit(this);
 	}

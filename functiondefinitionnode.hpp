@@ -19,6 +19,9 @@ public:
 	SignatureNode* getSignature();
 	OperatorsNode* getOperators();
 
+	FunctionDefinitionNode(Position position);
+	FunctionDefinitionNode();
+
 	void setSignature(SignatureNode*);
 	void setOperators(OperatorsNode*);
 };
