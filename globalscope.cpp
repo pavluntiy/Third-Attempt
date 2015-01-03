@@ -14,6 +14,11 @@ void GlobalScope::declareFunction(FunctionSymbol *function){
 		}
 	}
 
+	if(this->isDefined(name)){
+		throw NoticeException("Trying to redeclare '" + name + "' as function!");
+	}
+
+
 	this->functions[name] = function;
 }
 
@@ -39,11 +44,23 @@ void GlobalScope::declareType(Type *type){
 
 void GlobalScope::declareStructure(StructureSymbol *structure){
 	string name = structure->getName();
-	if(this->isDefined(name)){
-		throw NoticeException("Structure '" + name + "' redeclaration!");
+	if(this->isStructure(name)){
+		StructureSymbol *tmp = dynamic_cast<StructureSymbol*>(this->resolve(name));
+		if(!tmp->isOnlyDeclared()){
+			throw NoticeException("Structure '" + name + "' redeclaration, previously defined at " + tmp->getPosition().toString());
+		}
+		else {
+			//do some staff...
+			return;
+		}
 	}
+	if(this->isDefined(name)){
+		throw NoticeException("Trying to redeclare '" + name + "' as structure!");
+	}
+
 	this->structures[name] = structure;
 	this->namedScopes[name] = structure->getStructureScope();
+	this->types[name] = structure->getStructureType();
 }
 
 void GlobalScope::declareNamedScope(AbstractScope *scope){

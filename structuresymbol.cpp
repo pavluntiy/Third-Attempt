@@ -8,7 +8,9 @@ int StructureSymbol::getSize(){
 	return 100500;
 }
 
-StructureSymbol::StructureSymbol(){}
+StructureSymbol::StructureSymbol(){
+	this->defined = false;
+}
 
 string StructureSymbol::getName(){
 	return this->name;
@@ -29,4 +31,25 @@ string StructureSymbol::toString(){
 	stringstream result;
 	result << "structure '" << this->getName() <<"', defining type " << this->type->toString();
 	return result.str();
+}
+
+bool StructureSymbol::isOnlyDeclared(){
+	return !this->defined;
+}
+
+void StructureSymbol::define(Position position){
+	this->definitionPosition = position;
+	this->defined = true;
+}
+
+Position StructureSymbol::getDefinitionPosition(){
+	return this->definitionPosition;
+}
+
+void StructureSymbol::setDefinitionPosition(Position position){
+	this->definitionPosition = position;
+}
+
+Type* StructureSymbol::getStructureType(){
+	return this->type;
 }
