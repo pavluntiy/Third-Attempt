@@ -20,6 +20,7 @@ public:
 	BasicNode(Position position);
 
 	Position getPosition();
+	void setPosition(Position position);
 
 };
 

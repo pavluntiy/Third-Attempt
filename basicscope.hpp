@@ -25,6 +25,8 @@ public:
 	virtual Type* resolveType(Type*) override;
 	virtual Type* resolveType(const Type&) override;
 
+	BasicSymbol* resolve(string name);
+
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
 	virtual map<string, Type*>& getTypes() override;
 	virtual map<string, FunctionSymbol*>& getFunctions() override;
@@ -51,6 +53,10 @@ public:
 	BasicScope(AbstractScope *, string name = "");
 
 	bool isDefined(string name);
+	bool isFunction(string name);
+	bool isVariable(string name);
+	bool isStructure(string name);
+	bool isNamedScope(string name);
 };
 
 #endif

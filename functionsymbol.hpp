@@ -14,6 +14,8 @@ Type* returnType;
 vector<Type*> arguments;
 AbstractScope *functionScope;
 string functionLabel;
+Position definitionPosition;
+bool defined;
 public:
 
 	void setReturnType(Type *type);
@@ -26,8 +28,16 @@ public:
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
+	bool isOnlyDeclared();
+	void define(Position position = {0, 0});
+
+	Position getDefinitionPosition();
+	void setDefinitionPosition(Position position);
+
 	string toString();
 	string argumentsToString();
+
+	FunctionSymbol();
 
 
 };

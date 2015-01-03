@@ -29,8 +29,6 @@ public:
 	ValueNode(Position position);
 	ValueNode();
 
-	Position getPosition();
-	void setPosition();
 
 
 	ValueNode(Token::Type type, string text);

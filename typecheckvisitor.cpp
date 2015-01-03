@@ -43,6 +43,7 @@ void TypeVisitor::visit(VarDeclarationNode *node){
 		string varName = name->getSimpleName();
 		setCurrentScope(currentScope->resolveNamedScope(name));
 		auto variable = new VariableSymbol(type, varName);
+		variable->setPosition(node->getPosition());
 		currentScope->declareVariable(variable);
 		it.first->setSymbol(variable);
 
@@ -66,6 +67,7 @@ void TypeVisitor::visit(SignatureNode *node){
 
 	FunctionSymbol *function = new FunctionSymbol();
 	function->setReturnType(returnType);
+	function->setPosition(node->getPosition());
 
 	FunctionScope *functionScope = new FunctionScope(currentScope, functionName);
 
@@ -79,7 +81,9 @@ void TypeVisitor::visit(SignatureNode *node){
 	for(auto it: node->getArguments()){
 		function->addArgument(currentScope->resolveType(Type(get<0>(it))));
 		if(get<1>(it)){
-			functionScope->declareVariable(new VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName()));
+			auto variable = new VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName());
+			variable->setPosition(get<1>(it)->getPosition());
+			functionScope->declareVariable(variable);
 		}
 	 	// if(get<2>(it)){
 	 	// 	get<2>(it)->accept(this);
@@ -93,8 +97,10 @@ void TypeVisitor::visit(SignatureNode *node){
 
 void TypeVisitor::visit(FunctionDefinitionNode *node){
  	node->getSignature()->accept(this);
+ 	node->getSignature()->setFunctionSymbol(currentScope->resolveFunction(node->getSignature()->getName()));
 
  	this->scopes.push(currentScope);
+ 	node->getSignature()->getFunctionSymbol()->define(node->getSignature()->getPosition());
  	currentScope = node->getSignature()->getFunctionSymbol()->getFunctionScope();
  	node->getOperators()->accept(this);
  	currentScope = this->scopes.top();
@@ -159,6 +165,7 @@ void TypeVisitor::visit(StructNode *node){
  	setCurrentScope(parentScope);
  	currentScope->declareType(type);
  	currentScope->declareStructure(structure);
+ 	structure->setPosition(node->getPosition());
  	//currentScope->declareNamedScope(structure->getStructureScope());
  	setCurrentScope(structure->getStructureScope());
 

@@ -3,8 +3,15 @@
 void StructureScope::declareFunction(FunctionSymbol *function){
 	string name = function->getName();
 
-	if(this->isDefined(name)){
-		throw NoticeException("Function '" + name + "' redeclaration!");
+	if(this->isFunction(name)){
+		FunctionSymbol *tmp = dynamic_cast<FunctionSymbol*>(this->resolve(name));
+		if(!tmp->isOnlyDeclared()){
+			throw NoticeException("Function '" + name + "' redeclaration, previously defined at " + tmp->getPosition().toString());
+		}
+		else {
+			//do some staff...
+			return;
+		}
 	}
 
 	this->functions[name] = function;
@@ -73,7 +80,7 @@ void StructureScope::dump(ostream *out, string shift){
 
 	*out << shift <<"\tStructures:\n";
 	for(auto it: this->structures){
-		*out << shift << "\t\t" << it.first << "\n";
+		*out << shift << "\t\t" << it.second->toString() << "\n";
 		it.second->getStructureScope()->dump(out, shift + "\t\t");
 	}
 

@@ -180,6 +180,39 @@ bool BasicScope::isDefined(string name){
 	;
 }
 
+bool BasicScope::isFunction(string name){
+	return this->functions.count(name);
+}
+
+bool BasicScope::isVariable(string name){
+	return this->variables.count(name);
+}
+
+bool BasicScope::isStructure(string name){
+	return this->structures.count(name);
+}
+
+bool BasicScope::isNamedScope(string name){
+	return this->namedScopes.count(name);
+}
+
+BasicSymbol* BasicScope::resolve(string name){
+	if(isVariable(name)){
+		return this->variables[name];
+	}
+
+	if(isFunction(name)){
+		return this->functions[name];
+	}
+
+	if(isStructure(name)){
+		return this->structures[name];
+	}
+
+	throw TypeException("What are you trying to resolve!?");
+}
+
+
 
 // void BasicScope::dump(ostream *out, string shift){}
 // void BasicScope::declareFunction(FunctionSymbol function){}

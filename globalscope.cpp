@@ -3,8 +3,15 @@
 void GlobalScope::declareFunction(FunctionSymbol *function){
 	string name = function->getName();
 
-	if(this->isDefined(name)){
-		throw NoticeException("Function '" + name + "' redeclaration!");
+	if(this->isFunction(name)){
+		FunctionSymbol *tmp = dynamic_cast<FunctionSymbol*>(this->resolve(name));
+		if(!tmp->isOnlyDeclared()){
+			throw NoticeException("Function '" + name + "' redeclaration, previously defined at " + tmp->getPosition().toString());
+		}
+		else {
+			//do some staff...
+			return;
+		}
 	}
 
 	this->functions[name] = function;
@@ -79,7 +86,7 @@ void GlobalScope::dump(ostream *out, string shift){
 
 	*out << "\tStructures:\n";
 	for(auto it: this->structures){
-		*out << "\t\t" << it.first << "\n";
+		*out << "\t\t" << it.second->toString()<< "\n";
 		it.second->getStructureScope()->dump(out, shift + "\t\t");
 	}
 

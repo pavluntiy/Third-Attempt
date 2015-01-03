@@ -8,6 +8,10 @@ Position BasicNode::getPosition(){
 	return this->position;
 }
 
+void BasicNode::setPosition(Position position){
+	this->position = position;
+}
+
 
 BasicNode::~BasicNode(){}
 

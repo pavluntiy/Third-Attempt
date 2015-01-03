@@ -32,4 +32,5 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 
 	FunctionCallNode::FunctionCallNode(const Token &token){
 		this->functionName = new CompoundNameNode(token);
+		this->position = token.getPosition();
 	}

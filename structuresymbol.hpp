@@ -20,6 +20,7 @@ public:
 	StructureSymbol();
 	StructureSymbol(Type *type, AbstractScope *scope);
 	AbstractScope* getStructureScope();
+	string toString();
 };
 
 #endif

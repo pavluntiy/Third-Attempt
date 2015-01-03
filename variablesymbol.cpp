@@ -36,5 +36,6 @@ string VariableSymbol::toString(){
 	result << "'" << this->getName() << "' at ";
 	result << this;
 	result << " of " << this->getType()->toString();
+	result << " (defined at " << this->getPosition().toString() << ")";
 	return result.str();
 }

@@ -24,7 +24,6 @@ public:
 	IfNode(Position position);
 	IfNode();
 
-
 	void setCondition(BasicNode*);
 	void setThenBranch(BasicNode*);
 	void setElseBranch(BasicNode*);

@@ -75,7 +75,7 @@
 		return str;
 	}
 
-	Position Token::getPosition(){
+	Position Token::getPosition() const{
 		return this->position;
 	}
 

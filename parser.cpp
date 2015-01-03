@@ -728,6 +728,7 @@ BasicNode* Parser::getFunctionCalls(BasicNode *left){
 					get(Token::BRACE_LEFT);
 					try{	
 							result = new FunctionCallNode(left);
+							result->setPosition(currentToken.getPosition());
 							result->addArg(getAssignment());
 							while(currentToken == Token(Token::OPERATOR, ",")){
 								get(Token::OPERATOR);
@@ -776,6 +777,7 @@ BasicNode* Parser::getAccesses(BasicNode *left){
 			try {
 					get(Token::BRACKET_LEFT);
 					result = new FunctionCallNode(Token(Token::OPERATOR, "[]"));
+					result->setPosition(currentToken.getPosition());
 					result->addArg(left);
 					result->addArg(getAccessArgs());
 					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
@@ -839,8 +841,9 @@ BasicNode* Parser::getExpr9Suffix(BasicNode *left){
 	}
 
 	if(isExpr9SuffixOp()){
-		auto tmpToken = Token(Token::OPERATOR, "_" +currentToken.getText());
+		auto tmpToken = Token(Token::OPERATOR, "_" + currentToken.getText());
 		op = new FunctionCallNode(tmpToken);
+		op->setPosition(currentToken.getPosition());
 		get(Token::OPERATOR);	
 		op->addArg(getExpr9Suffix(left));
 		return op;
@@ -998,6 +1001,7 @@ BasicNode* Parser::getValue(){
 
 	if(isValue()){
 		auto tmp = new ValueNode(currentToken.getType(), currentToken.getText());
+		tmp->setPosition(currentToken.getPosition());
 		consume();
 		return tmp;
 	}
@@ -1016,7 +1020,7 @@ CompoundNameNode* Parser::getCompoundName(){
 	bool dotFound = false;
 
 	CompoundNameNode *result = new CompoundNameNode();
-
+	result->setPosition(currentToken.getPosition());
 	do {
 		if(counter > 0){
 			dotFound = true;
@@ -1085,7 +1089,7 @@ bool Parser::isAccessMode(){
 BasicNode* Parser::getType(){
 
 	TypeNode *result = new TypeNode();
-
+	result->setPosition(currentToken.getPosition());
 	try{
 		while(isStorageMode()){
 			result->addStorageMode(currentToken.getText());
@@ -1147,7 +1151,7 @@ BasicNode* Parser::getType(){
 }
 
 BasicNode* Parser::getVarDeclaration(){
-	VarDeclarationNode *result = new VarDeclarationNode();
+	VarDeclarationNode *result = new VarDeclarationNode(currentToken.getPosition());
 
 	try{
 		result->setType(dynamic_cast<TypeNode*>(getType()));
@@ -1186,7 +1190,7 @@ BasicNode* Parser::getSignature(){
 	bool nameFound = false;
 	bool eqFound = false;
 
-	SignatureNode *result = new SignatureNode();
+	SignatureNode *result = new SignatureNode(currentToken.getPosition());
 	TypeNode *type = nullptr;
 	CompoundNameNode *name = nullptr;
 	BasicNode *defaultValue = nullptr;
@@ -1322,7 +1326,7 @@ BasicNode* Parser::getFunction(){
 			return signature;
 		}
 
-		result = new FunctionDefinitionNode();
+		result = new FunctionDefinitionNode(currentToken.getPosition());
 		result->setSignature(signature);
 		result->setOperators(dynamic_cast<OperatorsNode*> (getBlock()));
 		return result;
@@ -1346,7 +1350,7 @@ BasicNode* Parser::getWhile(){
 	}
 	get(Token::BRACE_LEFT);
 
-	WhileNode *result = new WhileNode();
+	WhileNode *result = new WhileNode(currentToken.getPosition());
 
 	try{
 		result->setCondition(getExpression());
@@ -1395,7 +1399,7 @@ BasicNode* Parser::getFor(){
 	}
 	get(Token::BRACE_LEFT);
 
-	ForNode *result = new ForNode();
+	ForNode *result = new ForNode(currentToken.getPosition());
 	try{
 		try {
 			lock();
@@ -1459,7 +1463,7 @@ BasicNode* Parser::getIf(){
 	}
 	get(Token::BRACE_LEFT);
 
-	IfNode *result = new IfNode();
+	IfNode *result = new IfNode(currentToken.getPosition());
 
 	try{
 		result->setCondition(getExpression());
@@ -1506,7 +1510,7 @@ BasicNode* Parser::getReturn(){
 		throw ParserException("I shouldn't have got to here!");
 	}
 
-	ReturnNode *result = new ReturnNode();
+	ReturnNode *result = new ReturnNode(currentToken.getPosition());
 
 	result->setName(currentToken.getText());
 	get(Token::KEYWORD);
@@ -1528,7 +1532,7 @@ BasicNode* Parser::getStruct(){
 
 	get(Token::KEYWORD);
 
-	StructNode *result = new StructNode();
+	StructNode *result = new StructNode(currentToken.getPosition());
 
 	try{
 		result->setName(getCompoundName());
@@ -1665,7 +1669,7 @@ BasicNode* Parser::getOperator(){
 }
 
 BasicNode* Parser::getOperators(){
-	OperatorsNode *result = new OperatorsNode();
+	OperatorsNode *result = new OperatorsNode(currentToken.getPosition());
 		try{
 			while(true){
 				result->addOperator(getOperator());

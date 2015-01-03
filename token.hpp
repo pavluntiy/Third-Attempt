@@ -51,7 +51,7 @@ public:
 
 	string toString() const;
 
-	Position getPosition();
+	Position getPosition() const;
 
 	bool isInvisible() const;
 

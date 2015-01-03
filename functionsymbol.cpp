@@ -1,5 +1,8 @@
 #include "functionsymbol.hpp"
 
+FunctionSymbol::FunctionSymbol(){
+	this->defined = false;
+}
 
 void FunctionSymbol::setReturnType(Type *type){
 	this->returnType = type;
@@ -45,6 +48,11 @@ string FunctionSymbol::toString(){
 	// }
 
 	result << " at " << this;
+
+		result << " declared at " << this->getPosition().toString();
+	if(!this->isOnlyDeclared()){
+		result << " and defined at " << this->getDefinitionPosition().toString();
+	}
 	return result.str();
 }
 
@@ -57,4 +65,21 @@ string FunctionSymbol::argumentsToString(){
 	 	result << it->toString() << 	"; ";
 	}
 	return result.str();
+}
+
+bool FunctionSymbol::isOnlyDeclared(){
+	return !this->defined;
+}
+
+void FunctionSymbol::define(Position position){
+	this->definitionPosition = position;
+	this->defined = true;
+}
+
+Position FunctionSymbol::getDefinitionPosition(){
+	return this->definitionPosition;
+}
+
+void FunctionSymbol::setDefinitionPosition(Position position){
+	this->definitionPosition = position;
 }
