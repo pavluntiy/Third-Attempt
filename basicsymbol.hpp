@@ -2,10 +2,11 @@
 #define BASICSYMBOL
 
 #include "header.hpp"
-#include "type.hpp"
+//#include "type.hpp"
 #include "noticeexception.hpp"
 #include "typeexception.hpp"
 
+class Type;
 class BasicScope;
 
 class BasicSymbol {
@@ -27,6 +28,7 @@ public:
 	void setPosition(Position position);
 	Position getPosition();
 	//virtual bool operator== (const BasicSymbol &b) const;
+	virtual string toString() = 0;
 	BasicSymbol(Position position = {0, 0});
 };
 

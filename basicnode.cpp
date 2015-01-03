@@ -12,6 +12,13 @@ void BasicNode::setPosition(Position position){
 	this->position = position;
 }
 
+BasicSymbol* BasicNode::getSymbol(){
+	return this->symbol;
+}
+void BasicNode::setSymbol(BasicSymbol *symbol){
+	this->symbol = symbol;
+}
+
 
 BasicNode::~BasicNode(){}
 

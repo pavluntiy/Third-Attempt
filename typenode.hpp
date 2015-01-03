@@ -16,7 +16,7 @@ protected:
 	vector<string> accessModes;
 	vector<ValueNode*> dimensions;
 	CompoundNameNode *name;
-	Type *type;
+//	Type *type;
 
 
 
@@ -29,14 +29,14 @@ public:
 	void addAccessMode(string what);
 	void addDimension(ValueNode *what);
 	void addName(CompoundNameNode *name);
-	void setTypeSymbol(Type *type);
+//	void setTypeSymbol(Type *type);
 
 	vector<string>& getStorageModes();
 	vector<string>& getModifiers();
 	vector<string>& getAccessModes();
 	vector<ValueNode*>& getDimensions();
 	CompoundNameNode* getName();
-	Type* getTypeSymbol();
+//	Type* getTypeSymbol();
 
 	TypeNode(Position position);
 	TypeNode();

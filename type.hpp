@@ -2,9 +2,10 @@
 #define TYPE
 #include "header.hpp"
 #include "typenode.hpp"
+#include "basicsymbol.hpp"
 
 
-class Type{
+class Type: public BasicSymbol {
 protected:
 	//Type *parentType;
 

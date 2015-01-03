@@ -27,6 +27,7 @@ public:
 	virtual StructureSymbol* resolveStructure(const string &name) override;
 
 	virtual BasicSymbol* resolve(string name) override;
+	virtual BasicSymbol* resolve(CompoundNameNode *name) override;
 
 	virtual vector<AbstractScope*>& getAnonymousScopes() override;
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
@@ -55,11 +56,11 @@ public:
 	BasicScope();
 	BasicScope(AbstractScope *, string name = "");
 
-	bool isDefined(string name);
-	bool isFunction(string name);
-	bool isVariable(string name);
-	bool isStructure(string name);
-	bool isNamedScope(string name);
+	virtual bool isDefined(string name) override;
+	virtual bool isFunction(string name) override;
+	virtual bool isVariable(string name) override;
+	virtual bool isStructure(string name) override;
+	virtual bool isNamedScope(string name) override;
 };
 
 #endif

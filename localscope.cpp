@@ -80,7 +80,7 @@ void LocalScope::declareNamedScope(AbstractScope *scope){
 
 LocalScope::LocalScope(AbstractScope *parentScope):BasicScope(parentScope)
 {
-	
+
 }
 
 void LocalScope::dump(ostream *out, string shift){

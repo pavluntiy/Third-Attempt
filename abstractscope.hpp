@@ -38,6 +38,7 @@ public:
 	virtual StructureSymbol* resolveStructure(const string &name) = 0;
 
 	virtual BasicSymbol* resolve(string name) = 0;
+	virtual BasicSymbol* resolve(CompoundNameNode *name) = 0;
 
 
 	virtual map<string, Type*>& getTypes() = 0;
@@ -64,6 +65,11 @@ public:
 	virtual AbstractScope* getParentScope() = 0;
 
 	virtual void dump(ostream *out, string shift = "") = 0;
+	virtual bool isDefined(string name) = 0 ;
+	virtual bool isFunction(string name) = 0;
+	virtual bool isVariable(string name) = 0;
+	virtual bool isStructure(string name) = 0;
+	virtual bool isNamedScope(string name) = 0;
 
 
 };

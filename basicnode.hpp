@@ -5,11 +5,13 @@
 
 
 class AbstractScope;
+class BasicSymbol;
 class BasicNode {
 protected:
 	string text;
 	Position position;
 	AbstractScope *scope;
+	BasicSymbol *symbol;
 
 public:
 	virtual void accept(BasicVisitor *visitor) = 0;
@@ -27,6 +29,9 @@ public:
 
 	AbstractScope* getScope();
 	void setScope(AbstractScope *scope);
+
+	BasicSymbol *getSymbol();
+	void setSymbol(BasicSymbol *symbol);
 
 };
 

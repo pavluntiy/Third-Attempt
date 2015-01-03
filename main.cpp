@@ -7,6 +7,7 @@
 #include "printvisitor.hpp"
 #include "deletevisitor.hpp"
 #include "typecheckvisitor.hpp"
+#include "scopeprintvisitor.hpp"
 
 using namespace std;
 
@@ -66,10 +67,10 @@ int main (int argc, char **argv) {
 
 	// delete printVisitor;
 
-	TypeVisitor *typevisitor = new TypeVisitor();
+	TypeVisitor *typeVisitor = new TypeVisitor();
 
 	try{
-		parser.getTree()->accept(typevisitor);
+		parser.getTree()->accept(typeVisitor);
 	}
 	catch (NoticeException &ne){
 		*err << ne.what() << '\n';
@@ -78,7 +79,11 @@ int main (int argc, char **argv) {
 		*err << te.what() << '\n';
 	}
 
-	typevisitor->dump(out);
+	//typeVisitor->dump(out);
+
+	ScopePrintVisitor *scopePrintVisitor = new ScopePrintVisitor(out);
+
+	parser.getTree()->accept(scopePrintVisitor);
 
 
 

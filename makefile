@@ -9,7 +9,7 @@ SOURCES=header.cpp alphabet.cpp\
 	data.cpp\
 	\
 	basicvisitor.cpp\
-	printvisitor.cpp deletevisitor.cpp\
+	printvisitor.cpp deletevisitor.cpp scopeprintvisitor.cpp\
 	\
 	basicnode.cpp\
 	operatorsnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \

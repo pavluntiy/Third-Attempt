@@ -1,8 +1,10 @@
 def int foo(char c, int d, char z){
-	def int __bar(char c, int d, char z){
-		int a, number;
-	}
-	int a, number;
+	// def int __bar(char c, int d, char z){
+	// 	int a, number;
+	// }
+	// int a, number;
+	//this should be allowed after exterminating of an obnoxious bug of Parser...
+	//or shouldn't...
 }
 
 int a, number;
@@ -48,6 +50,21 @@ struct str1{
 	def int global.Vector.bar()
 	//def int global.str1.bar()
 }
+
+int a12323 = 0
+if(a12323){
+        int a12323
+}
+else {
+	int a12323
+}
+
+struct str___;
+struct str___{
+int 
+x
+}
+
 
 
 

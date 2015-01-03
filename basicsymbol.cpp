@@ -37,3 +37,5 @@ BasicSymbol::BasicSymbol(Position position){
 	this->position = position;
 }
 
+
+

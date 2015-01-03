@@ -191,6 +191,18 @@ BasicScope::BasicScope(AbstractScope *parentScope, string name){
 	this->name = name;
 }
 
+BasicSymbol* BasicScope::resolve(CompoundNameNode *name){
+	AbstractScope *currentScope = resolveNamedScope(name);
+	string simpleName = name->getSimpleName();
+	while(currentScope != nullptr){
+		if(currentScope->isDefined(simpleName)){
+			return currentScope->resolve(simpleName);
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	throw NoticeException("Undeclared variable '"+ simpleName + "'!");
+}
+
 bool BasicScope::isDefined(string name){
 	return
 		this->variables.count(name) 

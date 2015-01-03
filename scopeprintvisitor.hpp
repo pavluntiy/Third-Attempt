@@ -1,4 +1,4 @@
-#ifndef	TYPECHECKVISITOR
+#ifndef	SCOPEPRINTVISITOR
 #define TYPECHECKVISITOR
 
 #include "basicvisitor.hpp"
@@ -29,12 +29,12 @@
 #include "structuresymbol.hpp"
 
 
-class TypeVisitor: public BasicVisitor{
+class ScopePrintVisitor: public BasicVisitor{
 protected:
-	GlobalScope *globalScope;
 	AbstractScope *currentScope;
+	string shift;
+	ostream *out;
 	stack<AbstractScope*> scopes;
-	bool globalScopeFound;
 public:
 	virtual void visit(ProgramNode *node) override;
 	virtual void visit(OperatorsNode *node) override;
@@ -51,13 +51,11 @@ public:
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
 
-	TypeVisitor();
-	virtual ~TypeVisitor() override;
+	ScopePrintVisitor(ostream *out);
+	virtual ~ScopePrintVisitor() override;
 
 	void setCurrentScope(AbstractScope*);
 	void restoreCurrentScope();
-
-	void dump(ostream *out);
 };
 
 
