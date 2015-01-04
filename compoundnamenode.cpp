@@ -25,6 +25,10 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 		return this->names;
 	}
 
+	void CompoundNameNode::addName(const Token &token){
+		this->names.push_back(transformOperators(token));
+	}
+
 	void CompoundNameNode::addName(string what){
 		this->names.push_back(what);
 	}
@@ -53,10 +57,10 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 		return *(end(this->names) - 1);
 	}
 
-	BasicSymbol* CompoundNameNode::getSymbol(){
-		return this->symbol;
-	}
+	// BasicSymbol* CompoundNameNode::getSymbol(){
+	// 	return this->symbol;
+	// }
 
-	void CompoundNameNode::setSymbol(BasicSymbol *symbol){
-		this->symbol = symbol;
-	}
+	// void CompoundNameNode::setSymbol(BasicSymbol *symbol){
+	// 	this->symbol = symbol;
+	// }

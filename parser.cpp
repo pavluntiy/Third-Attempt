@@ -1027,6 +1027,15 @@ CompoundNameNode* Parser::getCompoundName(){
 			get(Token::OPERATOR);
 		}
 
+		if(currentToken == Token(Token::KEYWORD, "operator")){
+			get(Token::KEYWORD);
+			if(!currentToken.typeEqualsTo(Token::OPERATOR)){
+				throw ParserException("Corrupted 'operator' signature (missing OPERATOR name)", currentToken.getPosition());
+			}
+			result->addName(currentToken);
+			get(Token::OPERATOR);
+		}
+		else
 		if(currentToken.typeEqualsTo(Token::NAME)){
 			result->addName(currentToken.getText());
 			get(Token::NAME);
@@ -1199,17 +1208,17 @@ BasicNode* Parser::getSignature(){
 		result->setType(dynamic_cast<TypeNode*>(getType()));
 		typeFound = true;
 
-		if(currentToken == Token(Token::KEYWORD, "operator")){
-			get(Token::KEYWORD);
-			if(!currentToken.typeEqualsTo(Token::OPERATOR)){
-				throw ParserException("Corrupted 'operator' signature (missing OPERATOR name)", currentToken.getPosition());
-			}
-			result->setName(new CompoundNameNode(currentToken));
-			get(Token::OPERATOR);
-		}
-		else {
+		// if(currentToken == Token(Token::KEYWORD, "operator")){
+		// 	get(Token::KEYWORD);
+		// 	if(!currentToken.typeEqualsTo(Token::OPERATOR)){
+		// 		throw ParserException("Corrupted 'operator' signature (missing OPERATOR name)", currentToken.getPosition());
+		// 	}
+		// 	result->setName(new CompoundNameNode(currentToken));
+		// 	get(Token::OPERATOR);
+		// }
+		// else {
 			result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
-		}	
+		//}	
 		nameFound = true;
 
 		if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){

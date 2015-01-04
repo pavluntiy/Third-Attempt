@@ -1,8 +1,8 @@
 def int foo(char c, int d, char z){
-	// def int __bar(char c, int d, char z){
-	// 	int a, number;
-	// }
-	// int a, number;
+	def int __bar(char c, int d, char z){
+		int a, number;
+	}
+	int a, number;
 	//this should be allowed after exterminating of an obnoxious bug of Parser...
 	//or shouldn't...
 }

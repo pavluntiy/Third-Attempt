@@ -12,7 +12,7 @@ protected:
 	//string left;
 	//CompoundNameNode *right;
 	vector<string> names;
-	BasicSymbol *symbol;
+	//BasicSymbol *symbol;
 
 
 public: 
@@ -26,6 +26,7 @@ public:
 	vector<string>& getNames();
 
 	void addName(string what);
+	void addName(const Token &token);
 
 	CompoundNameNode(const Token &token);
 	CompoundNameNode(Position position);
@@ -36,8 +37,8 @@ public:
 	string getName();
 	string getSimpleName();
 	bool isSimpleName();
-	BasicSymbol* getSymbol();
-	void setSymbol(BasicSymbol *symbol);
+	//BasicSymbol* getSymbol();
+	//void setSymbol(BasicSymbol *symbol);
 };
 
 #endif
