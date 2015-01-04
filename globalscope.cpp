@@ -75,7 +75,9 @@ void GlobalScope::declareNamedScope(AbstractScope *scope){
 
 
 GlobalScope::GlobalScope():BasicScope(nullptr, "global")
-{
+{	
+	this->declareType(new Type("void", 0));
+	this->declareType(new Type("float", 8));
 	this->declareType(new Type("int", 8));
 	this->declareType(new Type("char", 1));
 	this->declareNamedScope(this);

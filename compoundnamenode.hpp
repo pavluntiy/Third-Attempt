@@ -27,6 +27,7 @@ public:
 
 	void addName(string what);
 	void addName(const Token &token);
+	void popName();
 
 	CompoundNameNode(const Token &token);
 	CompoundNameNode(Position position);

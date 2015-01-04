@@ -58,7 +58,7 @@ void StructureScope::declareStructure(StructureSymbol *structure){
 		throw NoticeException("Trying to redeclare '" + name + "' as structure!");
 	}
 
-
+	this->types[name] = structure->getStructureType();
 	this->structures[name] = structure;
 	this->namedScopes[name] = structure->getStructureScope();	
 }

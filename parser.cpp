@@ -1205,22 +1205,37 @@ BasicNode* Parser::getSignature(){
 	BasicNode *defaultValue = nullptr;
 
 	try {
-		result->setType(dynamic_cast<TypeNode*>(getType()));
-		typeFound = true;
+		if(currentToken == Token(Token::OPERATOR, "~")){
+			get(Token::OPERATOR);
+			auto typeTmp = new TypeNode();
+			auto typeNameTmp = new CompoundNameNode(currentToken.getPosition());
+			typeNameTmp->addName("void");
+			typeTmp->addName(typeNameTmp);
+			result->setType(typeTmp);
 
-		// if(currentToken == Token(Token::KEYWORD, "operator")){
-		// 	get(Token::KEYWORD);
-		// 	if(!currentToken.typeEqualsTo(Token::OPERATOR)){
-		// 		throw ParserException("Corrupted 'operator' signature (missing OPERATOR name)", currentToken.getPosition());
-		// 	}
-		// 	result->setName(new CompoundNameNode(currentToken));
-		// 	get(Token::OPERATOR);
-		// }
-		// else {
-			result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
-		//}	
-		nameFound = true;
-
+			auto tmpName = dynamic_cast<CompoundNameNode*>(getCompoundName());
+			string lastName = tmpName->getSimpleName();
+			tmpName->popName();
+			lastName += "#destruct";
+			tmpName->addName(lastName);
+			result->setName(tmpName);
+		}
+		else{
+			result->setType(dynamic_cast<TypeNode*>(getType()));
+			typeFound = true;
+			if(!currentToken.typeEqualsTo(Token::NAME) && currentToken != Token(Token::KEYWORD, "operator")){
+				auto tmp = new CompoundNameNode(*result->getType()->getName());
+				string lastName = tmp->getSimpleName();
+				tmp->popName();
+				lastName += "#construct";
+				tmp->addName(lastName);
+				result->setName(tmp);
+			}
+			else{
+				result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));
+				nameFound = true;
+			}
+		}
 		if(!currentToken.typeEqualsTo(Token::BRACE_LEFT)){
 			throw ParserException("No '(' in function signature", currentToken.getPosition());
 		}

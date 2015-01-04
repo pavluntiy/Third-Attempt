@@ -33,6 +33,10 @@ void CompoundNameNode::accept(BasicVisitor *visitor){
 		this->names.push_back(what);
 	}
 
+	void CompoundNameNode::popName(){
+		this->names.pop_back();
+	}
+
 	CompoundNameNode::CompoundNameNode(const Token &token){
 		this->names.push_back(transformOperators(token));
 	}
