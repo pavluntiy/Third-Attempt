@@ -12,10 +12,10 @@ ValueNode::ValueNode(Position position):BasicNode(position)
 	}
 
 	string ValueNode::toString(){
-		return this->getType();
+		return this->getTypeText();
 	}
 
-	string ValueNode::getType(){
+	string ValueNode::getTypeText(){
 		switch(this->type){
 			case Type::INT: return "INT";
 			case Type::FLOAT: return "FLOAT";
@@ -23,6 +23,10 @@ ValueNode::ValueNode(Position position):BasicNode(position)
 			case Type::CHAR: return "CHAR";
 			default: return "NONE";
 		}
+	}
+
+	ValueNode::Type ValueNode::getType(){
+		return this->type;
 	}
 
 	ValueNode::ValueNode(Token::Type type, string text){

@@ -18,6 +18,7 @@
 #include "fornode.hpp"
 #include "structnode.hpp"
 #include "valuenode.hpp"
+#include "dotnode.hpp"
 
 #include "noticeexception.hpp"
 #include "type.hpp"
@@ -52,6 +53,7 @@ public:
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
 	virtual void visit(BlockNode *node) override;
+	virtual void visit(DotNode *node) override;
 
 	ScopePrintVisitor(ostream *out);
 	virtual ~ScopePrintVisitor() override;

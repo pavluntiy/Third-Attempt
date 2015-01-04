@@ -14,7 +14,7 @@ SOURCES=header.cpp alphabet.cpp\
 	basicnode.cpp\
 	operatorsnode.cpp blocknode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
 	typenode.cpp vardeclarationnode.cpp signaturenode.cpp functiondefinitionnode.cpp ifnode.cpp whilenode.cpp fornode.cpp\
-	structnode.cpp returnnode.cpp\
+	structnode.cpp returnnode.cpp dotnode.cpp\
 	\
 	parser.cpp\
 	\

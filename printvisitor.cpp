@@ -40,6 +40,18 @@ void PrintVisitor::visit(OperatorsNode *node){
 	*this->out << shift << ")" << endl;	
 }
 
+void PrintVisitor::visit(DotNode *node){
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+	node->getLeft()->accept(this);
+
+	node->getRight()->accept(this);
+	this->shift.pop_back();
+	
+	*this->out << shift << ")" << endl;	
+}
+
 void PrintVisitor::visit(CompoundNameNode *node){
 	*this->out << shift << "( " << node->toString();
 

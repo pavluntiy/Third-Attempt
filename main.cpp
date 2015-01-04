@@ -79,7 +79,7 @@ int main (int argc, char **argv) {
 		*err << te.what() << '\n';
 	}
 
-	typeVisitor->dump(out);
+	// typeVisitor->dump(out);
 
 	ScopePrintVisitor *scopePrintVisitor = new ScopePrintVisitor(out);
 

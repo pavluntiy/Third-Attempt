@@ -24,7 +24,8 @@ protected:
 public: 
 	void accept(BasicVisitor *visitor) override;
 	string toString() override;
-	string getType();
+	string getTypeText();
+	Type getType();
 
 	ValueNode(Position position);
 	ValueNode();

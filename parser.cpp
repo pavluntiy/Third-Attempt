@@ -907,7 +907,7 @@ bool Parser::isExpr10Op(){
 BasicNode* Parser::getExpr10(BasicNode *left){
 
 	BasicNode *right = nullptr;
-	FunctionCallNode *op = nullptr;
+	DotNode *op = nullptr;
 
 	bool opFound = false;
 	string opName = "";
@@ -918,13 +918,13 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 			left = getAtom();
 			left = getBraced(left);
 				if(isExpr10Op()){
-					op = new FunctionCallNode(currentToken);
+					op = new DotNode(currentToken);
 					opName = currentToken.getText();
 					get(Token::OPERATOR);
 					opFound = true;
 					right = getAtom();
-					op->addArg(left);
-					op->addArg(right);
+					op->setLeft(left);
+					op->setRight(right);
 					return getExpr10(op);
 				}
 				else {
@@ -958,11 +958,11 @@ BasicNode* Parser::getExpr10(BasicNode *left){
 				left = getBraced(left);
 
 				if(isExpr10Op()){
-					op = new FunctionCallNode(currentToken);
+					op = new DotNode(currentToken);
 					get(Token::OPERATOR);
 					right = getAtom();
-					op->addArg(left);
-					op->addArg(right);
+					op->setLeft(left);
+					op->setRight(right);
 					return getExpr10(op);
 				}
 				else {

@@ -200,7 +200,7 @@ BasicSymbol* BasicScope::resolve(CompoundNameNode *name){
 		}
 		currentScope = currentScope->getParentScope();
 	}
-	throw NoticeException("Undeclared variable '"+ simpleName + "'!");
+	throw NoticeException("Undeclared symbol '"+ simpleName + "'!");
 }
 
 bool BasicScope::isDefined(string name){

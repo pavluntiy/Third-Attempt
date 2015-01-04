@@ -17,6 +17,7 @@
 #include "fornode.hpp"
 #include "structnode.hpp"
 #include "blocknode.hpp"
+#include "dotnode.hpp"
 
 #include "valuenode.hpp"
 
@@ -40,6 +41,7 @@ public:
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
 	virtual void visit(BlockNode *node) override;
+	virtual void visit(DotNode *node) override;
 
 
 	PrintVisitor(ostream *out);

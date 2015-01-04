@@ -39,6 +39,13 @@ void DeleteVisitor::visit(FunctionCallNode *node){
 	node = nullptr;
 }
 
+void DeleteVisitor::visit(DotNode *node){
+	node->getLeft()->accept(this);
+	node->getRight()->accept(this);
+	delete node;
+	node = nullptr;
+}
+
 void DeleteVisitor::visit(TypeNode *node){
 	for(auto it: node->getDimensions()){
 		it->accept(this);

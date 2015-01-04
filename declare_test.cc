@@ -15,7 +15,7 @@ def int __bar(char c, int d, char z){
 
 struct Point {
 	int x, y
-	def Point operator ... (int x = 0, int y = 0)
+	def Point operator ... (int x /*= 0*/, int y /*= 0*/)
 }
 
 struct str{
@@ -51,7 +51,7 @@ struct str1{
 	//def int global.str1.bar()
 }
 
-int a12323 = 0
+int a12323 /*= 0*/
 if(a12323){
         int a12323
 }

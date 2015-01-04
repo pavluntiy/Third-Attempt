@@ -52,9 +52,17 @@ void TypeVisitor::visit(CompoundNameNode *node){
 }
 
 void TypeVisitor::visit(FunctionCallNode *node){
+
+	node->setSymbol(currentScope->resolveFunction( dynamic_cast<CompoundNameNode*>(node->getFunctionName())));//Provisional
+
 	for(auto it: node->getFunctionArgs()){
 		it->accept(this);
 	}
+}
+
+void TypeVisitor::visit(DotNode *node){
+	node->getLeft()->accept(this);
+	node->getRight()->accept(this);
 }
 
 void TypeVisitor::visit(TypeNode *node){
@@ -64,6 +72,39 @@ void TypeVisitor::visit(TypeNode *node){
 }
 
 void TypeVisitor::visit(ValueNode *node){
+
+	switch(node->getType()){
+		case ValueNode::Type::INT: {
+			auto type = new CompoundNameNode("int");
+			node->setSymbol(currentScope->resolveType(type)); 
+			delete type;
+		}	
+		break;
+
+		case ValueNode::Type::FLOAT: {
+			auto type = new CompoundNameNode("float");
+			node->setSymbol(currentScope->resolveType(type)); 
+			delete type;
+		}	
+		break;
+
+		case ValueNode::Type::CHAR: {
+			auto type = new CompoundNameNode("char");
+			node->setSymbol(currentScope->resolveType(type)); 
+			delete type;
+		}	
+		break;
+
+		// case ValueNode::Type::FLOAT: {
+		// 	auto type = new CompoundNameNode("char");
+		// 	node->setSymbol(currentScope->resolveType(type)); 
+		// 	delete type;
+		// }	
+		// break;
+
+		default: throw TypeException("What is it!?", node->getPosition());
+	}
+
 }
 
 void TypeVisitor::visit(VarDeclarationNode *node){

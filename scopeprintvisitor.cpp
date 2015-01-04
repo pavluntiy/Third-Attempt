@@ -57,17 +57,25 @@ void ScopePrintVisitor::visit(CompoundNameNode *node){
 
 void ScopePrintVisitor::visit(FunctionCallNode *node){
 
-	this->shift.push_back(' ');
-	*this->out << shift << node->getSymbol()->toString();
+	*this->out << shift << "(" << node->toString() << endl;
+	this->shift.push_back('\t');
+	*this->out << shift << node->getSymbol()->toString() << endl;
 	// if(node->getFunctionName()){
 	// 	node->getFunctionName()->accept(this);
 	// }
-	// for(auto it: node->getFunctionArgs()){
-	// 	it->accept(this);
-	// }
+	for(auto it: node->getFunctionArgs()){
+		it->accept(this);
+	}
 	this->shift.pop_back();
 	
-	//*this->out << shift << ")" << endl;
+	*this->out << shift << ")" << endl;
+}
+
+void ScopePrintVisitor::visit(DotNode *node){
+	*this->out << shift << "( " << node->toString() << endl;
+	node->getLeft()->accept(this);
+	node->getRight()->accept(this);
+	*this->out << shift << ")\n";
 }
 
 void ScopePrintVisitor::visit(TypeNode *node){
@@ -106,7 +114,7 @@ void ScopePrintVisitor::visit(TypeNode *node){
 }
 
 void ScopePrintVisitor::visit(ValueNode *node){
-	*this->out << shift << "( " << node->toString();
+	*this->out << shift << "( " << node->getSymbol()->toString();
 	if(node->getText() != ""){
 	 	*this->out<< " \"" << node->getText() << "\"";
 	}
