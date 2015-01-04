@@ -8,6 +8,16 @@ void DeleteVisitor::visit(ProgramNode *node){
 	node = nullptr;
 }
 
+void DeleteVisitor::visit(BlockNode *node){
+	if(node->getChild()){
+		node->getChild()->accept(this);
+	}
+	delete node;
+	node = nullptr;
+}
+
+
+
 void DeleteVisitor::visit(OperatorsNode *node){
 	for(auto it : node->getChildren()){
 		it->accept(this);

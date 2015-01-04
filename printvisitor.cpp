@@ -12,6 +12,18 @@ void PrintVisitor::visit(ProgramNode *node){
 	*this->out << ")" << endl;	
 }
 
+void PrintVisitor::visit(BlockNode *node){
+	*this->out << shift << "( " << node->toString();
+	if(node->getChild()){
+		*this->out << endl;
+		this->shift.push_back(' ');
+		node->getChild()->accept(this);
+		this->shift.pop_back();
+	}
+
+	*this->out << ")" << endl;	
+}
+
 void PrintVisitor::visit(OperatorsNode *node){
 	*this->out << shift << "( " << node->toString();
 

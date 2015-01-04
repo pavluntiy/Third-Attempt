@@ -4,6 +4,7 @@
 #include "basicvisitor.hpp"
 
 #include "programnode.hpp"
+#include "blocknode.hpp"
 #include "operatorsnode.hpp"
 #include "compoundnamenode.hpp"
 #include "functioncallnode.hpp"
@@ -35,6 +36,7 @@ public:
 	virtual void visit(ForNode *node) override;
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
+	virtual void visit(BlockNode *node) override;
 
 	virtual ~DeleteVisitor() override;
 };

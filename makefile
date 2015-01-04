@@ -12,7 +12,7 @@ SOURCES=header.cpp alphabet.cpp\
 	printvisitor.cpp deletevisitor.cpp scopeprintvisitor.cpp\
 	\
 	basicnode.cpp\
-	operatorsnode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
+	operatorsnode.cpp blocknode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
 	typenode.cpp vardeclarationnode.cpp signaturenode.cpp functiondefinitionnode.cpp ifnode.cpp whilenode.cpp fornode.cpp\
 	structnode.cpp returnnode.cpp\
 	\

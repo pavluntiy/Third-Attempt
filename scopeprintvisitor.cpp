@@ -1,16 +1,28 @@
 #include "scopeprintvisitor.hpp"
 
 void ScopePrintVisitor::visit(ProgramNode *node){
-	currentScope = node->getScope();
+	setCurrentScope(node->getScope());
 	if(node->getChild()){
-		this->shift.push_back(' ');
+		this->shift.push_back('\t');
 		node->getChild()->accept(this);
 		this->shift.pop_back();
 	}
+	restoreCurrentScope();
+}
+
+void ScopePrintVisitor::visit(BlockNode *node){
+	setCurrentScope(node->getScope());
+	currentScope->dump(out, shift);
+	if(node->getChild()){
+		this->shift.push_back('\t');
+		node->getChild()->accept(this);
+		this->shift.pop_back();
+	}
+	restoreCurrentScope();
 }
 
 void ScopePrintVisitor::visit(OperatorsNode *node){
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
 	for(auto it : node->getChildren()){
 		it->accept(this);
 	}
@@ -104,7 +116,7 @@ void ScopePrintVisitor::visit(ValueNode *node){
 void ScopePrintVisitor::visit(VarDeclarationNode *node){
 	*this->out << shift << "( " << node->toString() << endl;
 		
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
 	//node->getType()->accept(this);
 
 	for(auto it: node->getVariables()){
@@ -124,7 +136,7 @@ void ScopePrintVisitor::visit(SignatureNode *node){
 
 	*this->out << shift << "(function " << node->getSymbol()->toString()<<  "\n";
 		
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
 	
  	//node->getType()->accept(this);
  	//node->getName()->accept(this);
@@ -157,7 +169,7 @@ void ScopePrintVisitor::visit(FunctionDefinitionNode *node){
 
 	*this->out << shift << "( " << node->toString() << endl;
 		
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
  	
  	node->getSignature()->accept(this);
  	node->getOperators()->accept(this);
@@ -172,13 +184,14 @@ void ScopePrintVisitor::visit(IfNode *node){
 
 	*this->out << shift << "( " << node->toString() << endl;
 		
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
  	
  	node->getCondition()->accept(this);
-
+ 	node->getThenBranch()->getScope()->dump(out, shift);
  	node->getThenBranch()->accept(this);
 
  	if(node->getElseBranch()){
+ 		node->getElseBranch()->getScope()->dump(out, shift);
  		node->getElseBranch()->accept(this);
  	}
 
@@ -192,13 +205,15 @@ void ScopePrintVisitor::visit(WhileNode *node){
 
 	*this->out << shift << "( " << node->toString() << endl;
 		
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
  	
  	node->getCondition()->accept(this);
-
+ 	node->getLoop()->getScope()->dump(out, shift);
  	node->getLoop()->accept(this);
 
+
  	if(node->getElseBranch()){
+ 		node->getElseBranch()->getScope()->dump(out, shift);
  		node->getElseBranch()->accept(this);
  	}
 
@@ -214,7 +229,7 @@ void ScopePrintVisitor::visit(ForNode *node){
 		
 	this->shift.push_back('\t');
  	
-	node->getScope()->dump(this->out);
+	node->getScope()->dump(this->out, shift);
 
  	if(node->getInit()){
  		node->getInit()->accept(this);
@@ -242,7 +257,7 @@ void ScopePrintVisitor::visit(ReturnNode *node){
 
 	//*this->out << shift << "( " << node->toString() << endl;
 		
-	this->shift.push_back(' ');
+	this->shift.push_back('\t');
 
  	if(node->getResult()){
  		node->getResult()->accept(this);

@@ -1,9 +1,10 @@
 #ifndef	SCOPEPRINTVISITOR
-#define TYPECHECKVISITOR
+#define SCOPEPRINTVISITOR
 
 #include "basicvisitor.hpp"
 
 #include "programnode.hpp"
+#include "blocknode.hpp"
 #include "operatorsnode.hpp"
 #include "compoundnamenode.hpp"
 #include "functioncallnode.hpp"
@@ -50,6 +51,7 @@ public:
 	virtual void visit(ForNode *node) override;
 	virtual void visit(ReturnNode *node) override;
 	virtual void visit(StructNode *node) override;
+	virtual void visit(BlockNode *node) override;
 
 	ScopePrintVisitor(ostream *out);
 	virtual ~ScopePrintVisitor() override;

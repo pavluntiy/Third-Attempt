@@ -1306,7 +1306,8 @@ BasicNode* Parser::getBlock(){
 	}
 	get(Token::CURL_LEFT);
 
-	auto result =  getOperators();
+	BlockNode *result =  new BlockNode(currentToken.getPosition());
+	result->addChild(getOperators());
 
 	if(!currentToken.typeEqualsTo(Token::CURL_RIGHT)){
 		result->accept(this->deleteVisitor);
@@ -1328,7 +1329,14 @@ BasicNode* Parser::getFunction(){
 
 		result = new FunctionDefinitionNode(currentToken.getPosition());
 		result->setSignature(signature);
-		result->setOperators(dynamic_cast<OperatorsNode*> (getBlock()));
+		if(currentToken == Token(Token::CURL_LEFT)){
+			get(Token::CURL_LEFT);
+			result->setOperators(dynamic_cast<OperatorsNode*> (getOperators()));
+			if(currentToken != Token(Token::CURL_RIGHT)){
+				throw ParserException("Function without '}'!", currentToken.getPosition());
+			}
+			get(Token::CURL_RIGHT);
+		}
 		return result;
 	}
 	catch (NoticeException &ne){

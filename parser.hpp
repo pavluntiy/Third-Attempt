@@ -23,6 +23,7 @@
 #include "fornode.hpp"
 #include "returnnode.hpp"
 #include "structnode.hpp"
+#include "blocknode.hpp"
 
 #include "deletevisitor.hpp"
 

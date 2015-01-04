@@ -22,9 +22,14 @@ void BasicNode::setSymbol(BasicSymbol *symbol){
 
 BasicNode::~BasicNode(){}
 
-BasicNode::BasicNode(){}
+BasicNode::BasicNode(){
+	this->symbol = nullptr;
+	this->scope = nullptr;
+}
 BasicNode::BasicNode(Position position){
 	this->position = position;
+	this->symbol = nullptr;
+	this->scope = nullptr;
 }
 
 AbstractScope* BasicNode::getScope(){

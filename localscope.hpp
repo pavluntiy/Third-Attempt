@@ -15,7 +15,7 @@ public:
 	virtual void declareNamedScope(AbstractScope *scope) override;
 
 	LocalScope();
-	LocalScope(AbstractScope *parentScope);
+	LocalScope(AbstractScope *parentScope, string name = "");
 	virtual void dump(ostream *out, string shift = "") override;
 };
 

@@ -3,7 +3,7 @@
 ProgramNode::ProgramNode(){}
 ProgramNode::ProgramNode(Position position):BasicNode(position)
 {
-
+	this->child = nullptr;
 }
 
 	void ProgramNode::accept(BasicVisitor *visitor){
@@ -11,7 +11,7 @@ ProgramNode::ProgramNode(Position position):BasicNode(position)
 	}
 
 	string ProgramNode::toString(){
-		return "PROGRAM";
+		return "Program";
 	}
 
 	void ProgramNode::addChild(BasicNode *node){

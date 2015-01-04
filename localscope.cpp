@@ -78,13 +78,13 @@ void LocalScope::declareNamedScope(AbstractScope *scope){
 }
 
 
-LocalScope::LocalScope(AbstractScope *parentScope):BasicScope(parentScope)
+LocalScope::LocalScope(AbstractScope *parentScope, string name):BasicScope(parentScope, name)
 {
 
 }
 
 void LocalScope::dump(ostream *out, string shift){
-	*out << shift << "Local scope:\n";
+	*out << shift << "Local scope " << this->getName() << ":\n";
 
 
 	// *out << "\tFunctions:\n";
@@ -94,9 +94,9 @@ void LocalScope::dump(ostream *out, string shift){
 	// 	it.second->getFunctionScope()->dump(out, shift + "\t\t");
 	// }
 
-	*out << "\tVariables:\n";
+	*out << shift << "\tVariables:\n";
 	for(auto it: this->variables){
-		*out << "\t\t" << it.second->toString() << "\n";
+		*out << shift << "\t\t" << it.second->toString() << "\n";
 	}
 
 	// *out << "\tStructures:\n";
@@ -105,7 +105,7 @@ void LocalScope::dump(ostream *out, string shift){
 	// 	it.second->getStructureScope()->dump(out, shift + "\t\t");
 	// }
 
-	*out << "end of local scope;\n" << shift << "=====\n";
+	*out << shift << "end of local scope;\n" << shift << "=====\n";
 
 }
 

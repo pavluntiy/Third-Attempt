@@ -17,6 +17,7 @@ class WhileNode;
 class ForNode;
 class ReturnNode;
 class StructNode;
+class BlockNode;
 
 
 class BasicVisitor {
@@ -36,6 +37,7 @@ public:
 	virtual void visit(ForNode *node) = 0;
 	virtual void visit(ReturnNode *node) = 0;
 	virtual void visit(StructNode *node) = 0;
+	virtual void visit(BlockNode *node) = 0;
 
 	virtual ~BasicVisitor();
 
