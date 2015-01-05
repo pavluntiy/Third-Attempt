@@ -22,10 +22,12 @@ void FunctionSymbol::setFunctionLabel(string str){
 
 Type* FunctionSymbol::getReturnType(){
 	return this->returnType;
+	//return this->functionType->getReturnType();
 }
 
 vector<Type*> FunctionSymbol::getArguments(){
 	return this->arguments;
+	//return this->functionType->getArguments();
 }
 
 AbstractScope* FunctionSymbol::getFunctionScope(){

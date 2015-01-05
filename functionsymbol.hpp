@@ -6,12 +6,14 @@
 //#include "functionscope.hpp"
 #include "basicsymbol.hpp"
 #include "abstractscope.hpp"
+#include "functiontype.hpp"
 
 class FunctionScope;
 class FunctionSymbol: public BasicSymbol{
 
 Type* returnType;
 vector<Type*> arguments;
+FunctionType *functionType;
 AbstractScope *functionScope;
 string functionLabel;
 Position definitionPosition;

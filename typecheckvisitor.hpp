@@ -22,6 +22,7 @@
 
 #include "noticeexception.hpp"
 #include "type.hpp"
+#include "functiontype.hpp"
 #include "functionsymbol.hpp"
 
 #include "functionscope.hpp"

@@ -21,6 +21,7 @@ public:
 	virtual AbstractScope* resolveNamedScope(CompoundNameNode* ) override;
 	virtual FunctionSymbol* resolveFunction(CompoundNameNode *name) override;
 	virtual VariableSymbol* resolveVariable(CompoundNameNode *name) override;
+	virtual Type* resolveModifiedType(const Type&) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
 	virtual Type* resolveType(const Type&) override;

@@ -136,11 +136,14 @@ void TypeVisitor::visit(SignatureNode *node){
 	CompoundNameNode *name = node->getName();
 	string functionName = name->getSimpleName();
 
-
+	//FunctionType *functionType = new FunctionType(node);
 	setCurrentScope(currentScope->resolveNamedScope(name));
+
+
 
 	Type* returnType = currentScope->resolveType(Type(node->getType()));
 	node->getType()->setSymbol(returnType);
+	//node->getType()->setSymbol(functionType->getReturnType());
 
 	FunctionSymbol *function = new FunctionSymbol();
 	function->setReturnType(returnType);
@@ -148,7 +151,7 @@ void TypeVisitor::visit(SignatureNode *node){
 
 	FunctionScope *functionScope = new FunctionScope(currentScope, functionName);
 
-	functionScope->setReturnType(returnType);
+	//functionScope->setReturnType(returnType);
 	function->setFunctionScope(functionScope);
 
 	function->setName(functionName);

@@ -112,12 +112,26 @@ StructureSymbol* BasicScope::resolveStructure(const string &name){
 	throw NoticeException("Undeclared structure;'"+ name + "'!");
 }
 
+Type* BasicScope::resolveModifiedType(const Type &type){
+	string name = type.getName();
+	AbstractScope *currentScope = this;//->resolveNamedScope(type.getFullName());
+	while(currentScope != nullptr){
+		if(currentScope->getTypes().count(name)){
+			return currentScope->getTypes()[name];
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	
+	throw NoticeException("Undeclared type'"+ name + "'!");
+}
+
 Type* BasicScope::resolveType(const Type &type){
 	string name = type.getName();
 	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
-			return currentScope->getTypes()[name];
+			//auto tmp
+			return resolveModifiedType(type);
 		}
 		currentScope = currentScope->getParentScope();
 	}
