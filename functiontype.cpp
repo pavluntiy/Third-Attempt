@@ -48,16 +48,16 @@ string FunctionType::toString(){
 	stringstream result;
 
 	result << "'" << "function type" << "' ";
-	result <<  "( returns " << this->getReturnType()->toString() << ") ";
+	result <<  "( returnType " << this->getReturnType()->toString() << ") ";
 
 	// result << "\nArguments:\n";
 	// for(auto it: this->arguments){
 	// 	result << it->toString();
 	// }
 
-	result << " at " << this;
+//	result << " at " << this;
 
-	result << " declared at " << this->getPosition().toString();
+//	result << " declared at " << this->getPosition().toString();
 	return result.str();
 }
 

@@ -42,7 +42,8 @@ string FunctionSymbol::toString(){
 	stringstream result;
 
 	result << "'" << this->getName() << "' ";
-	result <<  "( returns " << this->getReturnType()->toString() << ") ";
+	//result <<  "( returns " << this->getReturnType()->toString() << ") ";
+	result <<  "( type " << this->getType()->toString() << ") ";
 
 	// result << "\nArguments:\n";
 	// for(auto it: this->arguments){
