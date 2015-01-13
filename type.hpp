@@ -19,6 +19,7 @@ protected:
 	int size;
 
 	map<Type, string> convertTo;
+	bool unqualified;
 
 public:
 
@@ -32,9 +33,10 @@ public:
 	vector<string>& getModifiers();
 	vector<string>& getAccessModes();
 	vector<int>& getDimensions();
+	bool isUnqualified();
 
 	const vector<string>& getFullName() const;
-	string toString();
+	virtual string toString(string shift = "") override;
 
 };
 

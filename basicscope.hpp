@@ -39,11 +39,11 @@ public:
 
 
 
-	virtual void declareFunction(FunctionSymbol *function) = 0;
-	virtual void declareVariable(VariableSymbol *variable) = 0;
-	virtual void declareType(Type *type) = 0;
-	virtual void declareStructure(StructureSymbol *structure) = 0;
-	virtual void declareNamedScope(AbstractScope *scope) = 0;
+	virtual void declareFunction(FunctionSymbol *function) override;
+	virtual void declareVariable(VariableSymbol *variable) override;
+	virtual void declareType(Type *type) override;
+	virtual void declareStructure(StructureSymbol *structure) override;
+	virtual void declareNamedScope(AbstractScope *scope) override;
 	virtual void declareAnonymousScope(AbstractScope *scope) override;
 
 	virtual string getName() override;
@@ -62,6 +62,13 @@ public:
 	virtual bool isVariable(string name) override;
 	virtual bool isStructure(string name) override;
 	virtual bool isNamedScope(string name) override;
+
+	void addFunction(string name, FunctionSymbol *function);
+	void addVariable(string name, VariableSymbol *variable);
+	void addType(string name, Type *type);
+	void addNamedScope(string name, AbstractScope *scope);
+	void addStructure(string name, StructureSymbol *structure);
+
 };
 
 #endif

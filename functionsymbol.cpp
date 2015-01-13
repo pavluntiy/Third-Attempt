@@ -38,11 +38,10 @@ string FunctionSymbol::getFunctionLabel(){
 	return this->functionLabel;
 }
 
-string FunctionSymbol::toString(){
+string FunctionSymbol::toString(string shift){
 	stringstream result;
 
-	result << "'" << this->getName() << "' ";
-	//result <<  "( returns " << this->getReturnType()->toString() << ") ";
+	result << shift << "'" << this->getName() << "' ";
 	result <<  "( type " << this->getType()->toString() << ") ";
 
 	// result << "\nArguments:\n";
@@ -52,18 +51,18 @@ string FunctionSymbol::toString(){
 
 	result << " at " << this;
 
-		result << " declared at " << this->getPosition().toString();
+		result << shift << " declared at " << this->getPosition().toString();
 	if(!this->isOnlyDeclared()){
-		result << " and defined at " << this->getDefinitionPosition().toString();
+		result << shift << " and defined at " << this->getDefinitionPosition().toString();
 	}
 	return result.str();
 }
 
-string FunctionSymbol::argumentsToString(){
+string FunctionSymbol::argumentsToString(string shift){
 	stringstream result;
 
 
-	result << "'" + this->getName() + "' arguments:";
+	result << shift << "'" + this->getName() + "' arguments:";
 	for(auto it: this->arguments){
 	 	result << it->toString() << 	"; ";
 	}

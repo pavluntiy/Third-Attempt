@@ -24,7 +24,7 @@ public:
 
 	VariableSymbol();
 	VariableSymbol(Type *type, string name);
-	string toString();
+	virtual string toString(string shift = "") override;
 };
 
 #endif

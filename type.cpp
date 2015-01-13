@@ -23,6 +23,17 @@ Type::Type(TypeNode *node){
 	for(auto it: node->getDimensions()){
 		this->dimensions.push_back(stoi(it->getText()));
 	}
+
+	if(
+		this->storageModes.size() || this->modifiers.size() 
+		|| 
+		this->accessModes.size() || this->dimensions.size()
+	){
+		this->unqualified = false;
+	}
+	else {
+		this->unqualified = true;
+	}
 }
 const vector<string>& Type::getFullName()const {
 	return this->fullName;
@@ -45,8 +56,9 @@ vector<int>& Type::getDimensions(){
 }
 
 
-string Type::toString(){
+string Type::toString(string shift){
 	stringstream result;
+	result << shift;
 	for(auto it: this->getStorageModes()){
 		result << it + " ";
 	}
@@ -61,8 +73,7 @@ string Type::toString(){
 		result << to_string(it) + " ";
 	}
 
-	result << "'" << this->getName() << "'";
+	result << " '" << this->getName() << "'";
 	result << " at " << this;
-	//auto tmp = ;
 	return result.str();
 }

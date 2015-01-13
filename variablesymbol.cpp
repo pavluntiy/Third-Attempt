@@ -31,9 +31,9 @@ VariableSymbol::VariableSymbol(Type *type, string name){
 	this->type = type;
 }
 
-string VariableSymbol::toString(){
+string VariableSymbol::toString(string shift){
 	stringstream result;
-	result << "'" << this->getName() << "' at ";
+	result << shift <<  "'" << this->getName() << "' at ";
 	result << this;
 	result << " of " << this->getType()->toString();
 	result << " (defined at " << this->getPosition().toString() << ")";

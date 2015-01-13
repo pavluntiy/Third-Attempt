@@ -28,7 +28,7 @@ public:
 	void setPosition(Position position);
 	Position getPosition();
 	//virtual bool operator== (const BasicSymbol &b) const;
-	virtual string toString() = 0;
+	virtual string toString(string shift = "") = 0;
 	BasicSymbol(Position position = {0, 0});
 };
 

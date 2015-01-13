@@ -22,7 +22,7 @@ public:
 	StructureSymbol();
 	StructureSymbol(Type *type, AbstractScope *scope);
 	AbstractScope* getStructureScope();
-	string toString();
+	virtual string toString(string shift = "") override;
 
 	bool isOnlyDeclared();
 	void define(Position position = {0, 0});

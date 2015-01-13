@@ -36,8 +36,8 @@ public:
 	Position getDefinitionPosition();
 	void setDefinitionPosition(Position position);
 
-	string toString();
-	string argumentsToString();
+	string toString(string shift = "");
+	string argumentsToString(string shift = "");
 
 	FunctionSymbol();
 

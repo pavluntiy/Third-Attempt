@@ -21,8 +21,8 @@ public:
 	vector<Type*> getArguments();
 	void setReturnType(Type *type);
 	void addArgument(Type *type);
-	string toString();
-	string argumentsToString();
+	virtual string toString(string shift = "") override;
+	string argumentsToString(string shift = "");
 };
 
 

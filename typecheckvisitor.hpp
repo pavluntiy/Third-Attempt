@@ -30,6 +30,7 @@
 #include "structurescope.hpp"
 #include "localscope.hpp"
 #include "structuresymbol.hpp"
+#include "variablesymbol.hpp"
 
 
 class TypeVisitor: public BasicVisitor{

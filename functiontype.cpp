@@ -44,10 +44,10 @@ vector<Type*> FunctionType::getArguments(){
 }
 
 
-string FunctionType::toString(){
+string FunctionType::toString(string shift){
 	stringstream result;
 
-	result << "'" << "function type" << "' ";
+	result << shift << "'" << "function type" << "' ";
 	result <<  "( returnType " << this->getReturnType()->toString() << ") ";
 
 	// result << "\nArguments:\n";
@@ -61,11 +61,9 @@ string FunctionType::toString(){
 	return result.str();
 }
 
-string FunctionType::argumentsToString(){
+string FunctionType::argumentsToString(string shift){
 	stringstream result;
-
-
-	result << "'" + this->getName() + "' arguments:";
+	result << shift << "'" + this->getName() + "' arguments:";
 	for(auto it: this->arguments){
 	 	result << it->toString() << 	"; ";
 	}

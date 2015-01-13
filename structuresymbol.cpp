@@ -27,7 +27,7 @@ AbstractScope* StructureSymbol::getStructureScope(){
 	return this->structureScope;
 }
 
-string StructureSymbol::toString(){
+string StructureSymbol::toString(string shift){
 	stringstream result;
 	result << "structure '" << this->getName() <<"', defining type " << this->type->toString();
 	return result.str();

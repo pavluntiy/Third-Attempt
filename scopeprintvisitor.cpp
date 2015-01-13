@@ -79,7 +79,9 @@ void ScopePrintVisitor::visit(DotNode *node){
 }
 
 void ScopePrintVisitor::visit(TypeNode *node){
-	*this->out << shift << node->getSymbol()->toString();
+	if(node->getSymbol()){
+		*this->out << shift << node->getSymbol()->toString();
+	}
 	// *this->out << shift << "( " << node->toString() << '\n';
 
 	// this->shift.push_back(' ');
@@ -126,7 +128,6 @@ void ScopePrintVisitor::visit(VarDeclarationNode *node){
 		
 	this->shift.push_back('\t');
 	//node->getType()->accept(this);
-
 	for(auto it: node->getVariables()){
 		it.first->accept(this);
 		if(it.second){
@@ -279,7 +280,8 @@ void ScopePrintVisitor::visit(ReturnNode *node){
 void ScopePrintVisitor::visit(StructNode *node){
 
 	*this->out << shift << "(Structure " << node->getSymbol()->toString() <<": "<< endl;
-		
+	
+	//dynamic_cast<StructureSymbol*>(node->getSymbol())->getStructureScope()->dump(this->out);
 	this->shift.push_back('\t');
 
 

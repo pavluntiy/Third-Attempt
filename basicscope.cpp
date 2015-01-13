@@ -267,3 +267,105 @@ BasicSymbol* BasicScope::resolve(string name){
 // void BasicScope::declareFunction(FunctionSymbol function){}
 // void BasicScope::declareVariable(VariableSymbol variable){}
 // void BasicScope::declareType(Type type){}
+
+
+void BasicScope::addFunction(string name, FunctionSymbol *function){
+	this->functions[name] = function;
+}
+
+
+void BasicScope::addVariable(string name, VariableSymbol *variable){
+	this->variables[name] = variable;
+}
+
+void BasicScope::addType(string name, Type *type){
+	this->types[name] = type;
+}
+
+void BasicScope::addNamedScope(string name, AbstractScope *scope){
+	this->namedScopes[name] = scope;
+}
+
+void BasicScope::addStructure(string name, StructureSymbol *structure){
+	this->structures[name] = structure;
+}
+
+
+
+
+void BasicScope::declareFunction(FunctionSymbol *function){
+	string name = function->getName();
+
+	if(this->isFunction(name)){
+		FunctionSymbol *tmp = dynamic_cast<FunctionSymbol*>(this->resolve(name));
+		if(!tmp->isOnlyDeclared()){
+			throw NoticeException("Function '" + name + "' redeclaration, previously defined at " + tmp->getPosition().toString());
+		}
+		else {
+			//do some staff...
+			return;
+		}
+	}
+
+	if(this->isDefined(name)){
+		throw NoticeException("Trying to redeclare '" + name + "' as function!");
+	}
+
+
+	addFunction(name, function);
+}
+
+void BasicScope::declareVariable(VariableSymbol *variable){
+	string name = variable->getName();
+
+	if(this->isDefined(name)){
+		throw NoticeException("Variable '" + name + "' redeclaration!");
+	}
+
+	addVariable(name, variable);
+}
+
+void BasicScope::declareType(Type *type){
+	string name = type->getName();
+
+	if(this->isDefined(name)){
+		throw NoticeException("Type '" + name + "' redeclaration!");
+	}
+
+	addType(name, type);
+}
+
+void BasicScope::declareStructure(StructureSymbol *structure){
+	string name = structure->getName();
+	if(this->isStructure(name)){
+		StructureSymbol *tmp = dynamic_cast<StructureSymbol*>(this->resolve(name));
+		if(!tmp->isOnlyDeclared()){
+			throw NoticeException("Structure '" + name + "' redeclaration, previously defined at " + tmp->getPosition().toString());
+		}
+		else {
+			//do some staff...
+			return;
+		}
+	}
+	if(this->isDefined(name)){
+		throw NoticeException("Trying to redeclare '" + name + "' as structure!");
+	}
+
+	//this->structures[name] = structure;
+	addStructure(name, structure);
+	//this->namedScopes[name] = structure->getStructureScope();
+	addNamedScope(name, structure->getStructureScope());
+	addType(name, structure->getStructureType());
+	//this->types[name] = structure->getStructureType();
+}
+
+void BasicScope::declareNamedScope(AbstractScope *scope){
+	string name = scope->getName();
+
+	if(this->isDefined(name)){
+		throw NoticeException("Named scope '" + name + "' redeclaration!");
+	}
+
+	//this->namedScopes[name] = scope;
+	addNamedScope(name, scope);
+}
