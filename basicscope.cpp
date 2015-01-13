@@ -20,7 +20,8 @@ AbstractScope* BasicScope::getParentScope(){
 	return this->parentScope;
 }
 
-map<string, Type*>& BasicScope::getTypes(){
+//map<string, Type*>& BasicScope::getTypes(){
+map<string, vector<Type*> >& BasicScope::getTypes(){
 	return this->types;
 }
 
@@ -72,14 +73,17 @@ VariableSymbol* BasicScope::resolveVariable(CompoundNameNode *name){
 	throw NoticeException("Undeclared variable '"+ simpleName + "'!");
 }
 
-
+Type* BasicScope::getUnqualifiedType(string name){
+	return this->types[name][0];
+}
 
 Type* BasicScope::resolveType(CompoundNameNode *name){
 	AbstractScope *currentScope = resolveNamedScope(name);
 	string simpleName = name->getSimpleName();
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(simpleName)){
-			return currentScope->getTypes()[simpleName];
+			//return currentScope->getTypes()[simpleName];
+			return currentScope->getUnqualifiedType(simpleName);
 		}
 		currentScope = currentScope->getParentScope();
 	}
@@ -91,7 +95,8 @@ Type* BasicScope::resolveType(Type *type){
 	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
-			return currentScope->getTypes()[name];
+			//return currentScope->getTypes()[name];
+			return currentScope->getUnqualifiedType(name);
 		}
 		currentScope = currentScope->getParentScope();
 	}
@@ -115,14 +120,32 @@ StructureSymbol* BasicScope::resolveStructure(const string &name){
 Type* BasicScope::resolveModifiedType(const Type &type){
 	string name = type.getName();
 	AbstractScope *currentScope = this;//->resolveNamedScope(type.getFullName());
+
+
+
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
-			return currentScope->getTypes()[name];
+			break;
 		}
 		currentScope = currentScope->getParentScope();
 	}
-	
-	throw NoticeException("Undeclared type'"+ name + "'!");
+
+	if(!currentScope->getTypes().count(name)){
+		throw NoticeException("Undeclared type'"+ name + "'!");	
+	}
+
+	auto typeFamily = currentScope->getTypes()[name];
+
+	for(auto it: typeFamily){
+		if(type == *it){
+			return it;
+		}
+	}
+
+
+	auto result = new Type(type);
+	currentScope->declareType(result);
+	return result;
 }
 
 Type* BasicScope::resolveType(const Type &type){
@@ -131,7 +154,8 @@ Type* BasicScope::resolveType(const Type &type){
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
 			//auto tmp
-			return resolveModifiedType(type);
+			//return resolveModifiedType(type);
+			return currentScope->getUnqualifiedType(name);
 		}
 		currentScope = currentScope->getParentScope();
 	}
@@ -279,7 +303,7 @@ void BasicScope::addVariable(string name, VariableSymbol *variable){
 }
 
 void BasicScope::addType(string name, Type *type){
-	this->types[name] = type;
+	this->types[name].push_back(type);
 }
 
 void BasicScope::addNamedScope(string name, AbstractScope *scope){

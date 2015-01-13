@@ -1081,8 +1081,6 @@ bool Parser::isModifier(){
 		currentToken == Token(Token::KEYWORD, "signed")
 		||
 		currentToken == Token(Token::KEYWORD, "unsigned")
-		||
-		currentToken == Token(Token::KEYWORD, "const")
 	;
 }
 
@@ -1667,7 +1665,8 @@ BasicNode* Parser::getOperator(){
 	}
 
 
-	if(currentToken.typeEqualsTo(Token::KEYWORD) && currentToken != Token(Token::KEYWORD, "else")){
+	if(currentToken.typeEqualsTo(Token::KEYWORD) && currentToken != Token(Token::KEYWORD, "else") 
+		&& !isModifier() && !isStorageMode()){
 		throw ParserException("Strange keyword '" + currentToken.getText() + "' ", currentToken.getPosition());
 	}
 

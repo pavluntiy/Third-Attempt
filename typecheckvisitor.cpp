@@ -109,7 +109,7 @@ void TypeVisitor::visit(ValueNode *node){
 
 void TypeVisitor::visit(VarDeclarationNode *node){
 	
-	Type *type = this->currentScope->resolveType(new Type(node->getType()));
+	Type *type = this->currentScope->resolveModifiedType(Type(node->getType()));
 	node->getType()->setSymbol(type);
 
 	for(auto it: node->getVariables()){
@@ -141,7 +141,7 @@ void TypeVisitor::visit(SignatureNode *node){
 
 
 
-	Type* returnType = currentScope->resolveType(Type(node->getType()));
+	Type* returnType = currentScope->resolveModifiedType(Type(node->getType()));
 	node->getType()->setSymbol(returnType);
 	//node->getType()->setSymbol(functionType->getReturnType());
 	functionType->setReturnType(returnType);

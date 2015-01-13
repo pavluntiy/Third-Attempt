@@ -29,16 +29,21 @@ public:
 	Type();
 	Type(TypeNode*);
 
-	vector<string>& getStorageModes();
-	vector<string>& getModifiers();
-	vector<string>& getAccessModes();
-	vector<int>& getDimensions();
+	const vector<string>& getStorageModes() const;
+	const vector<string>& getModifiers() const;
+	const vector<string>& getAccessModes() const;
+	const vector<int>& getDimensions() const;
 	bool isUnqualified();
 
 	const vector<string>& getFullName() const;
 	virtual string toString(string shift = "") override;
 
+	bool operator==(const Type &other) const;
+	bool operator==(Type *other) const;
+
 };
+
+// bool operator==(Type *a, Type *b);
 
 
 #endif

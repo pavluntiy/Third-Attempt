@@ -39,22 +39,84 @@ const vector<string>& Type::getFullName()const {
 	return this->fullName;
 }
 
-vector<string>& Type::getStorageModes(){
+const vector<string>& Type::getStorageModes()const{
 	return this->storageModes;
 }
 
-vector<string>& Type::getModifiers(){
+const vector<string>& Type::getModifiers()const{
 	return this->modifiers;
 }
 
-vector<string>& Type::getAccessModes(){
+const vector<string>& Type::getAccessModes()const{
 	return this->accessModes;
 }
 
-vector<int>& Type::getDimensions(){
+const vector<int>& Type::getDimensions()const{
 	return this->dimensions;
 }
 
+bool Type::operator==(const Type &other)
+const{
+	if(this->name != other.name){
+		return false;
+	}
+
+	auto otherStorageModes = other.getStorageModes();
+	if(this->storageModes.size() != otherStorageModes.size()){
+		return false;
+	}
+
+	for(int i = 0; i < this->storageModes.size(); ++i){
+		if(this->storageModes[i] != otherStorageModes[i]){
+			return false;
+		}
+	}
+
+	auto otherModifiers = other.getModifiers();
+	if(this->modifiers.size() != otherModifiers.size()){
+		return false;
+	}
+
+	for(int i = 0; i < this->modifiers.size(); ++i){
+		if(this->modifiers[i] != otherModifiers[i]){
+			return false;
+		}
+	}
+
+	auto otherAccessModes = other.getAccessModes();
+	if(this->accessModes.size() != otherAccessModes.size()){
+		return false;
+	}
+
+	for(int i = 0; i < this->accessModes.size(); ++i){
+		if(this->accessModes[i] != otherAccessModes[i]){
+			return false;
+		}
+	}
+
+	auto otherDimensions = other.getDimensions();
+	if(this->dimensions.size() != otherDimensions.size()){
+		return false;
+	}
+
+	for(int i = 0; i < this->dimensions.size(); ++i){
+		if(this->dimensions[i] != otherDimensions[i]){
+			return false;
+		}
+	}
+
+	return this->name == other.getName();
+
+}
+
+bool Type::operator==(Type *other)
+const{
+	return *this == *other;
+}
+
+bool Type::isUnqualified(){
+	return this->unqualified;
+}
 
 string Type::toString(string shift){
 	stringstream result;
@@ -77,3 +139,7 @@ string Type::toString(string shift){
 	result << " at " << this;
 	return result.str();
 }
+
+// bool operator==(Type *a, Type *b){
+// 	return *a == *b;
+// }

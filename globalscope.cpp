@@ -17,7 +17,9 @@ void GlobalScope::dump(ostream *out, string shift){
 
 	*out << shift << "\tTypes:\n";
 	for(auto it: this->types){
-		*out << shift << "\t\t" << it.second->toString() << "\n";
+		for(auto it2: it.second){
+			*out << shift << "\t\t" << it2->toString() << "\n";
+		}
 	}
 
 	*out << "\tFunctions:\n";
