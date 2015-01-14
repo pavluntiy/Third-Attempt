@@ -143,3 +143,22 @@ string Type::toString(string shift){
 // bool operator==(Type *a, Type *b){
 // 	return *a == *b;
 // }
+
+// void Type::tryToAddConversion(FunctionSymbol *function){
+
+// 	if(function->getReturnType() != this){
+// 		return;
+// 	}
+
+// 	if(function->getArguments().size() != 1){
+// 		return;
+// 	}
+
+// 	this->convertTo[function->getArguments()[0]] = function;
+
+// }
+
+void Type::addConversion(Type *type, FunctionSymbol *function){
+	cout << "ADDED "  << " to " << type << " with " << function << "\n";
+	convertTo[type] = function;
+}

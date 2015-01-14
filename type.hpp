@@ -5,6 +5,7 @@
 #include "basicsymbol.hpp"
 
 
+class FunctionSymbol;
 class Type: public BasicSymbol {
 protected:
 	//Type *parentType;
@@ -18,7 +19,7 @@ protected:
 	string name;
 	int size;
 
-	map<Type, string> convertTo;
+	map<Type*, FunctionSymbol*> convertTo;
 	bool unqualified;
 
 public:
@@ -40,6 +41,9 @@ public:
 
 	bool operator==(const Type &other) const;
 	bool operator==(Type *other) const;
+
+	//void tryToAddConversion(FunctionSymbol *function);
+	void addConversion(Type *type, FunctionSymbol *function);
 
 };
 

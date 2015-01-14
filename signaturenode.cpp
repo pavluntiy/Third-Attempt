@@ -53,3 +53,19 @@ FunctionSymbol* SignatureNode::getFunctionSymbol(){
 void SignatureNode::setFunctionSymbol(FunctionSymbol *functionSymbol){
 	this->functionSymbol = functionSymbol;
 }
+
+void SignatureNode::setConstruct(){
+	this->functionType = SpecialType::CONSTRUCT;
+}
+
+void SignatureNode::setDestruct(){
+	this->functionType = SpecialType::DESTRUCT;
+}
+
+bool SignatureNode::isConstruct(){
+	return this->functionType == SpecialType::CONSTRUCT;
+}
+
+bool SignatureNode::isDestruct(){
+		return this->functionType == SpecialType::DESTRUCT;
+}

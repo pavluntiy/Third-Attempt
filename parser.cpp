@@ -1211,12 +1211,17 @@ BasicNode* Parser::getSignature(){
 			typeTmp->addName(typeNameTmp);
 			result->setType(typeTmp);
 
-			auto tmpName = dynamic_cast<CompoundNameNode*>(getCompoundName());
+			TypeNode *destroyType = dynamic_cast<TypeNode*>(getType());
+			//auto tmpName = dynamic_cast<CompoundNameNode*>(getCompoundName());
+			auto tmpName = destroyType->getName();
 			string lastName = tmpName->getSimpleName();
+			lastName = destroyType->getMangledQualifiers() + lastName;
 			tmpName->popName();
 			lastName += "#destruct";
 			tmpName->addName(lastName);
 			result->setName(tmpName);
+			delete destroyType;
+			result->setDestruct();
 		}
 		else{
 			result->setType(dynamic_cast<TypeNode*>(getType()));
@@ -1224,10 +1229,12 @@ BasicNode* Parser::getSignature(){
 			if(!currentToken.typeEqualsTo(Token::NAME) && currentToken != Token(Token::KEYWORD, "operator")){
 				auto tmp = new CompoundNameNode(*result->getType()->getName());
 				string lastName = tmp->getSimpleName();
+				lastName = result->getType()->getMangledQualifiers() + lastName;
 				tmp->popName();
 				lastName += "#construct";
 				tmp->addName(lastName);
 				result->setName(tmp);
+				result->setConstruct();
 			}
 			else{
 				result->setName(dynamic_cast<CompoundNameNode*>(getCompoundName()));

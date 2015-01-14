@@ -59,3 +59,37 @@ void TypeNode::addName(CompoundNameNode *what){
 // void TypeNode::setTypeSymbol(Type *type){
 // 	this->type = type;
 // }
+
+string TypeNode::getMangledQualifiers(){
+	stringstream result;
+
+
+	for(auto it: storageModes){
+		result << it << "_";
+	}
+	if(storageModes.size() > 0){
+		result << "#";
+	}
+
+	for(auto it: modifiers){
+		result << it << "_";
+	}
+	if(modifiers.size() > 0){
+		result << "#";
+	}
+
+	for(auto it: accessModes){
+		result << it << "_";
+	}
+	if(accessModes.size() > 0){
+		result << "#";
+	}
+
+	for(auto it: dimensions){
+		result << it << "_";
+	}
+	if(dimensions.size() > 0){
+		result << "#";
+	}
+	return result.str();
+}

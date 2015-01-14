@@ -41,6 +41,7 @@ public:
 	TypeNode(Position position);
 	TypeNode();
 
+	string getMangledQualifiers();
 
 };
 

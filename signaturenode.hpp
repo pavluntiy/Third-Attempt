@@ -10,7 +10,13 @@ class FunctionSymbol;
 class SignatureNode: public BasicNode {
 public:
 	typedef tuple<TypeNode*, CompoundNameNode*, BasicNode*> ArgumentType;
+	enum class SpecialType{
+		NONE,
+		CONSTRUCT,
+		DESTRUCT
+	};
 protected:
+	SpecialType functionType;
 	TypeNode *type;
 	CompoundNameNode *name;
 	vector<ArgumentType> arguments;
@@ -37,6 +43,12 @@ public:
 
 	SignatureNode(Position position);
 	SignatureNode();
+
+	void setConstruct();
+	void setDestruct();
+
+	bool isConstruct();
+	bool isDestruct();
 
 
 };

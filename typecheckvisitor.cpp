@@ -180,7 +180,15 @@ void TypeVisitor::visit(SignatureNode *node){
 	 	// }
 	}	
 
+
+
 	currentScope->declareFunction(function);
+	if(node->isConstruct()){
+		if(function->getArguments().size() == 1){
+			returnType->addConversion(function->getArguments()[0], function);
+		}
+	}
+
 	//node->setFunctionSymbol(function);
 	node->setSymbol(function);
 	restoreCurrentScope();
