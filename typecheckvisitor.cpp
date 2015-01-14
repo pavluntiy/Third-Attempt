@@ -110,6 +110,7 @@ void TypeVisitor::visit(ValueNode *node){
 void TypeVisitor::visit(VarDeclarationNode *node){
 	
 	Type *type = this->currentScope->resolveModifiedType(Type(node->getType()));
+	//cout <<"Nanana!";
 	node->getType()->setSymbol(type);
 
 	for(auto it: node->getVariables()){
@@ -164,7 +165,7 @@ void TypeVisitor::visit(SignatureNode *node){
 	node->setFunctionSymbol(function);
 
 	for(auto it: node->getArguments()){
-		auto currentType = currentScope->resolveType(Type(get<0>(it)));
+		auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));
 		get<0>(it)->setSymbol(currentType);
 		function->addArgument(currentType);
 		functionType->addArgument(currentType);

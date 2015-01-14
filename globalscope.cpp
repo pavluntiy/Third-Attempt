@@ -15,30 +15,14 @@ GlobalScope::GlobalScope():BasicScope(nullptr, "global")
 void GlobalScope::dump(ostream *out, string shift){
 	*out << shift << "Global Scope:\n";
 
-	*out << shift << "\tTypes:\n";
-	for(auto it: this->types){
-		for(auto it2: it.second){
-			*out << shift << "\t\t" << it2->toString() << "\n";
-		}
-	}
+	dumpTypes(out, shift);
 
-	*out << "\tFunctions:\n";
-	for(auto it: this->functions){
-		*out << "\t\t" << it.second->toString() << "\n";
-		*out << "\t\t" << it.second->argumentsToString() << "\n";
-		it.second->getFunctionScope()->dump(out, shift + "\t\t");
-	}
+	dumpFunctions(out, shift);
 
-	*out << "\tVariables:\n";
-	for(auto it: this->variables){
-		*out << "\t\t" << it.second->toString() << "\n";
-	}
+	dumpVariables(out, shift);
 
-	*out << "\tStructures:\n";
-	for(auto it: this->structures){
-		*out << "\t\t" << it.second->toString()<< "\n";
-		it.second->getStructureScope()->dump(out, shift + "\t\t");
-	}
+	dumpStructures(out, shift);
+	
 
 	*out << "end of global scope;\n" << shift << "=====\n";
 

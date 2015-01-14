@@ -11,18 +11,9 @@ void FunctionScope::declareStructure(StructureSymbol *structure){
 void FunctionScope::dump(ostream *out, string shift){
 	*out << shift << "Scope of function '" << this->getName() << "':\n";
 
+	dumpFunctions(out, shift);
 
-	*out << shift << "\tFunctions:\n";
-	for(auto it: this->functions){
-		*out << shift <<"\t\t" << it.first << "\n";
-		*out << shift << "\t\t" << it.second->toString() << "\n";
-		it.second->getFunctionScope()->dump(out, shift + "\t\t");
-	}
-
-	*out << shift << "\tVariables:\n";
-	for(auto it: this->variables){
-		*out << shift <<"\t\t" << it.second->toString() << "\n";
-	}
+	dumpVariables(out, shift);
 
 	*out << shift <<  "end of function scope '" << this->getName() << "';\n" << shift << "=====\n";
 }

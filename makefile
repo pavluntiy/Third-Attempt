@@ -19,7 +19,7 @@ SOURCES=header.cpp alphabet.cpp\
 	parser.cpp\
 	\
 	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp structuresymbol.cpp\
-	type.cpp functiontype.cpp\
+	type.cpp functiontype.cpp functioncallsymbol.cpp\
 	\
 	typecheckvisitor.cpp\
 	basicscope.cpp globalscope.cpp functionscope.cpp structurescope.cpp localscope.cpp\

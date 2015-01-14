@@ -65,6 +65,8 @@ int
 x
 }
 
+Point[100] somePoint1, somePoint2, somePoint3;
+
 
 
 

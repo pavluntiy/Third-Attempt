@@ -25,7 +25,8 @@ map<string, vector<Type*> >& BasicScope::getTypes(){
 	return this->types;
 }
 
-map<string, FunctionSymbol*>& BasicScope::getFunctions(){
+//map<string, FunctionSymbol*>& BasicScope::getFunctions(){
+map<string, vector<FunctionSymbol*>>& BasicScope::getFunctions(){
 	return this->functions;
 }
 
@@ -54,7 +55,7 @@ FunctionSymbol* BasicScope::resolveFunction(CompoundNameNode *name){
 	string simpleName = name->getSimpleName();
 	while(currentScope != nullptr){
 		if(currentScope->getFunctions().count(simpleName)){
-			return currentScope->getFunctions()[simpleName];
+			return currentScope->getFunctions()[simpleName][0];
 		}
 		currentScope = currentScope->getParentScope();
 	}
@@ -118,8 +119,9 @@ StructureSymbol* BasicScope::resolveStructure(const string &name){
 }
 
 Type* BasicScope::resolveModifiedType(const Type &type){
+	//cout << "ololo" << endl;
 	string name = type.getName();
-	AbstractScope *currentScope = this;//->resolveNamedScope(type.getFullName());
+	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
 
 
 
@@ -144,7 +146,7 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 
 
 	auto result = new Type(type);
-	currentScope->declareType(result);
+	currentScope->addType(result->getName(), result);
 	return result;
 }
 
@@ -275,7 +277,7 @@ BasicSymbol* BasicScope::resolve(string name){
 	}
 
 	if(isFunction(name)){
-		return this->functions[name];
+		return this->functions[name][0];
 	}
 
 	if(isStructure(name)){
@@ -294,7 +296,7 @@ BasicSymbol* BasicScope::resolve(string name){
 
 
 void BasicScope::addFunction(string name, FunctionSymbol *function){
-	this->functions[name] = function;
+	this->functions[name].push_back(function);
 }
 
 
@@ -303,6 +305,7 @@ void BasicScope::addVariable(string name, VariableSymbol *variable){
 }
 
 void BasicScope::addType(string name, Type *type){
+
 	this->types[name].push_back(type);
 }
 
@@ -353,7 +356,7 @@ void BasicScope::declareType(Type *type){
 	string name = type->getName();
 
 	if(this->isDefined(name)){
-		throw NoticeException("Type '" + name + "' redeclaration!");
+		throw NoticeException("Type '" + name + "' redeclaration #1!");
 	}
 
 	addType(name, type);
@@ -392,4 +395,40 @@ void BasicScope::declareNamedScope(AbstractScope *scope){
 
 	//this->namedScopes[name] = scope;
 	addNamedScope(name, scope);
+}
+
+void BasicScope::dumpFunctions(ostream *out, string shift){
+	*out << "\tFunctions:\n";
+	for(auto it: this->functions){
+		for(auto it2: it.second){
+			*out << "\t\t" << it2->toString() << "\n";
+			*out << "\t\t" << it2->argumentsToString() << "\n";
+			it2->getFunctionScope()->dump(out, shift + "\t\t");
+		}
+	}
+
+}
+
+void BasicScope::dumpVariables(ostream *out, string shift){
+	*out << "\tVariables:\n";
+	for(auto it: this->variables){
+		*out << "\t\t" << it.second->toString() << "\n";
+	}
+}
+
+void BasicScope::dumpStructures(ostream *out, string shift){
+	*out << "\tStructures:\n";
+	for(auto it: this->structures){
+		*out << "\t\t" << it.second->toString()<< "\n";
+		it.second->getStructureScope()->dump(out, shift + "\t\t");
+	}
+}
+
+void BasicScope::dumpTypes(ostream *out, string shift){
+	*out << shift << "\tTypes:\n";
+	for(auto it: this->types){
+		for(auto it2: it.second){
+			*out << shift << "\t\t" << it2->toString() << "\n";
+		}
+	}
 }

@@ -35,7 +35,7 @@ public:
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
 	//virtual map<string, Type*>& getTypes() override;
 	virtual map<string, vector<Type*>>& getTypes() override;
-	virtual map<string, FunctionSymbol*>& getFunctions() override;
+	virtual map<string, vector<FunctionSymbol*>>& getFunctions() override;
 	virtual map<string, VariableSymbol*>& getVariables() override;
 	virtual map<string, StructureSymbol*>& getStructures() override;
 
@@ -55,6 +55,10 @@ public:
 	virtual AbstractScope* getParentScope() override;
 
 	virtual void dump(ostream *out, string shift = "") = 0;
+	virtual void dumpFunctions(ostream *out, string shift = "") override;
+	virtual void dumpVariables(ostream *out, string shift = "") override;
+	virtual void dumpStructures(ostream *out, string shift = "") override;
+	virtual void dumpTypes(ostream *out, string shift = "") override;
 
 	BasicScope();
 	BasicScope(AbstractScope *, string name = "");
@@ -65,11 +69,11 @@ public:
 	virtual bool isStructure(string name) override;
 	virtual bool isNamedScope(string name) override;
 
-	void addFunction(string name, FunctionSymbol *function);
-	void addVariable(string name, VariableSymbol *variable);
-	void addType(string name, Type *type);
-	void addNamedScope(string name, AbstractScope *scope);
-	void addStructure(string name, StructureSymbol *structure);
+	virtual void addFunction(string name, FunctionSymbol *function) override;
+	virtual void addVariable(string name, VariableSymbol *variable) override;
+	virtual void addType(string name, Type *type) override;
+	virtual void addNamedScope(string name, AbstractScope *scope) override;
+	virtual void addStructure(string name, StructureSymbol *structure) override;
 
 };
 

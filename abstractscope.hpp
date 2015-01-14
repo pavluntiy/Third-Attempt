@@ -20,8 +20,8 @@ map<string, AbstractScope*> namedScopes;
 vector<AbstractScope*> anonymousScopes;
 //map<string, Type*> types;
 map<string, vector<Type*> > types;
-//map<string, vector<FunctionSymbol>> functions;
-map<string, FunctionSymbol*> functions;
+map<string, vector<FunctionSymbol*>> functions;
+//map<string, FunctionSymbol*> functions;
 map<string, VariableSymbol*> variables;
 map<string, StructureSymbol*> structures;
 
@@ -46,7 +46,8 @@ public:
 
 	virtual map<string, vector<Type*>>& getTypes() = 0;
 	//virtual map<string, Type*>& getTypes() = 0;
-	virtual map<string, FunctionSymbol*>& getFunctions() = 0;
+	//virtual map<string, FunctionSymbol*>& getFunctions() = 0;
+	virtual map<string, vector<FunctionSymbol*>>& getFunctions() = 0;
 	virtual map<string, VariableSymbol*>& getVariables() = 0;
 	virtual map<string, AbstractScope*>& getNamedScopes() = 0;
 	virtual vector<AbstractScope*>& getAnonymousScopes() = 0;
@@ -69,11 +70,22 @@ public:
 	virtual AbstractScope* getParentScope() = 0;
 
 	virtual void dump(ostream *out, string shift = "") = 0;
+	virtual void dumpFunctions(ostream *out, string shift = "") = 0;
+	virtual void dumpVariables(ostream *out, string shift = "") = 0;
+	virtual void dumpStructures(ostream *out, string shift = "") = 0;
+	virtual void dumpTypes(ostream *out, string shift = "") = 0;
 	virtual bool isDefined(string name) = 0 ;
 	virtual bool isFunction(string name) = 0;
 	virtual bool isVariable(string name) = 0;
 	virtual bool isStructure(string name) = 0;
 	virtual bool isNamedScope(string name) = 0;
+
+
+	virtual void addFunction(string name, FunctionSymbol *function) = 0;
+	virtual void addVariable(string name, VariableSymbol *variable) = 0;
+	virtual void addType(string name, Type *type) = 0;
+	virtual void addNamedScope(string name, AbstractScope *scope) = 0;
+	virtual void addStructure(string name, StructureSymbol *structure) = 0;
 
 
 };

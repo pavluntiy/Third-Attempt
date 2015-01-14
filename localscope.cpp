@@ -25,10 +25,7 @@ LocalScope::LocalScope(AbstractScope *parentScope, string name):BasicScope(paren
 void LocalScope::dump(ostream *out, string shift){
 	*out << shift << "Local scope " << this->getName() << ":\n";
 
-	*out << shift << "\tVariables:\n";
-	for(auto it: this->variables){
-		*out << shift << "\t\t" << it.second->toString() << "\n";
-	}
+	dumpVariables(out, shift);
 
 	*out << shift << "end of local scope;\n" << shift << "=====\n";
 
