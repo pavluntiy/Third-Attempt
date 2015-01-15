@@ -8,7 +8,9 @@
 #include "basicsymbol.hpp"
 #include "abstractscope.hpp"
 #include "functiontype.hpp"
+#include "functionsymbol.hpp"
 
+//class FunctionSymbol;
 class FunctionScope;
 class FunctionCallSymbol: public BasicSymbol{
 
@@ -29,6 +31,8 @@ public:
 
 	string toString(string shift = "");
 	string argumentsToString(string shift = "");
+
+	bool exactlyEquals(FunctionSymbol *);
 
 	FunctionCallSymbol();
 

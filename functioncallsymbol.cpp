@@ -28,6 +28,21 @@ string FunctionCallSymbol::toString(string shift){
 	return result.str();
 }
 
+bool FunctionCallSymbol::exactlyEquals(FunctionSymbol *candidate){
+	auto otherArgs = candidate->getArguments();
+	if(this->arguments.size() != otherArgs.size()){
+		return false;
+	}
+
+	for(int i = 0; i < this->arguments.size(); ++i){
+		if(this->arguments[i] != otherArgs[i]){
+			return false;
+		}
+	}
+
+	return true;
+}
+
 string FunctionCallSymbol::argumentsToString(string shift){
 	stringstream result;
 

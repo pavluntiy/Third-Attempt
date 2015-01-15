@@ -37,5 +37,13 @@ BasicSymbol::BasicSymbol(Position position){
 	this->position = position;
 }
 
+CompoundNameNode* BasicSymbol::getFullName(){
+	return this->fullName;
+}
+
+void BasicSymbol::setFullName(CompoundNameNode *name){
+	this->fullName = name;
+}
+
 
 

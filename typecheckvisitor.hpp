@@ -25,6 +25,7 @@
 #include "functiontype.hpp"
 #include "functionsymbol.hpp"
 #include "functioncallsymbol.hpp"
+#include "valuesymbol.hpp"
 
 #include "functionscope.hpp"
 #include "globalscope.hpp"

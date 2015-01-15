@@ -10,6 +10,7 @@ class FunctionSymbol;
 class VariableSymbol;
 class Type;
 class StructureSymbol;
+class FunctionCallSymbol;
 
 
 class AbstractScope {
@@ -37,6 +38,9 @@ public:
 	virtual Type* resolveType(CompoundNameNode*) = 0;
 	virtual Type* resolveType(Type*) = 0;
 	virtual Type* resolveType(const Type&) = 0;
+	virtual Type* resolveType(string) = 0;
+	virtual FunctionSymbol* resolveFunction(FunctionSymbol* function) = 0;
+	virtual FunctionSymbol* resolveFunctionCall(FunctionCallSymbol*) = 0;
 	virtual Type* getUnqualifiedType(string name) = 0;
 	virtual StructureSymbol* resolveStructure(const string &name) = 0;
 
@@ -50,6 +54,7 @@ public:
 	virtual map<string, vector<FunctionSymbol*>>& getFunctions() = 0;
 	virtual map<string, VariableSymbol*>& getVariables() = 0;
 	virtual map<string, AbstractScope*>& getNamedScopes() = 0;
+	virtual vector<FunctionSymbol*> getOverloadedFunctionList(CompoundNameNode *) = 0;
 	virtual vector<AbstractScope*>& getAnonymousScopes() = 0;
 	virtual map<string, StructureSymbol*>& getStructures() = 0;
 

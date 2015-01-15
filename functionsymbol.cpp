@@ -85,3 +85,18 @@ Position FunctionSymbol::getDefinitionPosition(){
 void FunctionSymbol::setDefinitionPosition(Position position){
 	this->definitionPosition = position;
 }
+
+bool FunctionSymbol::exactlyEquals(FunctionSymbol *candidate){
+	auto otherArgs = candidate->getArguments();
+	if(this->arguments.size() != otherArgs.size()){
+		return false;
+	}
+
+	for(int i = 0; i < this->arguments.size(); ++i){
+		if(this->arguments[i] != otherArgs[i]){
+			return false;
+		}
+	}
+
+	return true;
+}

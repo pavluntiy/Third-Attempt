@@ -53,11 +53,20 @@ void TypeVisitor::visit(CompoundNameNode *node){
 
 void TypeVisitor::visit(FunctionCallNode *node){
 
-	node->setSymbol(currentScope->resolveFunction( dynamic_cast<CompoundNameNode*>(node->getFunctionName())));//Provisional
+	//node->setSymbol(currentScope->resolveFunction( dynamic_cast<CompoundNameNode*>(node->getFunctionName())));//Provisional
+
+	auto functionCall = new FunctionCallSymbol();
+
+	functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
 
 	for(auto it: node->getFunctionArgs()){
 		it->accept(this);
+		functionCall->addArgument(it->getSymbol()->getType());
 	}
+
+	node->setSymbol(currentScope->resolveFunctionCall(functionCall));
+
+	//node->setType(currentScope->resolveType("int"));
 }
 
 void TypeVisitor::visit(DotNode *node){
@@ -73,25 +82,20 @@ void TypeVisitor::visit(TypeNode *node){
 
 void TypeVisitor::visit(ValueNode *node){
 
+	auto valueSymbol = new ValueSymbol(node->getText());
 	switch(node->getType()){
 		case ValueNode::Type::INT: {
-			auto type = new CompoundNameNode("int");
-			node->setSymbol(currentScope->resolveType(type)); 
-			delete type;
+			valueSymbol->setType(currentScope->resolveType("int"));
 		}	
 		break;
 
 		case ValueNode::Type::FLOAT: {
-			auto type = new CompoundNameNode("float");
-			node->setSymbol(currentScope->resolveType(type)); 
-			delete type;
+			valueSymbol->setType(currentScope->resolveType("float"));
 		}	
 		break;
 
 		case ValueNode::Type::CHAR: {
-			auto type = new CompoundNameNode("char");
-			node->setSymbol(currentScope->resolveType(type)); 
-			delete type;
+			valueSymbol->setType(currentScope->resolveType("char"));
 		}	
 		break;
 
@@ -104,7 +108,8 @@ void TypeVisitor::visit(ValueNode *node){
 
 		default: throw TypeException("What is it!?", node->getPosition());
 	}
-
+		
+	node->setSymbol(valueSymbol); 
 }
 
 void TypeVisitor::visit(VarDeclarationNode *node){
@@ -150,6 +155,7 @@ void TypeVisitor::visit(SignatureNode *node){
 	//node->setType(functionType);
 
 	FunctionSymbol *function = new FunctionSymbol();
+	function->setFullName(node->getName());
 	//function->setReturnType(returnType);
 	function->setPosition(node->getPosition());
 

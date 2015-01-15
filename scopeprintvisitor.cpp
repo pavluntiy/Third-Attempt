@@ -57,8 +57,8 @@ void ScopePrintVisitor::visit(CompoundNameNode *node){
 }
 
 void ScopePrintVisitor::visit(FunctionCallNode *node){
-	cout << node->getSymbol()->getType()->toString();
-	return;
+	// cout << node->getSymbol()->getType()->toString();
+	// return;
 
 	*this->out << shift << "(" << node->toString() << endl;
 	this->shift.push_back('\t');

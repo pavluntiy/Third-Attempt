@@ -14,6 +14,7 @@
 #include "variablesymbol.hpp"
 #include "type.hpp"
 #include "structuresymbol.hpp"
+#include "functioncallsymbol.hpp"
 
 class BasicScope: public AbstractScope{
 public:
@@ -25,6 +26,9 @@ public:
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
 	virtual Type* resolveType(const Type&) override;
+	virtual Type* resolveType(string) override;
+	virtual FunctionSymbol* resolveFunction(FunctionSymbol* function) override;
+	virtual FunctionSymbol* resolveFunctionCall(FunctionCallSymbol*) override;
 	virtual Type* getUnqualifiedType(string name) override;
 	virtual StructureSymbol* resolveStructure(const string &name) override;
 
@@ -35,6 +39,7 @@ public:
 	virtual map<string, AbstractScope*>& getNamedScopes()override;
 	//virtual map<string, Type*>& getTypes() override;
 	virtual map<string, vector<Type*>>& getTypes() override;
+	virtual vector<FunctionSymbol*> getOverloadedFunctionList(CompoundNameNode *) override;
 	virtual map<string, vector<FunctionSymbol*>>& getFunctions() override;
 	virtual map<string, VariableSymbol*>& getVariables() override;
 	virtual map<string, StructureSymbol*>& getStructures() override;

@@ -39,6 +39,8 @@ public:
 	string toString(string shift = "");
 	string argumentsToString(string shift = "");
 
+	bool exactlyEquals(FunctionSymbol *);
+
 	FunctionSymbol();
 
 

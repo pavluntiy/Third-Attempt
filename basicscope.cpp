@@ -105,6 +105,18 @@ Type* BasicScope::resolveType(Type *type){
 	throw NoticeException("Undeclared type'"+ name + "'!");
 }
 
+Type* BasicScope::resolveType(string name){
+	AbstractScope *currentScope = this;
+	while(currentScope != nullptr){
+		if(currentScope->getTypes().count(name)){
+			return currentScope->getUnqualifiedType(name);
+		}
+		currentScope = currentScope->getParentScope();
+	}
+
+	throw NoticeException("Undeclared unqualified type!");
+}
+
 StructureSymbol* BasicScope::resolveStructure(const string &name){
 
 	AbstractScope *currentScope = this;
@@ -116,6 +128,56 @@ StructureSymbol* BasicScope::resolveStructure(const string &name){
 	}
 	
 	throw NoticeException("Undeclared structure;'"+ name + "'!");
+}
+
+vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *name){
+	//cout << this << "::";
+	AbstractScope *currentScope = resolveNamedScope(name);
+	//cout << currentScope << "\n";
+	string simpleName = name->getSimpleName();
+	//cout << currentScope->getName() << "\n";
+	//cout << simpleName << currentScope->getFunctions().count(simpleName) << '\n';
+	while(currentScope != nullptr){
+		if(currentScope->getFunctions().count(simpleName)){
+			return currentScope->getFunctions()[simpleName];
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	throw NoticeException("Undeclared overloaded functions '"+ simpleName + "'!");
+}
+
+FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall){
+	try{
+		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
+		for(auto it: functionList){
+		if(functionCall->exactlyEquals(it)){
+			return it;
+		}
+	}
+	}
+	catch(NoticeException& ne){
+		cout << functionCall->argumentsToString() << endl;
+	}
+
+	
+
+	throw NoticeException("No acceptable overload found for function " + functionCall->getFullName()->getSimpleName());
+}
+
+FunctionSymbol* BasicScope::resolveFunction(FunctionSymbol* function){
+	//cout << "asdfasdfassdfsdfsdf";
+	if(!this->isFunction(function->getName())){
+		return nullptr;
+	}
+	auto functionList = getOverloadedFunctionList(function->getFullName());
+
+	for(auto it: functionList){
+		if(function->exactlyEquals(it)){
+			return it;
+		}
+	}
+
+	return nullptr;
 }
 
 Type* BasicScope::resolveModifiedType(const Type &type){
@@ -256,6 +318,7 @@ bool BasicScope::isDefined(string name){
 }
 
 bool BasicScope::isFunction(string name){
+	//cout << name << "!!";
 	return this->functions.count(name);
 }
 
@@ -296,6 +359,7 @@ BasicSymbol* BasicScope::resolve(string name){
 
 
 void BasicScope::addFunction(string name, FunctionSymbol *function){
+	//cout << " added " << function->toString() << endl;
 	this->functions[name].push_back(function);
 }
 
@@ -321,23 +385,25 @@ void BasicScope::addStructure(string name, StructureSymbol *structure){
 
 
 void BasicScope::declareFunction(FunctionSymbol *function){
+	//cout << "Ololo!";
 	string name = function->getName();
+	if(this->isFunction(name)){	
+		//cout << "###__";
+		FunctionSymbol *tmp = dynamic_cast<FunctionSymbol*>(this->resolveFunction(function));
 
-	if(this->isFunction(name)){
-		FunctionSymbol *tmp = dynamic_cast<FunctionSymbol*>(this->resolve(name));
+		if(!tmp){
+			addFunction(name, function);
+		}
+		else
 		if(!tmp->isOnlyDeclared()){
 			throw NoticeException("Function '" + name + "' redeclaration, previously defined at " + tmp->getPosition().toString());
 		}
-		else {
-			//do some staff...
-			return;
-		}
+		return;
 	}
 
 	if(this->isDefined(name)){
 		throw NoticeException("Trying to redeclare '" + name + "' as function!");
 	}
-
 
 	addFunction(name, function);
 }

@@ -8,6 +8,7 @@
 
 class Type;
 class BasicScope;
+class CompoundNameNode;
 
 class BasicSymbol {
 protected:
@@ -16,6 +17,8 @@ protected:
 	Type *type;
 	BasicScope *definitionScope;
 	Position position;
+	CompoundNameNode *fullName;
+
 
 public:
 	virtual void setName(string name);
@@ -30,6 +33,9 @@ public:
 	//virtual bool operator== (const BasicSymbol &b) const;
 	virtual string toString(string shift = "") = 0;
 	BasicSymbol(Position position = {0, 0});
+
+	CompoundNameNode *getFullName();
+	void setFullName(CompoundNameNode *name);
 };
 
 //
