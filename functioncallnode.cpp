@@ -21,7 +21,7 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 	}
 
 
-	void FunctionCallNode::addArg(BasicNode *node){
+	void FunctionCallNode::addArgument(BasicNode *node){
 		this->functionArgs.push_back(node);
 	}
 
@@ -34,3 +34,7 @@ void FunctionCallNode::accept(BasicVisitor *visitor){
 		this->functionName = new CompoundNameNode(token);
 		this->position = token.getPosition();
 	}
+
+void FunctionCallNode::replaceArgument(int index, BasicNode *node){
+	this->functionArgs[index] = node;
+}

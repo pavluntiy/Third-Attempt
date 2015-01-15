@@ -48,6 +48,14 @@ string FunctionSymbol::getFunctionLabel(){
 	return this->functionLabel;
 }
 
+bool FunctionSymbol::isVarargs(){
+	return this->varargs;
+}
+
+void FunctionSymbol::setVarargs(){
+	this->varargs = true;
+}
+
 string FunctionSymbol::toString(string shift){
 	stringstream result;
 
@@ -110,3 +118,4 @@ bool FunctionSymbol::exactlyEquals(FunctionSymbol *candidate){
 
 	return true;
 }
+

@@ -154,7 +154,7 @@ void ScopePrintVisitor::visit(SignatureNode *node){
  	//node->getType()->accept(this);
  	//node->getName()->accept(this);
 
- 	if(node->getVarargs()){
+ 	if(node->isVarargs()){
  		*this->out << shift << "VARARGS\n";
  	}
 

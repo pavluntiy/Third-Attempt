@@ -31,7 +31,7 @@ public:
 	TypeNode* getType();
 	CompoundNameNode* getName();
 	vector<ArgumentType>& getArguments();
-	bool getVarargs();
+	bool isVarargs();
 
 	void setVarargs();
 	void setType(TypeNode*);

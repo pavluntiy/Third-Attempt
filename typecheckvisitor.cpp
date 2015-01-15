@@ -65,6 +65,17 @@ void TypeVisitor::visit(FunctionCallNode *node){
 	}
 	functionCall->setFunction(currentScope->resolveFunctionCall(functionCall));
 
+	if(functionCall->getConversions().size() > 0){
+		auto conversions = functionCall->getConversions();
+		auto arguments = node->getFunctionArgs();
+		int bound = arguments.size();
+		for(int i = 0; i < bound; ++i){
+			if(conversions[i]){
+				node->replaceArgument(i, insertConversion(arguments[i], conversions[i]));
+			}
+		}
+	}
+
 	node->setSymbol(functionCall);
 
 
@@ -190,6 +201,9 @@ void TypeVisitor::visit(SignatureNode *node){
 	 	// }
 	}	
 
+	if(node->isVarargs()){
+		function->setVarargs();
+	}
 
 
 	currentScope->declareFunction(function);
@@ -359,4 +373,15 @@ void TypeVisitor::setCurrentScope(AbstractScope* scope){
 void TypeVisitor::restoreCurrentScope(){
 	currentScope = this->scopes.top();
 	this->scopes.pop();
+}
+
+FunctionCallNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *function){
+
+	auto *result = new FunctionCallNode();
+	result->addArgument(node);
+	auto *functionCall = new FunctionCallSymbol();
+	
+	functionCall->setFunction(function);
+	result->setSymbol(functionCall);
+	return result;
 }

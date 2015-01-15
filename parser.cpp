@@ -87,8 +87,8 @@ BasicNode* Parser::getCommaExpression(BasicNode *left){
 				commaFound = true;
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getAssignment());
+				op->addArgument(left);
+				op->addArgument(getAssignment());
 				return getCommaExpression(op);
 			}
 			else{
@@ -155,8 +155,8 @@ BasicNode* Parser::getAssignment(){
 			opName = currentToken.getText();
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
-			op->addArg(left);
-			op->addArg(getTernary());
+			op->addArgument(left);
+			op->addArgument(getTernary());
 			return op;
 		}
 		else{
@@ -187,14 +187,14 @@ BasicNode* Parser::getTernary(){
 			questionMarkFound = true;
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
-			op->addArg(cond);
-			op->addArg(getTernary());
+			op->addArgument(cond);
+			op->addArgument(getTernary());
 			thenBranchFound = true;
 			if(currentToken != Token(Token::OPERATOR, ":")){
 				throw ParserException("No 'else' branch found for ternary ", currentToken.getPosition());
 			}
 			get(Token::OPERATOR);
-			op->addArg(getTernary());
+			op->addArgument(getTernary());
 			return op;
 		}
 		else {
@@ -241,8 +241,8 @@ BasicNode* Parser::getInIsExpression(BasicNode *left){
 				opFound = true;
 				opName = currentToken.getText();
 				get(Token::KEYWORD);
-				op->addArg(left);
-				op->addArg(getLogicalOr());
+				op->addArgument(left);
+				op->addArgument(getLogicalOr());
 				//return getInIsExpression(op);
 				return op;
 			}
@@ -275,8 +275,8 @@ BasicNode* Parser::getLogicalOr(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getLogicalAnd());
+				op->addArgument(left);
+				op->addArgument(getLogicalAnd());
 				return getLogicalOr(op);
 			}
 			else{
@@ -309,8 +309,8 @@ BasicNode* Parser::getLogicalAnd(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getBitwiseOr());
+				op->addArgument(left);
+				op->addArgument(getBitwiseOr());
 				return getLogicalAnd(op);
 			}
 			else{
@@ -343,8 +343,8 @@ BasicNode* Parser::getBitwiseOr(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getBitwiseXor());
+				op->addArgument(left);
+				op->addArgument(getBitwiseXor());
 				return getBitwiseOr(op);
 			}
 			else{
@@ -373,8 +373,8 @@ BasicNode* Parser::getBitwiseXor(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getBitwiseAnd());
+				op->addArgument(left);
+				op->addArgument(getBitwiseAnd());
 				return getBitwiseXor(op);
 			}
 			else{
@@ -407,8 +407,8 @@ BasicNode* Parser::getBitwiseAnd(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getComparison());
+				op->addArgument(left);
+				op->addArgument(getComparison());
 				return getBitwiseAnd(op);
 			}
 			else{
@@ -452,8 +452,8 @@ BasicNode* Parser::getComparison(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getStrictComparison());
+				op->addArgument(left);
+				op->addArgument(getStrictComparison());
 				return getComparison(op);
 			}
 			else{
@@ -495,8 +495,8 @@ BasicNode* Parser::getStrictComparison(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getShift());
+				op->addArgument(left);
+				op->addArgument(getShift());
 				return getStrictComparison(op);
 			}
 			else{
@@ -540,8 +540,8 @@ BasicNode* Parser::getShift(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getExpr6());
+				op->addArgument(left);
+				op->addArgument(getExpr6());
 				return getShift(op);
 			}
 			else{
@@ -582,8 +582,8 @@ BasicNode* Parser::getExpr6(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getExpr7());
+				op->addArgument(left);
+				op->addArgument(getExpr7());
 				return getExpr6(op);
 			}
 			else{
@@ -626,8 +626,8 @@ BasicNode* Parser::getExpr7(BasicNode *left){
 				opName = currentToken.getText();
 				op = new FunctionCallNode(currentToken);
 				get(Token::OPERATOR);
-				op->addArg(left);
-				op->addArg(getExpr8());
+				op->addArgument(left);
+				op->addArgument(getExpr8());
 				return getExpr7(op);
 			}
 			else{
@@ -662,8 +662,8 @@ BasicNode* Parser::getExpr8(){
 			opName = currentToken.getText();
 			op = new FunctionCallNode(currentToken);
 			get(Token::OPERATOR);
-			op->addArg(left);
-			op->addArg(getExpr8());
+			op->addArgument(left);
+			op->addArgument(getExpr8());
 			return op;
 		}
 		else{
@@ -729,11 +729,11 @@ BasicNode* Parser::getFunctionCalls(BasicNode *left){
 					try{	
 							result = new FunctionCallNode(left);
 							result->setPosition(currentToken.getPosition());
-							result->addArg(getAssignment());
+							result->addArgument(getAssignment());
 							while(currentToken == Token(Token::OPERATOR, ",")){
 								get(Token::OPERATOR);
 								commaFound = true;
-								result->addArg(getAssignment());
+								result->addArgument(getAssignment());
 								commaFound = false;
 							}
 					}
@@ -778,8 +778,8 @@ BasicNode* Parser::getAccesses(BasicNode *left){
 					get(Token::BRACKET_LEFT);
 					result = new FunctionCallNode(Token(Token::OPERATOR, "[]"));
 					result->setPosition(currentToken.getPosition());
-					result->addArg(left);
-					result->addArg(getAccessArgs());
+					result->addArgument(left);
+					result->addArgument(getAccessArgs());
 					if(!currentToken.typeEqualsTo(Token::BRACKET_RIGHT)){
 						throw ParserException("Missed BRACKET_RIGHT at " + currentToken.getPosition().toString());
 					}
@@ -845,7 +845,7 @@ BasicNode* Parser::getExpr9Suffix(BasicNode *left){
 		op = new FunctionCallNode(tmpToken);
 		op->setPosition(currentToken.getPosition());
 		get(Token::OPERATOR);	
-		op->addArg(getExpr9Suffix(left));
+		op->addArgument(getExpr9Suffix(left));
 		return op;
 	}
 
@@ -881,7 +881,7 @@ BasicNode* Parser::getExpr9(){
 		opName = currentToken.getText();
 		get(Token::OPERATOR);
 		try{
-			op->addArg(getExpr9());
+			op->addArgument(getExpr9());
 			return op;
 		}
 		catch (NoticeException &ne){

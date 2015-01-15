@@ -44,6 +44,7 @@ public:
 
 	//void tryToAddConversion(FunctionSymbol *function);
 	void addConversion(Type *type, FunctionSymbol *function);
+	FunctionSymbol* getConversion(Type *type);
 
 };
 

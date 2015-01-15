@@ -21,12 +21,14 @@ public:
 
 	string transformOperators(const Token &token);
 
-	void addArg(BasicNode *node);
+	void addArgument(BasicNode *node);
 
 	FunctionCallNode(Position position);
 	FunctionCallNode();
 	FunctionCallNode(BasicNode *functionName);
 	FunctionCallNode(const Token &token);
+
+	void replaceArgument(int, BasicNode*);
 
 };
 

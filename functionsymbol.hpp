@@ -18,6 +18,7 @@ AbstractScope *functionScope;
 string functionLabel;
 Position definitionPosition;
 bool defined;
+bool varargs = false;
 public:
 
 	void setFunctionType(FunctionType *type);
@@ -43,6 +44,8 @@ public:
 	string argumentsToString(string shift = "");
 
 	bool exactlyEquals(FunctionSymbol *);
+	bool isVarargs();
+	void setVarargs();
 
 	FunctionSymbol();
 

@@ -60,6 +60,8 @@ public:
 	virtual void visit(DotNode *node) override;
 
 
+	FunctionCallNode* insertConversion(BasicNode*, FunctionSymbol*);
+
 	TypeVisitor();
 	virtual ~TypeVisitor() override;
 

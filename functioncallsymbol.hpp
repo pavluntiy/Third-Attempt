@@ -34,6 +34,9 @@ public:
 	string argumentsToString(string shift = "");
 
 	bool exactlyEquals(FunctionSymbol *);
+	bool conversionExists(FunctionSymbol *);
+
+	const vector<FunctionSymbol*>& getConversions();
 
 	FunctionCallSymbol();
 

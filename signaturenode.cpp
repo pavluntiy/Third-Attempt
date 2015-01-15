@@ -42,7 +42,7 @@ vector<SignatureNode::ArgumentType>& SignatureNode::getArguments(){
 	return this->arguments;
 }
 
-bool SignatureNode::getVarargs(){
+bool SignatureNode::isVarargs(){
 	return this->varargs;
 }
 

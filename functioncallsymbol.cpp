@@ -11,6 +11,7 @@ void FunctionCallSymbol::addArgument(Type *type){
 }
 
 void FunctionCallSymbol::setFunction(FunctionSymbol *function){
+	this->type = function->getReturnType();
 	this->function = function;
 }
 
@@ -29,7 +30,7 @@ Type* FunctionCallSymbol::getType(){
 string FunctionCallSymbol::toString(string shift){
 	stringstream result;
 
-	result << shift << "'" << this->getFullName()->getSimpleName() << "' ";
+	result << shift << "'" << this->getFunction()->toString() << "' ";
 	result << this->argumentsToString(shift) << '\n';
 
 	return result.str();
@@ -46,6 +47,41 @@ bool FunctionCallSymbol::exactlyEquals(FunctionSymbol *candidate){
 			return false;
 		}
 	}
+
+	return true;
+}
+
+const vector<FunctionSymbol*>& FunctionCallSymbol::getConversions(){
+	return this->conversions;
+}
+
+bool FunctionCallSymbol::conversionExists(FunctionSymbol *candidate){
+	auto otherArgs = candidate->getArguments();
+	if(this->arguments.size() != otherArgs.size() && !candidate->isVarargs()){
+		return false;
+	}
+
+	int bound = min(this->arguments.size(), otherArgs.size());
+	vector<FunctionSymbol*> convertors;
+	for(int i = 0; i < bound; ++i){
+		if(this->arguments[i] == otherArgs[i] ){
+			convertors.push_back(nullptr);
+		}
+		else {
+			auto tmp = otherArgs[i]->getConversion(this->arguments[i]);
+			//cout << this->arguments[i] << otherArgs[i];
+			//cout << "ololo!";
+			if(!tmp){
+				return false;
+			}
+			else{
+				convertors.push_back(tmp);
+				//cout << "OLOLO";
+			}
+		}
+	}
+
+	this->conversions = convertors;
 
 	return true;
 }

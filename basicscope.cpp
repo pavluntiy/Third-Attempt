@@ -154,6 +154,12 @@ FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall
 				return it;
 			}
 		}
+
+		for(auto it: functionList){
+			if(functionCall->conversionExists(it)){
+				return it;
+			}
+		}
 	}
 	catch(NoticeException& ne){
 	}
