@@ -63,8 +63,10 @@ void TypeVisitor::visit(FunctionCallNode *node){
 		it->accept(this);
 		functionCall->addArgument(it->getSymbol()->getType());
 	}
+	functionCall->setFunction(currentScope->resolveFunctionCall(functionCall));
 
-	node->setSymbol(currentScope->resolveFunctionCall(functionCall));
+	node->setSymbol(functionCall);
+
 
 	//node->setType(currentScope->resolveType("int"));
 }
@@ -160,6 +162,7 @@ void TypeVisitor::visit(SignatureNode *node){
 	function->setPosition(node->getPosition());
 
 	function->setType(functionType);
+	function->setReturnType(returnType);
 
 	FunctionScope *functionScope = new FunctionScope(currentScope, functionName);
 

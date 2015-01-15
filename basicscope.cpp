@@ -150,18 +150,17 @@ FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall
 	try{
 		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
 		for(auto it: functionList){
-		if(functionCall->exactlyEquals(it)){
-			return it;
+			if(functionCall->exactlyEquals(it)){
+				return it;
+			}
 		}
 	}
-	}
 	catch(NoticeException& ne){
-		cout << functionCall->argumentsToString() << endl;
 	}
 
 	
 
-	throw NoticeException("No acceptable overload found for function " + functionCall->getFullName()->getSimpleName());
+	throw NoticeException("#!No acceptable overload found for function " + functionCall->toString());
 }
 
 FunctionSymbol* BasicScope::resolveFunction(FunctionSymbol* function){

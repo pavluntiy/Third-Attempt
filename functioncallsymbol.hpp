@@ -13,21 +13,22 @@
 //class FunctionSymbol;
 class FunctionScope;
 class FunctionCallSymbol: public BasicSymbol{
-
-Type* returnType;
 vector<Type*> arguments;
-FunctionType *functionType;
-public:
+FunctionSymbol *function;
+vector<FunctionSymbol*> conversions;
 
-	void setReturnType(Type *type);
+public:
 	void addArgument(Type *type);
 	void setFunctionScope(AbstractScope *scope);
 	void setFunctionLabel(string str);
-
-	Type* getReturnType();
 	vector<Type*> getArguments();
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
+
+	void setFunction(FunctionSymbol *function);
+	FunctionSymbol* getFunction();
+
+	Type *getType();
 
 	string toString(string shift = "");
 	string argumentsToString(string shift = "");

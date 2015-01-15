@@ -1,29 +1,36 @@
 #include "functioncallsymbol.hpp"
 
 FunctionCallSymbol::FunctionCallSymbol(){
+	function = nullptr;
 }
 
-void FunctionCallSymbol::setReturnType(Type *type){
-	this->returnType = type;
-}
+
 
 void FunctionCallSymbol::addArgument(Type *type){
 	this->arguments.push_back(type);
 }
 
-Type* FunctionCallSymbol::getReturnType(){
-	return this->returnType;
+void FunctionCallSymbol::setFunction(FunctionSymbol *function){
+	this->function = function;
+}
+
+FunctionSymbol* FunctionCallSymbol::getFunction(){
+	return this->function;
 }
 
 vector<Type*> FunctionCallSymbol::getArguments(){
 	return this->arguments;
 }
 
+Type* FunctionCallSymbol::getType(){
+	return this->function->getReturnType();
+}
+
 string FunctionCallSymbol::toString(string shift){
 	stringstream result;
 
-	result << shift << "'" << this->getName() << "' ";
-	result <<  "( type " << this->getType()->toString() << ") ";
+	result << shift << "'" << this->getFullName()->getSimpleName() << "' ";
+	result << this->argumentsToString(shift) << '\n';
 
 	return result.str();
 }
@@ -47,9 +54,9 @@ string FunctionCallSymbol::argumentsToString(string shift){
 	stringstream result;
 
 
-	result << shift << "'" + this->getName() + "' arguments:";
+	result << shift << " arguments:";
 	for(auto it: this->arguments){
-	 	result << it->toString() << 	"; ";
+	 	result << it->toString() << "; ";
 	}
 	return result.str();
 }

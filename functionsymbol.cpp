@@ -4,6 +4,10 @@ FunctionSymbol::FunctionSymbol(){
 	this->defined = false;
 }
 
+void FunctionSymbol::setFunctionType(FunctionType *type){
+	this->functionType = type;
+}
+
 void FunctionSymbol::setReturnType(Type *type){
 	this->returnType = type;
 }
@@ -19,6 +23,12 @@ void FunctionSymbol::setFunctionScope(AbstractScope *scope){
 void FunctionSymbol::setFunctionLabel(string str){
 	this->functionLabel = str;
 }
+
+FunctionType* FunctionSymbol::getFunctionType(){
+	return this->functionType;
+	//return this->functionType->getReturnType();
+}
+
 
 Type* FunctionSymbol::getReturnType(){
 	return this->returnType;

@@ -20,11 +20,14 @@ Position definitionPosition;
 bool defined;
 public:
 
-	void setReturnType(Type *type);
+	void setFunctionType(FunctionType *type);
+
 	void addArgument(Type *type);
 	void setFunctionScope(AbstractScope *scope);
 	void setFunctionLabel(string str);
+	void setReturnType(Type *type);
 
+	FunctionType* getFunctionType();
 	Type* getReturnType();
 	vector<Type*> getArguments();
 	AbstractScope* getFunctionScope();
