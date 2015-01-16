@@ -55,6 +55,8 @@ void TypeVisitor::visit(FunctionCallNode *node){
 
 	//node->setSymbol(currentScope->resolveFunction( dynamic_cast<CompoundNameNode*>(node->getFunctionName())));//Provisional
 
+	auto possibleFuctionArgument = node->getFunctionName();
+	node->getFunctionName()->accept(this);
 	auto functionCall = new FunctionCallSymbol();
 
 	functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
@@ -68,7 +70,7 @@ void TypeVisitor::visit(FunctionCallNode *node){
 	if(functionCall->getConversions().size() > 0){
 		auto conversions = functionCall->getConversions();
 		auto arguments = node->getFunctionArgs();
-		int bound = arguments.size();
+		int bound = conversions.size();
 		for(int i = 0; i < bound; ++i){
 			if(conversions[i]){
 				node->replaceArgument(i, insertConversion(arguments[i], conversions[i]));
@@ -375,12 +377,14 @@ void TypeVisitor::restoreCurrentScope(){
 	this->scopes.pop();
 }
 
-FunctionCallNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *function){
-
+BasicNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *function){
+	if(!function){
+		return node;
+	}
 	auto *result = new FunctionCallNode();
 	result->addArgument(node);
 	auto *functionCall = new FunctionCallSymbol();
-	
+
 	functionCall->setFunction(function);
 	result->setSymbol(functionCall);
 	return result;

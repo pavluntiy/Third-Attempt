@@ -30,7 +30,13 @@ Type* FunctionCallSymbol::getType(){
 string FunctionCallSymbol::toString(string shift){
 	stringstream result;
 
-	result << shift << "'" << this->getFunction()->toString() << "' ";
+	//result << this->getFunction();
+	if(this->getFunction()){
+		result << shift << "'" << this->getFunction()->toString() << "' ";
+	}
+	else if(this->getFullName()){
+		result << "'" << this->getFullName()->getSimpleName() << "'";
+	}
 	result << this->argumentsToString(shift) << '\n';
 
 	return result.str();
@@ -61,10 +67,12 @@ bool FunctionCallSymbol::conversionExists(FunctionSymbol *candidate){
 		return false;
 	}
 
+
 	int bound = min(this->arguments.size(), otherArgs.size());
 	vector<FunctionSymbol*> convertors;
 	for(int i = 0; i < bound; ++i){
 		if(this->arguments[i] == otherArgs[i] ){
+			cout << "Mimimi!\n";
 			convertors.push_back(nullptr);
 		}
 		else {
@@ -82,6 +90,7 @@ bool FunctionCallSymbol::conversionExists(FunctionSymbol *candidate){
 	}
 
 	this->conversions = convertors;
+
 
 	return true;
 }
