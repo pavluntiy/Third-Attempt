@@ -81,6 +81,18 @@ void ScopePrintVisitor::visit(DotNode *node){
 	*this->out << shift << ")\n";
 }
 
+void ScopePrintVisitor::visit(ImportNode *node){
+
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	//dynamic_cast<ImportSymbol*>(node->getSymbol())->getScope()->dump(out, shift);
+		node->getTree()->accept(this);
+	this->shift.push_back(' ');
+
+	*this->out   << shift << ")" << endl;
+}
+
 void ScopePrintVisitor::visit(TypeNode *node){
 	if(node->getSymbol()){
 		*this->out << shift << node->getSymbol()->toString();

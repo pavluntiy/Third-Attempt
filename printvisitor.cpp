@@ -52,6 +52,26 @@ void PrintVisitor::visit(DotNode *node){
 	*this->out << shift << ")" << endl;	
 }
 
+void PrintVisitor::visit(ImportNode *node){
+
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+
+ 	if(node->getModuleName()){
+ 		node->getModuleName()->accept(this);
+ 	}
+
+ 	if(node->getScopeName()){
+ 		node->getScopeName()->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
 void PrintVisitor::visit(CompoundNameNode *node){
 	*this->out << shift << "( " << node->toString();
 

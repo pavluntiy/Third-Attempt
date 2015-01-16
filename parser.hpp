@@ -24,6 +24,7 @@
 #include "returnnode.hpp"
 #include "structnode.hpp"
 #include "blocknode.hpp"
+#include "importnode.hpp"
 
 #include "deletevisitor.hpp"
 
@@ -157,6 +158,8 @@ BasicNode* getIf();
 BasicNode* getWhile();
 
 BasicNode* getFor();
+
+BasicNode* getImport();
 
 bool isReturnKeyword();
 

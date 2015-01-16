@@ -29,6 +29,8 @@ void TypeVisitor::visit(BlockNode *node){
 }
 
 void TypeVisitor::visit(OperatorsNode *node){
+
+
 	// if(this->globalScopeFound){
 	// 	LocalScope *localScope = new LocalScope(currentScope);
 	// 	currentScope->declareAnonymousScope(localScope);
@@ -87,6 +89,66 @@ void TypeVisitor::visit(FunctionCallNode *node){
 void TypeVisitor::visit(DotNode *node){
 	node->getLeft()->accept(this);
 	node->getRight()->accept(this);
+}
+
+void TypeVisitor::visit(ImportNode *node){
+
+
+	auto names = node->getModuleName()->getNames();
+
+	string name = ".";
+
+	for(auto it: names){
+		name += "/" + it;
+	}
+
+	auto in = new ifstream(name + ".cch");
+
+	if(!in->is_open()){
+		throw TypeException("Bad module", node->getPosition());
+	}
+
+
+	Lexer lexer(*in);
+
+	Parser parser(lexer);
+	try{
+		parser.buildTree();
+	}
+	catch (ParserException &pe){
+
+		throw ParserException( "In module '" + name + "' parse error:\n"  + pe.what() );
+	}
+
+	TypeVisitor *typeVisitor = new TypeVisitor();
+
+	try{
+		parser.getTree()->accept(typeVisitor);
+	}
+	catch (NoticeException &ne){
+		cout << ne.what() << '\n';
+	}
+	catch (TypeException &te){
+		throw TypeException("In module " + name + te.what(), node->getPosition());
+	}
+
+	node->setTree(parser.getTree());
+
+	// *this->out << shift << "( " << node->toString() << endl;
+		
+	// this->shift.push_back(' ');
+
+ // 	if(node->getModuleName()){
+ // 		node->getModuleName()->accept(this);
+ // 	}
+
+ // 	if(node->getScopeName()){
+ // 		node->getScopeName()->accept(this);
+ // 	}
+
+	// this->shift.pop_back();
+
+	// *this->out   << shift << ")" << endl;
 }
 
 void TypeVisitor::visit(TypeNode *node){

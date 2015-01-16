@@ -148,7 +148,7 @@ vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *
 
 FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall){
 	try{
-			cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
+			//cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
 		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
 
 		for(auto it: functionList){
@@ -201,7 +201,7 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 		currentScope = currentScope->getParentScope();
 	}
 
-	if(!currentScope->getTypes().count(name)){
+	if(!currentScope || !currentScope->getTypes().count(name)){
 		throw NoticeException("Undeclared type'"+ name + "'!");	
 	}
 

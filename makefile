@@ -14,12 +14,12 @@ SOURCES=header.cpp alphabet.cpp\
 	basicnode.cpp\
 	operatorsnode.cpp blocknode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
 	typenode.cpp vardeclarationnode.cpp signaturenode.cpp functiondefinitionnode.cpp ifnode.cpp whilenode.cpp fornode.cpp\
-	structnode.cpp returnnode.cpp dotnode.cpp\
+	structnode.cpp returnnode.cpp dotnode.cpp importnode.cpp\
 	\
 	parser.cpp\
 	\
 	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp structuresymbol.cpp\
-	type.cpp functiontype.cpp functioncallsymbol.cpp valuesymbol.cpp\
+	type.cpp functiontype.cpp functioncallsymbol.cpp valuesymbol.cpp importsymbol.cpp\
 	\
 	typecheckvisitor.cpp\
 	basicscope.cpp globalscope.cpp functionscope.cpp structurescope.cpp localscope.cpp\

@@ -2,6 +2,7 @@
 #define TYPECHECKVISITOR
 
 #include "basicvisitor.hpp"
+#include "parser.hpp"
 
 #include "programnode.hpp"
 #include "blocknode.hpp"
@@ -21,11 +22,13 @@
 #include "dotnode.hpp"
 
 #include "noticeexception.hpp"
+#include "parserexception.hpp"
 #include "type.hpp"
 #include "functiontype.hpp"
 #include "functionsymbol.hpp"
 #include "functioncallsymbol.hpp"
 #include "valuesymbol.hpp"
+#include "importsymbol.hpp"
 
 #include "functionscope.hpp"
 #include "globalscope.hpp"
@@ -58,6 +61,7 @@ public:
 	virtual void visit(StructNode *node) override;
 	virtual void visit(BlockNode *node) override;
 	virtual void visit(DotNode *node) override;
+	virtual void visit(ImportNode *node) override;
 
 
 	BasicNode* insertConversion(BasicNode*, FunctionSymbol*);

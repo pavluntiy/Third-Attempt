@@ -39,6 +39,17 @@ void DeleteVisitor::visit(FunctionCallNode *node){
 	node = nullptr;
 }
 
+void DeleteVisitor::visit(ImportNode *node){
+	if(node->getModuleName()){
+		node->getModuleName()->accept(this);
+	}
+	if(node->getScopeName()){
+		node->getScopeName()->accept(this);
+	}
+	delete node;
+	node = nullptr;
+}
+
 void DeleteVisitor::visit(DotNode *node){
 	node->getLeft()->accept(this);
 	node->getRight()->accept(this);

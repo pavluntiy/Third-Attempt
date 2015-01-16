@@ -37,8 +37,12 @@ void Parser::consume(){
 	++this->currentPosition;
 	if(this->lexer.isValidIndex(this->currentPosition)){	
 		this->currentToken = this->lexer[this->currentPosition];
+
 		while(currentToken.isIgnorable())
 		{
+			if(currentToken.typeEqualsTo(Token::ERROR)){
+				throw ParserException("Problems with lexer:\n" + currentToken.getText(), currentToken.getPosition());
+			}
 			++this->currentPosition;
 			this->currentToken = this->lexer[this->currentPosition];
 
@@ -1616,6 +1620,33 @@ BasicNode* Parser::getStruct(){
 	return result;
 }
 
+BasicNode* Parser::getImport(){
+
+	if(currentToken != Token(Token::KEYWORD, "import")){
+		throw ParserException("I shouldn't have got to here!");
+	}
+
+	auto *result = new ImportNode(currentToken.getPosition());	
+	bool moduleNameFound = false;
+	get(Token::KEYWORD);
+	try{
+		result->setModuleName(getCompoundName());
+		moduleNameFound = true;
+		if(currentToken == Token(Token::NAME, "to")){
+			get(Token::NAME);
+			result->setScopeName(getCompoundName());
+		}
+		return result;
+	}
+	catch(NoticeException &ne){
+		if(moduleNameFound){
+			throw ParserException("corrupted structure of 'import' -- strange with scopeName", currentToken.getPosition());
+		}
+		throw ParserException("corrupted structure of 'import'", currentToken.getPosition());
+	}
+
+}
+
 bool Parser::consumeSemicolons(){
 	bool result = false;
 	while(currentToken.typeEqualsTo(Token::SEMICOLON)){
@@ -1655,6 +1686,12 @@ BasicNode* Parser::getOperator(){
 
 	if(currentToken == Token(Token::KEYWORD, "struct")){
 		auto result = getStruct();
+		consumeSemicolons();
+		return result;
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "import")){
+		auto result = getImport();
 		consumeSemicolons();
 		return result;
 	}
@@ -1739,6 +1776,9 @@ void Parser::buildTree(){
 		}
 		catch(NoticeException &ne){
 			//cout << ne.what();
+		}
+		catch (LexerException &le){
+			throw ParserException("Error in lexer:\n" + le.what(), currentToken.getPosition());
 		}
 
 		get(Token::END);

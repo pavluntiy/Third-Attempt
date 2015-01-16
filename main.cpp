@@ -61,11 +61,11 @@ int main (int argc, char **argv) {
 		*err << e.what() << '\n';
 	}
 
-	// PrintVisitor *printVisitor = new PrintVisitor(out);
+	//PrintVisitor *printVisitor = new PrintVisitor(out);
 
-	// parser.getTree()->accept(printVisitor);
+	//parser.getTree()->accept(printVisitor);
 
-	// delete printVisitor;
+	//delete printVisitor;
 
 	TypeVisitor *typeVisitor = new TypeVisitor();
 
@@ -79,7 +79,7 @@ int main (int argc, char **argv) {
 		*err << te.what() << '\n';
 	}
 
-	// typeVisitor->dump(out);
+	typeVisitor->dump(out);
 
 	ScopePrintVisitor *scopePrintVisitor = new ScopePrintVisitor(out);
 
@@ -87,10 +87,10 @@ int main (int argc, char **argv) {
 
 
 
-	DeleteVisitor *deleteVisitor = new DeleteVisitor();
+	// DeleteVisitor *deleteVisitor = new DeleteVisitor();
 
-	parser.getTree()->accept(deleteVisitor);
-	delete deleteVisitor;
+	// parser.getTree()->accept(deleteVisitor);
+	// delete deleteVisitor;
 
 
 	return 0;
