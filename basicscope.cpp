@@ -187,6 +187,35 @@ FunctionSymbol* BasicScope::resolveFunction(FunctionSymbol* function){
 	return nullptr;
 }
 
+bool BasicScope::hasType(Type *type){
+
+	string name = type->getName();
+	cout << "!!!:::" << name << endl;
+	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
+
+
+	while(currentScope != nullptr){
+		if(currentScope->getTypes().count(name)){
+			break;
+		}
+		currentScope = currentScope->getParentScope();
+	}
+
+	if(!currentScope || !currentScope->getTypes().count(name)){
+		throw NoticeException("Undeclared type'"+ name + "'!");	
+	}
+
+	auto typeFamily = currentScope->getTypes()[name];
+
+	for(auto it: typeFamily){
+		if(*type == *it){
+			return true;
+		}
+	}
+
+	return false;
+}
+
 Type* BasicScope::resolveModifiedType(const Type &type){
 	//cout << "ololo" << endl;
 	string name = type.getName();
@@ -323,6 +352,18 @@ bool BasicScope::isDefined(string name){
 		this->structures.count(name) 
 	;
 }
+
+// bool BasicScope::isDefined(CompoundNameNode *name){
+// 	return
+// 		this->resolveVariable(name) 
+// 		|| 
+// 		this->resolveType(name) 
+// 		|| 
+// 		this->resolveNamedScope(name) 
+// 		||
+// 		this->resolveFunction(name) 
+// 	;
+// }
 
 bool BasicScope::isFunction(string name){
 	//cout << name << "!!";
@@ -504,4 +545,58 @@ void BasicScope::dumpTypes(ostream *out, string shift){
 			*out << shift << "\t\t" << it2->toString() << "\n";
 		}
 	}
+}
+
+void BasicScope::import(AbstractScope *other){
+	
+
+	auto otherStructures = other->getStructures();
+	for(auto it: otherStructures){
+		try{
+			this->declareStructure(it.second);
+		}
+		catch(NoticeException &ne){
+			throw TypeException("Error importing scope " + other->getName() + ": structure " + it.first + " redeclaration");
+		}
+	}
+
+	auto otherVariables = other->getVariables();
+	for(auto it: otherVariables){
+		try{
+			this->declareVariable(it.second);
+		}
+		catch(NoticeException &ne){
+			throw TypeException("Error importing scope " + other->getName() + ": variable " + it.first + " redeclaration");
+		}
+	}
+
+	auto otherTypes = other->getTypes();
+	for(auto it: otherTypes){
+		for(auto it2: it.second){
+			try{
+				if(!hasType(it2)){
+					this->addType(it2->getName(), it2);
+				}
+			}
+			catch(NoticeException &ne){
+				throw TypeException("Error importing scope " + other->getName() + ": type " + it.first + " redeclaration");
+			}
+		}
+	}
+
+	auto otherFunctions = other->getFunctions();
+	for(auto it: otherFunctions){
+		for(auto it2: it.second){
+			try{
+				this->declareFunction(it2);
+			}
+			catch(NoticeException &ne){
+				throw TypeException("Error importing scope " + other->getName() + ": function " + it.first + " redeclaration");
+			}
+		}
+	}
+
+
+
+
 }

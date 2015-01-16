@@ -126,13 +126,17 @@ void TypeVisitor::visit(ImportNode *node){
 		parser.getTree()->accept(typeVisitor);
 	}
 	catch (NoticeException &ne){
-		cout << ne.what() << '\n';
+		//isConstruct << ne.what() << '\n';
 	}
 	catch (TypeException &te){
 		throw TypeException("In module " + name + te.what(), node->getPosition());
 	}
 
-	node->setTree(parser.getTree());
+	node->setTree( parser.getTree());
+	this->currentScope->import(typeVisitor->getGlobalScope());
+
+
+
 
 	// *this->out << shift << "( " << node->toString() << endl;
 		
@@ -450,4 +454,8 @@ BasicNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *functi
 	functionCall->setFunction(function);
 	result->setSymbol(functionCall);
 	return result;
+}
+
+AbstractScope* TypeVisitor::getGlobalScope(){
+	return this->globalScope;
 }

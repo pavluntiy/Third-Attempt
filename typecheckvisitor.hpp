@@ -73,6 +73,8 @@ public:
 	void restoreCurrentScope();
 
 	void dump(ostream *out);
+
+	AbstractScope *getGlobalScope();
 };
 
 

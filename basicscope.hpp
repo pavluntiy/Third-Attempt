@@ -22,6 +22,7 @@ public:
 	virtual AbstractScope* resolveNamedScope(CompoundNameNode* ) override;
 	virtual FunctionSymbol* resolveFunction(CompoundNameNode *name) override;
 	virtual VariableSymbol* resolveVariable(CompoundNameNode *name) override;
+	virtual bool hasType(Type*) override;
 	virtual Type* resolveModifiedType(const Type&) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
@@ -79,6 +80,8 @@ public:
 	virtual void addType(string name, Type *type) override;
 	virtual void addNamedScope(string name, AbstractScope *scope) override;
 	virtual void addStructure(string name, StructureSymbol *structure) override;
+
+	virtual void import(AbstractScope*) override;
 
 };
 

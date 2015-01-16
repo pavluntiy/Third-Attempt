@@ -11,6 +11,7 @@ int Type::getSize() const{
 Type::Type(string name, int size){
 	this->name = name;
 	this->size = size;
+	this->fullName.push_back(name);
 }
 Type::Type(){}
 
@@ -159,12 +160,12 @@ string Type::toString(string shift){
 // }
 
 void Type::addConversion(Type *type, FunctionSymbol *function){
-	cout << "ADDED "  <<"for " << this << " to " << type << " with " << function << "\n";
+	//cout << "ADDED "  <<"for " << this << " to " << type << " with " << function << "\n";
 	convertTo[type] = function;
 }
 
 FunctionSymbol* Type::getConversion(Type *type){
-	cout << "Getting "  <<"for " << this << " to " << type << "!\n";
+	//cout << "Getting "  <<"for " << this << " to " << type << "!\n";
 	if(this->convertTo.count(type)){
 		return this->convertTo[type];
 	}
