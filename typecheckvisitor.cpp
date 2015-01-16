@@ -121,6 +121,7 @@ void TypeVisitor::visit(ImportNode *node){
 	}
 
 	TypeVisitor *typeVisitor = new TypeVisitor();
+	typeVisitor->setGlobalScope(this->currentScope);
 
 	try{
 		parser.getTree()->accept(typeVisitor);
@@ -133,7 +134,7 @@ void TypeVisitor::visit(ImportNode *node){
 	}
 
 	node->setTree( parser.getTree());
-	this->currentScope->import(typeVisitor->getGlobalScope());
+	//this->currentScope->import(typeVisitor->getGlobalScope());
 
 
 
@@ -458,4 +459,9 @@ BasicNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *functi
 
 AbstractScope* TypeVisitor::getGlobalScope(){
 	return this->globalScope;
+}
+
+void TypeVisitor::setGlobalScope(AbstractScope *scope){
+	delete this->globalScope;
+	this->globalScope = scope;
 }

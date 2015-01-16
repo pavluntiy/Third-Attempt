@@ -40,7 +40,7 @@
 
 class TypeVisitor: public BasicVisitor{
 protected:
-	GlobalScope *globalScope;
+	AbstractScope *globalScope;
 	AbstractScope *currentScope;
 	stack<AbstractScope*> scopes;
 	bool globalScopeFound;
@@ -75,6 +75,7 @@ public:
 	void dump(ostream *out);
 
 	AbstractScope *getGlobalScope();
+	void setGlobalScope(AbstractScope*);
 };
 
 
