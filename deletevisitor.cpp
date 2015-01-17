@@ -164,6 +164,16 @@ void DeleteVisitor::visit(ReturnNode *node){
 	node = nullptr;
 }
 
+void DeleteVisitor::visit(UsingNode *node){
+
+ 	if(node->getType()){
+ 		node->getType()->accept(this);
+ 	}
+
+	delete node;
+	node = nullptr;
+}
+
 void DeleteVisitor::visit(StructNode *node){
  	node->getName()->accept(this);
 

@@ -9,7 +9,7 @@
 
 class FunctionCallNode: public BasicNode {
 protected:
-	BasicNode *functionName;
+	CompoundNameNode *functionName;
 	vector<BasicNode*> functionArgs;
 
 public: 

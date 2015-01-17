@@ -13,7 +13,7 @@ void BasicSymbol::setDefinitionScope(BasicScope *scope){
 	this->definitionScope = scope;
 }
 
-string BasicSymbol::getName(){
+string BasicSymbol::getName() const{
 	return this->name;
 }
 

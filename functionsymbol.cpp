@@ -25,7 +25,7 @@ void FunctionSymbol::setFunctionLabel(string str){
 }
 
 FunctionType* FunctionSymbol::getFunctionType(){
-	return this->functionType;
+	return dynamic_cast<FunctionType*>(this->type);
 	//return this->functionType->getReturnType();
 }
 

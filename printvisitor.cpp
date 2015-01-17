@@ -299,6 +299,21 @@ void PrintVisitor::visit(ReturnNode *node){
 	*this->out   << shift << ")" << endl;
 }
 
+void PrintVisitor::visit(UsingNode *node){
+
+	*this->out << shift << "( " << node->toString() << endl;
+		
+	this->shift.push_back(' ');
+
+ 	if(node->getType()){
+ 		node->getType()->accept(this);
+ 	}
+
+	this->shift.pop_back();
+
+	*this->out   << shift << ")" << endl;
+}
+
 void PrintVisitor::visit(StructNode *node){
 
 	*this->out << shift << "( " << node->toString() << endl;

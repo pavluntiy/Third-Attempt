@@ -20,6 +20,7 @@
 #include "structnode.hpp"
 #include "valuenode.hpp"
 #include "dotnode.hpp"
+#include "usingnode.hpp"
 
 #include "noticeexception.hpp"
 #include "parserexception.hpp"
@@ -62,6 +63,7 @@ public:
 	virtual void visit(BlockNode *node) override;
 	virtual void visit(DotNode *node) override;
 	virtual void visit(ImportNode *node) override;
+	virtual void visit(UsingNode *node) override;
 
 
 	BasicNode* insertConversion(BasicNode*, FunctionSymbol*);

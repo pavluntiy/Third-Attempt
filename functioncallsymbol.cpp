@@ -10,12 +10,12 @@ void FunctionCallSymbol::addArgument(Type *type){
 	this->arguments.push_back(type);
 }
 
-void FunctionCallSymbol::setFunction(FunctionSymbol *function){
-	this->type = function->getReturnType();
+void FunctionCallSymbol::setFunction(BasicSymbol *function){
+	this->type = function->getType();
 	this->function = function;
 }
 
-FunctionSymbol* FunctionCallSymbol::getFunction(){
+BasicSymbol* FunctionCallSymbol::getFunction(){
 	return this->function;
 }
 
@@ -42,7 +42,7 @@ string FunctionCallSymbol::toString(string shift){
 	return result.str();
 }
 
-bool FunctionCallSymbol::exactlyEquals(FunctionSymbol *candidate){
+bool FunctionCallSymbol::exactlyEquals(FunctionType *candidate){
 	auto otherArgs = candidate->getArguments();
 	if(this->arguments.size() != otherArgs.size()){
 		return false;
@@ -61,7 +61,7 @@ const vector<FunctionSymbol*>& FunctionCallSymbol::getConversions(){
 	return this->conversions;
 }
 
-bool FunctionCallSymbol::conversionExists(FunctionSymbol *candidate){
+bool FunctionCallSymbol::conversionExists(FunctionType *candidate){
 	auto otherArgs = candidate->getArguments();
 	if(this->arguments.size() != otherArgs.size() && !candidate->isVarargs()){
 		return false;

@@ -1,8 +1,8 @@
 #include "functiontype.hpp"
 
-string FunctionType::getName() const{
-	return this->name;
-}
+// string FunctionType::getName() const{
+// 	return this->name;
+// }
 
 int FunctionType::getSize() const{
 	return this->size;
@@ -43,12 +43,19 @@ vector<Type*> FunctionType::getArguments(){
 	return this->arguments;
 }
 
+void FunctionType::setVarargs(){
+	this->varargs = true;
+}
+bool FunctionType::isVarargs(){
+	return this->varargs;
+}
+
 
 string FunctionType::toString(string shift){
 	stringstream result;
 
-	result << shift << "'" << "function type" << "' ";
-	result <<  "( returnType " << this->getReturnType()->toString() << ") ";
+	result << shift << "function type '" << this->name <<" ";
+	result <<  "( returnType " << this->getReturnType()->toString() << ")'";
 
 	// result << "\nArguments:\n";
 	// for(auto it: this->arguments){

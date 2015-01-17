@@ -152,13 +152,13 @@ FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall
 		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
 
 		for(auto it: functionList){
-			if(functionCall->exactlyEquals(it)){
+			if(functionCall->exactlyEquals(it->getFunctionType())){
 				return it;
 			}
 		}
 
 		for(auto it: functionList){
-			if(functionCall->conversionExists(it)){
+			if(functionCall->conversionExists(it->getFunctionType())){
 				return it;
 			}
 		}
@@ -190,7 +190,7 @@ FunctionSymbol* BasicScope::resolveFunction(FunctionSymbol* function){
 bool BasicScope::hasType(Type *type){
 
 	string name = type->getName();
-	cout << "!!!:::" << name << endl;
+	//cout << "!!!:::" << name << endl;
 	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
 
 
@@ -469,6 +469,8 @@ void BasicScope::declareVariable(VariableSymbol *variable){
 void BasicScope::declareType(Type *type){
 	string name = type->getName();
 
+	//cout << "!!" << name << "\n";
+
 	if(this->isDefined(name)){
 		throw NoticeException("Type '" + name + "' redeclaration #1!");
 	}
@@ -476,6 +478,13 @@ void BasicScope::declareType(Type *type){
 	addType(name, type);
 }
 
+void BasicScope::declareType(string name, Type *type){
+
+	if(this->isDefined(name)){
+		throw NoticeException("Type '" + name + "' redeclaration #1!");
+	}
+	addType(name, type);
+}
 void BasicScope::declareStructure(StructureSymbol *structure){
 	string name = structure->getName();
 	if(this->isStructure(name)){

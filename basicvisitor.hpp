@@ -20,6 +20,7 @@ class StructNode;
 class BlockNode;
 class DotNode;
 class ImportNode;
+class UsingNode;
 
 
 class BasicVisitor {
@@ -42,6 +43,7 @@ public:
 	virtual void visit(BlockNode *node) = 0;
 	virtual void visit(DotNode *node) = 0;
 	virtual void visit(ImportNode *node) = 0;
+	virtual void visit(UsingNode *node) = 0;
 
 	virtual ~BasicVisitor();
 

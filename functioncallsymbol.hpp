@@ -12,9 +12,10 @@
 
 //class FunctionSymbol;
 class FunctionScope;
+class FunctionType;
 class FunctionCallSymbol: public BasicSymbol{
 vector<Type*> arguments;
-FunctionSymbol *function;
+BasicSymbol *function;
 vector<FunctionSymbol*> conversions;
 
 public:
@@ -25,16 +26,16 @@ public:
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
-	void setFunction(FunctionSymbol *function);
-	FunctionSymbol* getFunction();
+	void setFunction(BasicSymbol *function);
+	BasicSymbol* getFunction();
 
 	Type *getType();
 
 	string toString(string shift = "");
 	string argumentsToString(string shift = "");
 
-	bool exactlyEquals(FunctionSymbol *);
-	bool conversionExists(FunctionSymbol *);
+	bool exactlyEquals(FunctionType *);
+	bool conversionExists(FunctionType *);
 
 	const vector<FunctionSymbol*>& getConversions();
 

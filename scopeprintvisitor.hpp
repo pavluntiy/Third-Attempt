@@ -20,6 +20,7 @@
 #include "valuenode.hpp"
 #include "dotnode.hpp"
 #include "importnode.hpp"
+#include "usingnode.hpp"
 
 #include "noticeexception.hpp"
 #include "type.hpp"
@@ -60,6 +61,7 @@ public:
 	virtual void visit(BlockNode *node) override;
 	virtual void visit(DotNode *node) override;
 	virtual void visit(ImportNode *node) override;
+	virtual void visit(UsingNode *node) override;
 
 	ScopePrintVisitor(ostream *out);
 	virtual ~ScopePrintVisitor() override;

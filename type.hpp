@@ -16,7 +16,7 @@ protected:
 	vector<int> dimensions;
 
 	vector<string> fullName;
-	string name;
+	//string name;
 	int size;
 
 	map<Type*, FunctionSymbol*> convertTo;
@@ -24,7 +24,7 @@ protected:
 
 public:
 
-	string getName() const;
+	//string getName() const;
 	int getSize() const;
 	Type(string name, int size = 0);
 	Type();

@@ -21,6 +21,7 @@
 #include "importnode.hpp"
 
 #include "valuenode.hpp"
+#include "usingnode.hpp"
 
 class PrintVisitor: public BasicVisitor{
 protected:
@@ -44,6 +45,7 @@ public:
 	virtual void visit(BlockNode *node) override;
 	virtual void visit(DotNode *node) override;
 	virtual void visit(ImportNode *node) override;
+	virtual void visit(UsingNode *node) override;
 
 
 	PrintVisitor(ostream *out);

@@ -61,13 +61,24 @@ void TypeVisitor::visit(FunctionCallNode *node){
 	node->getFunctionName()->accept(this);
 	auto functionCall = new FunctionCallSymbol();
 
-	functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
-
 	for(auto it: node->getFunctionArgs()){
 		it->accept(this);
 		functionCall->addArgument(it->getSymbol()->getType());
 	}
-	functionCall->setFunction(currentScope->resolveFunctionCall(functionCall));
+
+	if(dynamic_cast<FunctionCallNode*>(node->getFunctionName())){
+		auto tmp = dynamic_cast<FunctionCallSymbol*>(node->getFunctionName()->getSymbol());
+		functionCall->setFunction(tmp);
+		if( !functionCall->exactlyEquals(tmp->getFunction()) && 
+			!functionCall->conversionExists(tmp->getFunctionType())
+		){
+			throw TypeException("Invalid function call ", node->getPosition());
+		}	
+	}
+	else{
+		functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
+		functionCall->setFunction(currentScope->resolveFunctionCall(functionCall));
+	}
 
 	if(functionCall->getConversions().size() > 0){
 		auto conversions = functionCall->getConversions();
@@ -271,6 +282,7 @@ void TypeVisitor::visit(SignatureNode *node){
 	}	
 
 	if(node->isVarargs()){
+		functionType->setVarargs();
 		function->setVarargs();
 	}
 
@@ -371,11 +383,64 @@ void TypeVisitor::visit(ForNode *node){
  	restoreCurrentScope();
 }
 
+
+
 void TypeVisitor::visit(ReturnNode *node){
 
  	if(node->getResult()){
  		node->getResult()->accept(this);
  	}
+}
+
+void TypeVisitor::visit(UsingNode *node){
+
+ 	if(dynamic_cast<SignatureNode*>(node->getType())){
+ 		auto signature = dynamic_cast<SignatureNode*>(node->getType());
+ 		CompoundNameNode *fullName = signature->getName();
+		string functionTypeName = fullName->getSimpleName();
+
+		FunctionType *functionType = new FunctionType;
+		setCurrentScope(currentScope->resolveNamedScope(fullName));
+
+		Type* returnType = currentScope->resolveModifiedType(Type(signature->getType()));
+		signature->getType()->setSymbol(functionType);
+
+		functionType->setReturnType(returnType);
+
+		for(auto it: signature->getArguments()){
+			auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));
+			get<0>(it)->setSymbol(currentType);
+			functionType->addArgument(currentType);
+		}	
+
+		if(signature->isVarargs()){
+			functionType->setVarargs();
+		}
+
+		functionType->setName(functionTypeName);
+		currentScope->declareType(functionType);
+		node->setSymbol(functionType);
+
+		restoreCurrentScope();
+ 	}
+ 	else{
+ 		auto type = dynamic_cast<TypeNode*>(node->getType());
+ 		auto fullName = dynamic_cast<CompoundNameNode*>(node->getName());
+ 		string typeName = fullName->getSimpleName();
+
+ 		setCurrentScope(currentScope->resolveNamedScope(fullName));
+
+ 		//auto typeToDeclare = new Type(*currentScope->resolveModifiedType(type));
+ 		//typeToDeclare->setName(typeName);
+ 		//currentScope->declareType(typeToDeclare);
+
+ 		auto typeToDeclare = currentScope->resolveModifiedType(type);
+ 		currentScope->declareType(typeName, typeToDeclare);
+ 		node->setSymbol(typeToDeclare);
+
+ 		restoreCurrentScope();
+ 	}
+ 	
 }
 
 void TypeVisitor::visit(StructNode *node){

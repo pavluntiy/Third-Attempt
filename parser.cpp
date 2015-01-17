@@ -1602,6 +1602,12 @@ BasicNode* Parser::getStruct(){
 				consumeSemicolons();
 				result->addStructure(tmp);
 			}
+			// else
+			// if(currentToken == Token(Token::KEYWORD, "using")){
+			// 	auto tmp = getUsing();
+			// 	consumeSemicolons();
+			// 	result->addStructure(tmp);
+			// }
 			else {
 				auto tmp = getVarDeclaration();
 				consumeSemicolons();
@@ -1644,6 +1650,43 @@ BasicNode* Parser::getImport(){
 		}
 		throw ParserException("corrupted structure of 'import'", currentToken.getPosition());
 	}
+
+}
+
+BasicNode* Parser::getUsing(){
+
+	if(currentToken != Token(Token::KEYWORD, "using")){
+		throw ParserException("I shouldn't have got to here!");
+	}
+
+	auto *result = new UsingNode(currentToken.getPosition());	
+	bool typeFound = false;
+	get(Token::KEYWORD);
+	try{
+		if(currentToken == Token(Token::KEYWORD, "def")){
+			result->setType(getSignature());
+			result->setName(result->getName());
+			// cout << "ololo\n\n";
+		}
+		else{
+			result->setType(getType());
+
+			//if(!currentToken.typeEqualsTo(Token::NAME)){
+				//throw ParserException("Strange type declaration: no name found!", currentToken.getPosition());
+			//}
+			typeFound = true;
+
+			result->setName(getCompoundName());
+		}
+	}
+	catch(NoticeException &ne){
+		if(typeFound){
+			throw ParserException("corrupted structure of 'using' -- strange with type synonim", currentToken.getPosition());
+		}
+		throw ParserException("corrupted structure of 'using'", currentToken.getPosition());
+	}
+
+	return result;
 
 }
 
@@ -1692,6 +1735,12 @@ BasicNode* Parser::getOperator(){
 
 	if(currentToken == Token(Token::KEYWORD, "import")){
 		auto result = getImport();
+		consumeSemicolons();
+		return result;
+	}
+
+	if(currentToken == Token(Token::KEYWORD, "using")){
+		auto result = getUsing();
 		consumeSemicolons();
 		return result;
 	}

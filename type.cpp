@@ -1,8 +1,8 @@
 #include "type.hpp"
 
-string Type::getName() const{
-	return this->name;
-}
+// string Type::getName() const{
+// 	return this->name;
+// }
 
 int Type::getSize() const{
 	return this->size;

@@ -65,6 +65,7 @@ public:
 	virtual void declareFunction(FunctionSymbol *function) = 0;
 	virtual void declareVariable(VariableSymbol *variable) = 0;
 	virtual void declareType(Type *type) = 0;
+	virtual void declareType(string name, Type *type) = 0;
 	virtual void declareStructure(StructureSymbol *structure) = 0;
 	virtual void declareNamedScope(AbstractScope *scope) = 0;
 

@@ -25,7 +25,7 @@ public:
 	virtual void setType(Type *type);
 	virtual void setDefinitionScope(BasicScope *scope);
 
-	virtual string getName();
+	virtual string getName() const;
 	virtual Type* getType();
 	virtual BasicScope* getDefinitionScope();
 	void setPosition(Position position);

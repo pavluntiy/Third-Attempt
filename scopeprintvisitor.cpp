@@ -293,6 +293,15 @@ void ScopePrintVisitor::visit(ReturnNode *node){
 	//*this->out   << shift << ")" << endl;
 }
 
+void ScopePrintVisitor::visit(UsingNode *node){
+		
+	this->shift.push_back('\t');
+
+ 	*this->out << shift << "(Using " << node->getSymbol()->toString() << " as type )\n"; 
+
+	this->shift.pop_back();
+}
+
 void ScopePrintVisitor::visit(StructNode *node){
 
 	*this->out << shift << "(Structure " << node->getSymbol()->toString() <<": "<< endl;
