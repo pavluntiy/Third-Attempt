@@ -57,6 +57,11 @@ printf('a', 100, 200, 300, 1.212, 'a')
 printf('10');
 
 
+using def int fType(int);
+def fType getFunction(){}
+getFunction()(10);
+
+
 
 
 

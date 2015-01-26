@@ -69,15 +69,18 @@ void TypeVisitor::visit(FunctionCallNode *node){
 	if(dynamic_cast<FunctionCallNode*>(node->getFunctionName())){
 		auto tmp = dynamic_cast<FunctionCallSymbol*>(node->getFunctionName()->getSymbol());
 		functionCall->setFunction(tmp);
-		if( !functionCall->exactlyEquals(tmp->getFunction()) && 
-			!functionCall->conversionExists(tmp->getFunctionType())
+		auto functionType = dynamic_cast<FunctionType*>(tmp->getType());
+		if( !functionCall->exactlyEquals(functionType) && 
+			!functionCall->conversionExists(functionType)
 		){
 			throw TypeException("Invalid function call ", node->getPosition());
 		}	
 	}
 	else{
 		functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
-		functionCall->setFunction(currentScope->resolveFunctionCall(functionCall));
+		auto function = currentScope->resolveFunctionCall(functionCall);
+		functionCall->setFunction(function);
+		functionCall->setType(function->getReturnType());
 	}
 
 	if(functionCall->getConversions().size() > 0){
@@ -92,6 +95,8 @@ void TypeVisitor::visit(FunctionCallNode *node){
 	}
 
 	node->setSymbol(functionCall);
+	//cout << node->getSymbol()->getType()->toString() << "!!!!!!!!!!!!!!!\n";
+	//cout << functionCall->toString() << "!!!!!\n";
 
 
 	//node->setType(currentScope->resolveType("int"));
@@ -263,6 +268,7 @@ void TypeVisitor::visit(SignatureNode *node){
 	function->setName(functionName);
 	functionScope->setName(functionName);
 	node->setFunctionSymbol(function);
+	node->setSymbol(function);
 
 	for(auto it: node->getArguments()){
 		auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));

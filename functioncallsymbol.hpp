@@ -29,7 +29,7 @@ public:
 	void setFunction(BasicSymbol *function);
 	BasicSymbol* getFunction();
 
-	Type *getType();
+//	Type *getType();
 
 	string toString(string shift = "");
 	string argumentsToString(string shift = "");

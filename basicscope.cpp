@@ -148,7 +148,8 @@ vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *
 
 FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall){
 	try{
-			//cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
+			cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
+			cout << functionCall->toString() << "\n";
 		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
 
 		for(auto it: functionList){

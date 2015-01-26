@@ -11,7 +11,7 @@ void FunctionCallSymbol::addArgument(Type *type){
 }
 
 void FunctionCallSymbol::setFunction(BasicSymbol *function){
-	this->type = function->getType();
+	//this->type = function->getType();
 	this->function = function;
 }
 
@@ -23,9 +23,11 @@ vector<Type*> FunctionCallSymbol::getArguments(){
 	return this->arguments;
 }
 
-Type* FunctionCallSymbol::getType(){
-	return this->function->getReturnType();
-}
+// Type* FunctionCallSymbol::getType(){
+// 	//auto tmp = this->function->getType();
+// 	//auto result = dynami_cast<Type*> (tmp->get
+// 	return tmp;
+// }
 
 string FunctionCallSymbol::toString(string shift){
 	stringstream result;
