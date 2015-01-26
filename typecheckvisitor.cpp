@@ -2,6 +2,15 @@
 
 void TypeVisitor::visit(ProgramNode *node){
 	setCurrentScope(globalScope);
+
+	//auto moduleName = 
+	//globalScope->addModule(import(globalScope, "autoimport"), "autoimport");
+	node->setAutoImport(import(currentScope, "autoimport"));
+	//node->setAutoImport(globalScope->resolveModule("autoimport"));
+
+	if(node->getAutoImport()){
+		node->getAutoImport()->accept(this);
+	}
 	if(node->getChild()){
 		node->getChild()->accept(this);
 	}
@@ -107,21 +116,21 @@ void TypeVisitor::visit(DotNode *node){
 	node->getRight()->accept(this);
 }
 
-void TypeVisitor::visit(ImportNode *node){
+BasicNode* TypeVisitor::import(AbstractScope *to, string name){
 
-
-	auto names = node->getModuleName()->getNames();
-
-	string name = ".";
-
-	for(auto it: names){
-		name += "/" + it;
+	if(currentScope->hasModule(name)){
+		//return currentScope->resolveModule(name);
+		//cout << "Failed: " <<  name << "\n";
+		return nullptr;
 	}
+
+	currentScope->addModule(nullptr, name);
+
 
 	auto in = new ifstream(name + ".cch");
 
 	if(!in->is_open()){
-		throw TypeException("Bad module", node->getPosition());
+		throw TypeException("Bad module " + name);
 	}
 
 
@@ -136,8 +145,8 @@ void TypeVisitor::visit(ImportNode *node){
 		throw ParserException( "In module '" + name + "' parse error:\n"  + pe.what() );
 	}
 
-	TypeVisitor *typeVisitor = new TypeVisitor();
-	typeVisitor->setGlobalScope(this->currentScope);
+	TypeVisitor *typeVisitor = new TypeVisitor(to);
+	//typeVisitor->setGlobalScope(to);
 
 	try{
 		parser.getTree()->accept(typeVisitor);
@@ -146,10 +155,63 @@ void TypeVisitor::visit(ImportNode *node){
 		//isConstruct << ne.what() << '\n';
 	}
 	catch (TypeException &te){
-		throw TypeException("In module " + name + te.what(), node->getPosition());
+		throw TypeException("In module " + name + te.what());
 	}
 
-	node->setTree( parser.getTree());
+	currentScope->addModule(parser.getTree(), name);
+
+	cout << to << ": " << currentScope->resolveModule(name) << " " << name << "\n";
+
+	return parser.getTree();
+}
+
+void TypeVisitor::visit(ImportNode *node){
+
+
+	auto names = node->getModuleName()->getNames();
+
+	string name = ".";
+
+	for(auto it: names){
+		name += "/" + it;
+	}
+
+	import(currentScope, name);
+	node->setTree(currentScope->resolveModule(name));
+	//cout << "lalka: " << node->getTree() << "\n";
+
+	// auto in = new ifstream(name + ".cch");
+
+	// if(!in->is_open()){
+	// 	throw TypeException("Bad module", node->getPosition());
+	// }
+
+
+	// Lexer lexer(*in);
+
+	// Parser parser(lexer);
+	// try{
+	// 	parser.buildTree();
+	// }
+	// catch (ParserException &pe){
+
+	// 	throw ParserException( "In module '" + name + "' parse error:\n"  + pe.what() );
+	// }
+
+	// TypeVisitor *typeVisitor = new TypeVisitor();
+	// typeVisitor->setGlobalScope(this->currentScope);
+
+	// try{
+	// 	parser.getTree()->accept(typeVisitor);
+	// }
+	// catch (NoticeException &ne){
+	// 	//isConstruct << ne.what() << '\n';
+	// }
+	// catch (TypeException &te){
+	// 	throw TypeException("In module " + name + te.what(), node->getPosition());
+	// }
+
+	// node->setTree( parser.getTree());
 	//this->currentScope->import(typeVisitor->getGlobalScope());
 
 
@@ -491,10 +553,14 @@ void TypeVisitor::visit(StructNode *node){
  	restoreCurrentScope();
 }
 
+TypeVisitor::TypeVisitor(AbstractScope* scope){
+	this->globalScope = scope;
+	currentScope = this->globalScope;
+}
+
 TypeVisitor::TypeVisitor(){
 	this->globalScope = new GlobalScope();
 	currentScope = globalScope;
-	this->globalScopeFound = false;
 }
 
 TypeVisitor::~TypeVisitor(){
@@ -536,3 +602,7 @@ void TypeVisitor::setGlobalScope(AbstractScope *scope){
 	delete this->globalScope;
 	this->globalScope = scope;
 }
+
+// void TypeVisitor::autoimport(){
+// 	import(currentScope, "autoimport");
+// }

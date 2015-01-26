@@ -610,3 +610,31 @@ void BasicScope::import(AbstractScope *other){
 
 
 }
+
+map<string, BasicNode*>& BasicScope::getModules(){
+	return this->modules;
+}
+
+
+void BasicScope::addModule(BasicNode *tree, string name){
+	// if(this->modules.count(name)){
+	// 	//throw TypeException("Reimporting module " + name);
+	// 	return;
+	// }
+	this->modules[name] = tree;
+	//cout << "Added  " + name << "\n";
+}
+
+BasicNode* BasicScope::resolveModule(string name){
+	if(!this->modules.count(name)){
+		return nullptr;
+	}
+	return modules[name];
+}
+
+bool BasicScope::hasModule(string name){
+	if(!this->modules.count(name)){
+		return false;
+	}
+	return true;
+}

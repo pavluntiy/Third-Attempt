@@ -67,8 +67,10 @@ public:
 
 
 	BasicNode* insertConversion(BasicNode*, FunctionSymbol*);
+	BasicNode* import(AbstractScope *to, string name);
 
 	TypeVisitor();
+	TypeVisitor(AbstractScope* scope);
 	virtual ~TypeVisitor() override;
 
 	void setCurrentScope(AbstractScope*);

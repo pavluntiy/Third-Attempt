@@ -25,6 +25,7 @@ map<string, vector<FunctionSymbol*>> functions;
 //map<string, FunctionSymbol*> functions;
 map<string, VariableSymbol*> variables;
 map<string, StructureSymbol*> structures;
+map<string, BasicNode*> modules;
 
 string base;
 int currentOffset;
@@ -59,9 +60,12 @@ public:
 	virtual vector<FunctionSymbol*> getOverloadedFunctionList(CompoundNameNode *) = 0;
 	virtual vector<AbstractScope*>& getAnonymousScopes() = 0;
 	virtual map<string, StructureSymbol*>& getStructures() = 0;
+	virtual map<string, BasicNode*>& getModules() = 0;
 
 
-
+	virtual void addModule(BasicNode *tree, string name) = 0;
+	virtual BasicNode* resolveModule(string name) = 0;
+	virtual bool hasModule(string name) = 0;
 	virtual void declareFunction(FunctionSymbol *function) = 0;
 	virtual void declareVariable(VariableSymbol *variable) = 0;
 	virtual void declareType(Type *type) = 0;

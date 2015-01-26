@@ -174,7 +174,7 @@ BasicNode *getTree();
 
 void pushTree();
 
-void buildTree();
+void buildTree(BasicNode *root = nullptr);
 };
 
 

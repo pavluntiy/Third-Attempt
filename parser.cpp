@@ -1808,6 +1808,7 @@ BasicNode* Parser::getOperators(){
 }
 
 BasicNode* Parser::getTree(){
+	cout << "Tree is " << this->tree << "...\n";
 	return this->tree;
 }
 
@@ -1815,8 +1816,13 @@ void Parser::pushTree(){
 
 }
 
-void Parser::buildTree(){
-	this->tree = new ProgramNode();
+void Parser::buildTree(BasicNode *root){
+	//if(!root){
+		this->tree = new ProgramNode();
+	// }
+	// else{
+	// 	this->tree = root;
+	// }
 	try{
 		get(Token::BEGIN);
 		try {

@@ -22,3 +22,10 @@ ProgramNode::ProgramNode(Position position):BasicNode(position)
 		return this->child;
 	}
 
+void ProgramNode::setAutoImport(BasicNode *node){
+		this->autoImport = node;
+	}
+
+	BasicNode* ProgramNode::getAutoImport(){
+		return this->autoImport;
+	}

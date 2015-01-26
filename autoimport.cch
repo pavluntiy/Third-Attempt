@@ -1,0 +1,6 @@
+def float(int);
+def int (float);
+def float operator+(float, float);
+def int operator+(int, int);
+
+

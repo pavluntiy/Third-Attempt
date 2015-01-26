@@ -9,6 +9,7 @@ class ProgramNode: public BasicNode {
 friend class BasicVisitor;
 protected:
 	BasicNode *child;
+	BasicNode *autoImport;
 
 public: 
 	void accept(BasicVisitor *visitor) override;
@@ -20,6 +21,9 @@ public:
 
 	BasicNode* getChild();
 	void addChild(BasicNode *node);
+
+	BasicNode* getAutoImport();
+	void setAutoImport(BasicNode *node);
 
 };
 

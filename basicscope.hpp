@@ -32,6 +32,7 @@ public:
 	virtual FunctionSymbol* resolveFunctionCall(FunctionCallSymbol*) override;
 	virtual Type* getUnqualifiedType(string name) override;
 	virtual StructureSymbol* resolveStructure(const string &name) override;
+	virtual bool hasModule(string name) override;
 
 	virtual BasicSymbol* resolve(string name) override;
 	virtual BasicSymbol* resolve(CompoundNameNode *name) override;
@@ -44,6 +45,11 @@ public:
 	virtual map<string, vector<FunctionSymbol*>>& getFunctions() override;
 	virtual map<string, VariableSymbol*>& getVariables() override;
 	virtual map<string, StructureSymbol*>& getStructures() override;
+	virtual map<string, BasicNode*>& getModules() override;
+
+
+	virtual void addModule(BasicNode *tree, string name) override;
+	virtual BasicNode* resolveModule(string name) override;
 
 
 

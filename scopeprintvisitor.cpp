@@ -2,6 +2,11 @@
 
 void ScopePrintVisitor::visit(ProgramNode *node){
 	setCurrentScope(node->getScope());
+	if(node->getAutoImport()){
+		this->shift.push_back('\t');
+		node->getAutoImport()->accept(this);
+		this->shift.pop_back();
+	}
 	if(node->getChild()){
 		this->shift.push_back('\t');
 		node->getChild()->accept(this);
