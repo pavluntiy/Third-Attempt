@@ -22,7 +22,7 @@ public:
 	vector<Type*> getArguments();
 	void setReturnType(Type *type);
 	void addArgument(Type *type);
-	virtual string toString(string shift = "") override;
+	virtual string toString(string shift = "")override;
 	string argumentsToString(string shift = "");
 	void setVarargs();
 	bool isVarargs();

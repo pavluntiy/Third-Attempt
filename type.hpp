@@ -37,7 +37,7 @@ public:
 	bool isUnqualified();
 
 	const vector<string>& getFullName() const;
-	virtual string toString(string shift = "") override;
+	virtual string toString(string shift = "")override;
 
 	bool operator==(const Type &other) const;
 	bool operator==(Type *other) const;

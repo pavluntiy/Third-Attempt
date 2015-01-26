@@ -259,12 +259,10 @@ void TypeVisitor::visit(ValueNode *node){
 		}	
 		break;
 
-		// case ValueNode::Type::FLOAT: {
-		// 	auto type = new CompoundNameNode("char");
-		// 	node->setSymbol(currentScope->resolveType(type)); 
-		// 	delete type;
-		// }	
-		// break;
+		case ValueNode::Type::STRING: {
+			valueSymbol->setType(currentScope->resolveType("string"));
+		}	
+		break;
 
 		default: throw TypeException("What is it!?", node->getPosition());
 	}
@@ -503,10 +501,13 @@ void TypeVisitor::visit(UsingNode *node){
  		//currentScope->declareType(typeToDeclare);
 
  		auto typeToDeclare = currentScope->resolveModifiedType(type);
+ 		cout << "Going to declare " << typeToDeclare->toString() << " as " << typeName << "\n";
  		currentScope->declareType(typeName, typeToDeclare);
  		node->setSymbol(typeToDeclare);
 
  		restoreCurrentScope();
+
+ 		cout << "=======\n";
  	}
  	
 }

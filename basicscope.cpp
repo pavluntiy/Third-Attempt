@@ -219,12 +219,15 @@ bool BasicScope::hasType(Type *type){
 
 Type* BasicScope::resolveModifiedType(const Type &type){
 	//cout << "ololo" << endl;
+	//cout << "resolving type " << (new Type(type))->toString() << "\n";
 	string name = type.getName();
 	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
 
 
 
 	while(currentScope != nullptr){
+		//cout << name << "!\n";
+		//currentScope->dump(&cout);
 		if(currentScope->getTypes().count(name)){
 			break;
 		}
@@ -238,6 +241,7 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 	auto typeFamily = currentScope->getTypes()[name];
 
 	for(auto it: typeFamily){
+		cout << "Trying... " << it->toString() << "\n";
 		if(type == *it){
 			return it;
 		}
@@ -245,6 +249,7 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 
 
 	auto result = new Type(type);
+	cout << "Now new type " << result->toString() << "\n";
 	currentScope->addType(result->getName(), result);
 	return result;
 }
@@ -418,7 +423,7 @@ void BasicScope::addVariable(string name, VariableSymbol *variable){
 }
 
 void BasicScope::addType(string name, Type *type){
-
+	cout << "Pushed to " << name << " type " << type->toString() << "\n";
 	this->types[name].push_back(type);
 }
 
