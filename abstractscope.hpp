@@ -26,6 +26,7 @@ map<string, vector<FunctionSymbol*>> functions;
 map<string, VariableSymbol*> variables;
 map<string, StructureSymbol*> structures;
 map<string, BasicNode*> modules;
+map<Type*, StructureSymbol*> typeStructures;
 
 string base;
 int currentOffset;
@@ -46,6 +47,7 @@ public:
 	virtual FunctionSymbol* resolveFunctionCall(FunctionCallSymbol*) = 0;
 	virtual Type* getUnqualifiedType(string name) = 0;
 	virtual StructureSymbol* resolveStructure(const string &name) = 0;
+	virtual StructureSymbol* resolveStructure(Type *) = 0;
 
 	virtual BasicSymbol* resolve(string name) = 0;
 	virtual BasicSymbol* resolve(CompoundNameNode *name) = 0;
@@ -61,6 +63,8 @@ public:
 	virtual vector<AbstractScope*>& getAnonymousScopes() = 0;
 	virtual map<string, StructureSymbol*>& getStructures() = 0;
 	virtual map<string, BasicNode*>& getModules() = 0;
+
+	virtual map<Type*, StructureSymbol*>& getTypeStructures() = 0;
 
 
 	virtual void addModule(BasicNode *tree, string name) = 0;
@@ -98,6 +102,7 @@ public:
 	virtual void addType(string name, Type *type) = 0;
 	virtual void addNamedScope(string name, AbstractScope *scope) = 0;
 	virtual void addStructure(string name, StructureSymbol *structure) = 0;
+	virtual void addTypeStructure(Type *type, StructureSymbol *structure) = 0;
 
 	virtual void import(AbstractScope*) = 0;
 

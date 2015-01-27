@@ -46,6 +46,10 @@ vector<AbstractScope*>& BasicScope::getAnonymousScopes(){
 	return this->anonymousScopes;
 }
 
+map<Type*, StructureSymbol*>& BasicScope::getTypeStructures(){
+	return this->typeStructures;
+}
+
 void BasicScope::declareAnonymousScope(AbstractScope *scope){
 	this->anonymousScopes.push_back(scope);
 }
@@ -128,6 +132,14 @@ StructureSymbol* BasicScope::resolveStructure(const string &name){
 	}
 	
 	throw NoticeException("Undeclared structure;'"+ name + "'!");
+}
+
+StructureSymbol* BasicScope::resolveStructure(Type *type){
+	if(!this->typeStructures.count(type)){
+		throw TypeException("No way to resolve type " + type->toString() + " as structure!");
+	}
+
+	return this->typeStructures[type];
 }
 
 vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *name){
@@ -240,17 +252,17 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 
 	auto typeFamily = currentScope->getTypes()[name];
 
-	cout << "Typefamily: " << name << ":\n";
+//	cout << "Typefamily: " << name << ":\n";
 	for(auto it: typeFamily){
-		cout << "Trying... " << it->toString() << "\n";
+//		cout << "Trying... " << it->toString() << "\n";
 
-	cout << "Comparing " << (new Type(type))->toString() << " && " << it->toString() << "...\n";
+//	cout << "Comparing " << (new Type(type))->toString() << " && " << it->toString() << "...\n";
 		if(type.modifiersEqual(*it)){
 			return it;
 		}
 	}
 
-	cout << "...Fail!...\b";
+//	cout << "...Fail!...\b";
 
 
 	auto result = new Type(type);
@@ -517,6 +529,7 @@ void BasicScope::declareStructure(StructureSymbol *structure){
 	//this->namedScopes[name] = structure->getStructureScope();
 	addNamedScope(name, structure->getStructureScope());
 	addType(name, structure->getStructureType());
+	addTypeStructure(structure->getStructureType(), structure);
 	//this->types[name] = structure->getStructureType();
 }
 
@@ -633,6 +646,10 @@ void BasicScope::addModule(BasicNode *tree, string name){
 	// }
 	this->modules[name] = tree;
 	//cout << "Added  " + name << "\n";
+}
+
+void BasicScope::addTypeStructure(Type *type, StructureSymbol *structure){
+	this->typeStructures[type] = structure;
 }
 
 BasicNode* BasicScope::resolveModule(string name){

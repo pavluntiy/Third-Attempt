@@ -12,7 +12,6 @@ protected:
 	string base;
 	int offset;
 
-
 public:
 	void setBase(string str);
 	void setOffset(int offset);

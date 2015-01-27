@@ -112,8 +112,15 @@ void TypeVisitor::visit(FunctionCallNode *node){
 }
 
 void TypeVisitor::visit(DotNode *node){
+
 	node->getLeft()->accept(this);
+	auto currentSymbol = node->getLeft()->getSymbol();
+
+	setCurrentScope(currentScope->resolveStructure(currentSymbol->getType())->getStructureScope());
 	node->getRight()->accept(this);
+	auto resultSymbol = node->getRight()->getSymbol();
+	node->setSymbol(resultSymbol);
+	restoreCurrentScope();
 }
 
 BasicNode* TypeVisitor::import(AbstractScope *to, string name){

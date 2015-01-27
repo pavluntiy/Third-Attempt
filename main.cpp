@@ -71,6 +71,11 @@ int main (int argc, char **argv) {
 
 	try{
 		parser.getTree()->accept(typeVisitor);
+		typeVisitor->dump(out);
+
+		ScopePrintVisitor *scopePrintVisitor = new ScopePrintVisitor(out);
+
+		parser.getTree()->accept(scopePrintVisitor);
 	}
 	catch (NoticeException &ne){
 		*err << ne.what() << '\n';
@@ -79,11 +84,7 @@ int main (int argc, char **argv) {
 		*err << te.what() << '\n';
 	}
 
-	typeVisitor->dump(out);
 
-	ScopePrintVisitor *scopePrintVisitor = new ScopePrintVisitor(out);
-
-	parser.getTree()->accept(scopePrintVisitor);
 
 
 
