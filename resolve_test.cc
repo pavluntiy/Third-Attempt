@@ -31,12 +31,21 @@ foo(rand())
 
 def int operator = (int, int);
 struct Point{
-int x, y;
-def int getSth();
+	int x, y;
+	def int getSth();
+	def int foo(int);
+	def int foo(){
+		x;
+	}
 };
 
+Point somePoint;
+somePoint.foo(10);
+somePoint->foo();
+
+
 struct Vector{
-Point start, end;
+	Point start, end;
 };
 
 
