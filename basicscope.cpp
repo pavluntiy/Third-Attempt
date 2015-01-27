@@ -176,8 +176,8 @@ vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *
 
 FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall){
 	try{
-			cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
-			cout << functionCall->toString() << "\n";
+			//cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
+			//cout << functionCall->toString() << "\n";
 		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
 
 		for(auto it: functionList){
@@ -373,13 +373,15 @@ BasicScope::BasicScope(AbstractScope *parentScope, string name){
 BasicSymbol* BasicScope::resolve(CompoundNameNode *name){
 	AbstractScope *currentScope = resolveNamedScope(name);
 	string simpleName = name->getSimpleName();
+	AbstractScope *previousScope = this;
 	while(currentScope != nullptr){
 		if(currentScope->isDefined(simpleName)){
 			return currentScope->resolve(simpleName);
 		}
+		previousScope = currentScope;
 		currentScope = currentScope->getParentScope();
 	}
-	throw NoticeException("Undeclared symbol '"+ simpleName + "'!");
+	throw NoticeException("Undeclared symbol '"+ simpleName + "'!\n" + previousScope->toString());
 }
 
 bool BasicScope::isDefined(string name){
@@ -458,7 +460,7 @@ void BasicScope::addVariable(string name, VariableSymbol *variable){
 }
 
 void BasicScope::addType(string name, Type *type){
-	cout << "Pushed to " << name << " type " << type->toString() << "\n";
+	//cout << "Pushed to " << name << " type " << type->toString() << "\n";
 	this->types[name].push_back(type);
 }
 
@@ -596,6 +598,49 @@ void BasicScope::dumpTypes(ostream *out, string shift){
 			*out << shift << "\t\t" << it2->toString() << "\n";
 		}
 	}
+}
+
+string BasicScope::functionsToString(string shift){
+	stringstream ss;
+	ss << shift << "\tFunctions:\n";
+	for(auto it: this->functions){
+		for(auto it2: it.second){
+			ss << shift << "\t\t" << it2->toString() << "\n";
+			ss << shift << "\t\t" << it2->argumentsToString() << "\n";
+			it2->getFunctionScope()->toString(shift + "\t\t");
+		}
+	}	
+
+	return ss.str();
+}
+
+string BasicScope::variablesToString(string shift){
+	stringstream ss;
+	ss << shift << "\tVariables:\n";
+	for(auto it: this->variables){
+		ss << "\t\t" << shift << it.second->toString() << "\n";
+	}
+	return ss.str();
+}
+
+string BasicScope::structuresToString(string shift){
+	stringstream ss;
+	ss << shift << "\tStructures:\n";
+	for(auto it: this->structures){
+		ss << "\t\t" << shift << it.second->toString(shift + "\t\t") << "\n";
+	}
+	return ss.str();
+}
+string BasicScope::typesToString(string shift){
+	stringstream ss;
+	ss << shift << "\tTypes:\n";
+	for(auto it: this->types){
+		for(auto it2: it.second){
+			ss << shift << "\t\t" << it2->toString() << "\n";
+		}
+	}
+
+	return ss.str();
 }
 
 void BasicScope::import(AbstractScope *other){

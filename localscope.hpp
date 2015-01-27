@@ -17,6 +17,7 @@ public:
 	LocalScope();
 	LocalScope(AbstractScope *parentScope, string name = "");
 	virtual void dump(ostream *out, string shift = "") override;
+	virtual string toString(string shift = "") override;
 };
 
 #endif

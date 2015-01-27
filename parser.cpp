@@ -1808,7 +1808,7 @@ BasicNode* Parser::getOperators(){
 }
 
 BasicNode* Parser::getTree(){
-	cout << "Tree is " << this->tree << "...\n";
+	//cout << "Tree is " << this->tree << "...\n";
 	return this->tree;
 }
 

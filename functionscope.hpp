@@ -22,6 +22,7 @@ public:
 	FunctionScope();
 	FunctionScope(AbstractScope *scope, string name = "");
 	virtual void dump(ostream *out, string shift = "") override;
+	virtual string toString(string shift = "") override;
 
 };
 

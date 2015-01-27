@@ -96,4 +96,31 @@ p1.x = p3.y;
 
 foo(v1.end.x);
 
+struct __Point{
+def int foo(int);
+def int foo(char);
+def int foo();   
+};
+
+struct __Vector{
+def int foo(int);
+def int foo(char);
+def int foo(); 
+
+__Point a, b;
+};
+
+__Vector __v1, __v2;
+
+__v1.a.foo(10);
+
+__v1.b.foo();
+__v1.foo()
+__v2.b.foo('a');
+__v2.foo('a');
+
+struct UM{
+int x, y;
+def int foo(){x};
+};
 

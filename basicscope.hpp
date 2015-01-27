@@ -92,6 +92,11 @@ public:
 	virtual void addTypeStructure(Type *type, StructureSymbol *structure) override;
 
 	virtual void import(AbstractScope*) override;
+	virtual string toString(string shift = "") = 0;
+	virtual string functionsToString(string shift = "") override;
+	virtual string variablesToString(string shift = "") override;
+	virtual string structuresToString(string shift = "") override;
+	virtual string typesToString(string shift = "") override;
 
 };
 

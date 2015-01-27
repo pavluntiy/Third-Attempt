@@ -31,3 +31,14 @@ void LocalScope::dump(ostream *out, string shift){
 
 }
 
+string LocalScope::toString(string shift){
+	stringstream result;
+	result<< shift << "Local scope'" << this->getName() << "':\n";
+
+	result << variablesToString(shift);
+
+	result << shift <<  "end of local scope;\n" << shift << "=====\n";
+
+	return result.str();
+}
+

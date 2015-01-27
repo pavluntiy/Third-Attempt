@@ -30,5 +30,18 @@ void FunctionScope::setReturnType(Type *type){
 	this->returnType = type;
 }
 
+string FunctionScope::toString(string shift){
+	stringstream result;
+	result<< shift << "Scope of function '" << this->getName() << "':\n";
+
+	result << functionsToString(shift);
+
+	result << variablesToString(shift);
+
+	result << shift <<  "end of function scope '" << this->getName() << "';\n" << shift << "=====\n";
+
+	return result.str();
+}
+
 
 

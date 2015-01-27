@@ -24,4 +24,20 @@ StructureScope::StructureScope(AbstractScope *scope, string name):BasicScope(sco
 
 }
 
+string StructureScope::toString(string shift){
+	stringstream result;
+	result << shift << "Scope of structure '" << this->getName() << "':\n";
+
+	result << typesToString(shift);
+
+	result << functionsToString(shift);
+
+	result << variablesToString(shift);
+
+	result << structuresToString(shift);
+
+	result << shift <<  "end of struct scope '" << this->getName() << "';\n" << shift << "=====\n";
+	return result.str();
+}
+
 

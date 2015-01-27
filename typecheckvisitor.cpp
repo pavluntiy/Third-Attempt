@@ -541,10 +541,16 @@ void TypeVisitor::visit(StructNode *node){
  	structure = currentScope->resolveStructure(structure->getName());
  	//currentScope->declareNamedScope(structure->getStructureScope());
  	setCurrentScope(structure->getStructureScope());
+
  	node->setSymbol(structure);
 
  	bool isDefinition = false;
  	for(auto it: node->getStructures()){
+ 		it->accept(this);
+ 		isDefinition = true;
+ 	}
+
+ 	for(auto it: node->getVariables()){
  		it->accept(this);
  		isDefinition = true;
  	}
@@ -554,10 +560,6 @@ void TypeVisitor::visit(StructNode *node){
  		isDefinition = true;
  	}
 
- 	for(auto it: node->getVariables()){
- 		it->accept(this);
- 		isDefinition = true;
- 	}
 
  	if(isDefinition){
  		structure->define(node->getPosition());

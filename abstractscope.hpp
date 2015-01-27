@@ -106,6 +106,12 @@ public:
 
 	virtual void import(AbstractScope*) = 0;
 
+	virtual string toString(string shift = "") = 0;
+	virtual string functionsToString(string shift = "") = 0;
+	virtual string variablesToString(string shift = "") = 0;
+	virtual string structuresToString(string shift = "") = 0;
+	virtual string typesToString(string shift = "") = 0;
+
 
 };
 

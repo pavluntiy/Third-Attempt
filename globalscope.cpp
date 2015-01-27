@@ -28,3 +28,23 @@ void GlobalScope::dump(ostream *out, string shift){
 
 }
 
+
+string GlobalScope::toString(string shift){
+
+	stringstream result;
+	result << shift << "Global Scope:\n";
+
+	result << typesToString(shift);
+
+	result << functionsToString(shift);
+
+	result << variablesToString(shift);
+
+	result << structuresToString(shift);
+	
+
+	result << "end of global scope;\n" << shift << "=====\n";
+
+	return result.str();
+
+}
