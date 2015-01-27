@@ -8,7 +8,7 @@
 class FunctionSymbol;
 class Type: public BasicSymbol {
 protected:
-	//Type *parentType;
+	Type *actualType;
 
 	vector<string> storageModes;
 	vector<string> modifiers;
@@ -41,10 +41,14 @@ public:
 
 	bool operator==(const Type &other) const;
 	bool operator==(Type *other) const;
+	bool modifiersEqual(const Type &other) const;
 
 	//void tryToAddConversion(FunctionSymbol *function);
 	void addConversion(Type *type, FunctionSymbol *function);
 	FunctionSymbol* getConversion(Type *type);
+
+	void setActualType(Type* type);
+	Type* getActualType();
 
 };
 

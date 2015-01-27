@@ -74,7 +74,7 @@ bool FunctionCallSymbol::conversionExists(FunctionType *candidate){
 	vector<FunctionSymbol*> convertors;
 	for(int i = 0; i < bound; ++i){
 		if(this->arguments[i] == otherArgs[i] ){
-			cout << "Mimimi!\n";
+			//cout << "Mimimi!\n";
 			convertors.push_back(nullptr);
 		}
 		else {

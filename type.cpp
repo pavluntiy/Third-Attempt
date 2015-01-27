@@ -56,16 +56,14 @@ const vector<int>& Type::getDimensions()const{
 	return this->dimensions;
 }
 
-bool Type::operator==(const Type &other)
+bool Type::modifiersEqual(const Type &other) 
 const{
-	if(this->name != other.name){
-		return false;
-	}
 
 	auto otherStorageModes = other.getStorageModes();
 	if(this->storageModes.size() != otherStorageModes.size()){
 		return false;
 	}
+
 
 	for(int i = 0; i < this->storageModes.size(); ++i){
 		if(this->storageModes[i] != otherStorageModes[i]){
@@ -106,7 +104,13 @@ const{
 		}
 	}
 
-	return this->name == other.getName();
+	return true;
+}
+
+bool Type::operator==(const Type &other)
+const{
+
+	return this->name == other.getName() && this->modifiersEqual(other);
 
 }
 
@@ -171,4 +175,12 @@ FunctionSymbol* Type::getConversion(Type *type){
 	}
 
 	return nullptr;
+}
+
+void Type::setActualType(Type* type){
+	this->actualType = type;
+}
+
+Type* Type::getActualType(){
+	return this->actualType;
 }

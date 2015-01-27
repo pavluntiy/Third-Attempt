@@ -17,3 +17,8 @@ using INt INT
 //Excessive instance of basic type appears in map<>
 
 using def fType fType();
+
+toString() const!
+
+sizeof
+some shit with types!

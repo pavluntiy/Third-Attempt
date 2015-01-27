@@ -1,13 +1,6 @@
+//import std.bool.mod
+//import std.int.mod;
+//import std.string.mod;
 
-using char[] string;
-
-//def float(int);
-//def int (float);
-//def float operator+(float, float);
-//def int operator+(int, int);
-
-
-def string (char);
-//def string operator + (string, string);
 
 

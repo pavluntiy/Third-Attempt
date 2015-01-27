@@ -240,16 +240,21 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 
 	auto typeFamily = currentScope->getTypes()[name];
 
+	cout << "Typefamily: " << name << ":\n";
 	for(auto it: typeFamily){
 		cout << "Trying... " << it->toString() << "\n";
-		if(type == *it){
+
+	cout << "Comparing " << (new Type(type))->toString() << " && " << it->toString() << "...\n";
+		if(type.modifiersEqual(*it)){
 			return it;
 		}
 	}
 
+	cout << "...Fail!...\b";
+
 
 	auto result = new Type(type);
-	cout << "Now new type " << result->toString() << "\n";
+	//cout << "Now new type " << result->toString() << "\n";
 	currentScope->addType(result->getName(), result);
 	return result;
 }
