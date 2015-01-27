@@ -29,7 +29,17 @@ def void foo(int)
 foo(rand())
 
 
-struct Vector{struct Point{}};
+def int operator = (int, int);
+struct Point{
+int x, y;
+def int getSth();
+};
+
+struct Vector{
+Point start, end;
+};
+
+
 
 def const ref Vector.Point(Vector.Point);
 def Vector create(const ref Vector.Point p1, const ref Vector.Point p2){
@@ -62,7 +72,19 @@ def fType getFunction(){}
 getFunction()(10);
 
 
+def int operator = (int, int);
 
 
+Vector v1, v2;
+def int Vector.magic(){
+start.x = end.x;
+}
+
+def void operator = (Point, Point);
+Point p3;
+p1 = p3;
+p1.x = p3.y;
+
+foo(v1.end.x);
 
 

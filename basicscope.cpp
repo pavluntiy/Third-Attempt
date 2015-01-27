@@ -135,11 +135,27 @@ StructureSymbol* BasicScope::resolveStructure(const string &name){
 }
 
 StructureSymbol* BasicScope::resolveStructure(Type *type){
-	if(!this->typeStructures.count(type)){
+		
+	string name = type->getName();
+	auto currentScope = this->resolveNamedScope(type->getFullName());
+	while(currentScope != nullptr){
+		if(currentScope->getTypes().count(name)){
+			break;
+		}
+		currentScope = currentScope->getParentScope();
+	}
+
+	if(!currentScope || !currentScope->getTypes().count(name)){
+		throw NoticeException("Undeclared type'"+ name + "'!");	
+	}
+
+	auto typeStructures = currentScope->getTypeStructures();
+
+	if(!typeStructures.count(type)){
 		throw TypeException("No way to resolve type " + type->toString() + " as structure!");
 	}
 
-	return this->typeStructures[type];
+	return typeStructures[type];
 }
 
 vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *name){
@@ -228,6 +244,8 @@ bool BasicScope::hasType(Type *type){
 
 	return false;
 }
+
+
 
 Type* BasicScope::resolveModifiedType(const Type &type){
 	//cout << "ololo" << endl;
