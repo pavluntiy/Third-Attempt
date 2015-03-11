@@ -26,7 +26,7 @@ public:
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
-	void setFunction(BasicSymbol *function);
+	void setFunction(FunctionSymbol *function);
 	BasicSymbol* getFunction();
 
 //	Type *getType();

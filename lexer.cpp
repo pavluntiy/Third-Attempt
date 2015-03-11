@@ -6,9 +6,8 @@
 		return this->eofReported;
 	}
 
-	Lexer::Lexer(istream &in):
-	data(in)
-	{	
+	Lexer::Lexer(Data *data){
+		this->data = data;	
 		this->wasEof = false;
 		output.push_back(Token(Token::BEGIN));
 		currentToken = output[0];
@@ -22,11 +21,11 @@
 	}
 
 	char Lexer::currentChar(){
-		if(this->data.eof()){
+		if(this->data->eof()){
 			setEof();
 			return '\0';
 		}
-		return this->data.currentChar;
+		return this->data->currentChar;
 	}
 
 	void Lexer::setEof(){
@@ -43,7 +42,7 @@
 
 			string buffer = "";
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 
 			while(
 				Alphabet::is<Alphabet::LATIN_LETTER>(currentChar()) ||
@@ -51,19 +50,19 @@
 				Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())
 			){
 				buffer += currentChar();
-				data.consume();
+				data->consume();
 			}
 			return " ::: " + buffer;
 	}
 
 	Token Lexer::tryAndGetOctal(bool zeroFound, string buffer){
 		if(!zeroFound){
-			data.restore();
+			data->restore();
 			throw LexerException("No octal found!");
 		}
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
-			data.consume();
+			data->consume();
 		}
 
 		if(Alphabet::is<Alphabet::OCTAL_DIGIT>(currentChar())){
@@ -76,7 +75,7 @@
 					buffer += currentChar();
 				}
 				
-				data.consume();
+				data->consume();
 
 			}
 		}
@@ -87,7 +86,7 @@
 		}
 
 		if(buffer == "0"){
-			data.restore();
+			data->restore();
 			throw NoticeException("No octal found!");
 		}
 
@@ -99,7 +98,7 @@
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "octal", data.getPreviousSourcePosition());
+		return Token(Token::INT, buffer, "octal", data->getPreviousSourcePosition());
 
 	}
 
@@ -108,7 +107,7 @@
 		int zeroes = 0;
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
 			++zeroes;
-			data.consume();
+			data->consume();
 		}
 
 		if(Alphabet::is<Alphabet::HEXADECIMAL_DIGIT>(currentChar())){
@@ -121,14 +120,14 @@
 					buffer += currentChar();
 				}
 				
-				data.consume();
+				data->consume();
 
 			}
 		}
 
 		if(buffer == "0x" || buffer == "0X"){
 			if(!zeroes){
-				data.restore();
+				data->restore();
 				throw LexerException("Unfinished hexadecimal found!");
 			}
 			else{
@@ -139,7 +138,7 @@
 
 
 		if(currentChar() == '.'){
-				 	data.restore();
+				 	data->restore();
 				 	throw LexerException("No fractions are allowed for hexadecimal");
 		}
 
@@ -147,20 +146,20 @@
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "hexadecimal", data.getPreviousSourcePosition());
+		return Token(Token::INT, buffer, "hexadecimal", data->getPreviousSourcePosition());
 
 	}
 
 	Token Lexer::tryAndGetDecimal(string buffer){
 
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
-			data.consume();
+			data->consume();
 		}
 
 		bool isFloat = false;
 		if(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) || currentChar() == '.'){
 			while(Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar()) 
-				|| (currentChar() == '.' && !data.find("..") )
+				|| (currentChar() == '.' && !data->find("..") )
 				|| Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())
 				|| Alphabet::is<Alphabet::UNDERSCORE>(currentChar())
 			){	
@@ -176,13 +175,13 @@
 					buffer += currentChar();
 				}
 
-				data.consume();
+				data->consume();
 
 			}
 		}
 
 		if (isFloat){
-			return Token(Token::FLOAT, buffer, "decimal", data.getPreviousSourcePosition());
+			return Token(Token::FLOAT, buffer, "decimal", data->getPreviousSourcePosition());
 		}
 
 		if(buffer.size() == 1 && Alphabet::is<Alphabet::SIGN>(buffer[0])){
@@ -193,7 +192,7 @@
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "decimal", data.getPreviousSourcePosition());
+		return Token(Token::INT, buffer, "decimal", data->getPreviousSourcePosition());
 
 	}
 
@@ -202,7 +201,7 @@
 		int zeroes = 0;
 		while(Alphabet::is<Alphabet::ZERO>(currentChar())){
 			++zeroes;
-			data.consume();
+			data->consume();
 		}
 
 		if(Alphabet::is<Alphabet::BINARY_DIGIT>(currentChar())){
@@ -215,14 +214,14 @@
 					buffer += currentChar();
 				}
 				
-				data.consume();
+				data->consume();
 
 			}
 		}
 
 		if(buffer == "0b" || buffer == "0B"){
 			if(!zeroes){
-				data.restore();
+				data->restore();
 				throw LexerException("No binary found!");
 			}
 			else{
@@ -231,7 +230,7 @@
 		}
 
 		if(currentChar() == '.'){
-				 	data.restore();
+				 	data->restore();
 				 	throw LexerException("No fractions are allowed for binary");
 		}
 
@@ -239,13 +238,13 @@
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::INT, buffer, "binar", data.getPreviousSourcePosition());
+		return Token(Token::INT, buffer, "binar", data->getPreviousSourcePosition());
 
 	}
 
 
 	Token Lexer::tryAndGetNumeric(){
-		data.lock();
+		data->lock();
 		Token result;
 		bool zeroFound = false;
 
@@ -254,31 +253,31 @@
 		if (Alphabet::is<Alphabet::ZERO>(currentChar())){
 			zeroFound = true;
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
 
 
 		if(zeroFound && (currentChar() == 'x' || currentChar() == 'X')){
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 			try{
 				result = tryAndGetHexadecimal(buffer);
 				return result;
 			}
 			catch(NoticeException le){
-				data.restore();
+				data->restore();
 			}
 		}
 
 		if(zeroFound && (currentChar() == 'b' || currentChar() == 'B')){
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 			try{
 				result = tryAndGetBinary(buffer);
 				return result;
 			}
 			catch(NoticeException le){
-				data.restore();
+				data->restore();
 			}
 		}
 	
@@ -295,7 +294,7 @@
 			return result;
 		}
 		catch(NoticeException le){
-			data.restore();
+			data->restore();
 		}
 
 		throw NoticeException ("No numeric found!");
@@ -306,59 +305,59 @@
 
 		string buffer = "";
 		buffer += currentChar();
-		data.consume();
+		data->consume();
 
 		bool screenCharFound = false;
 		while(currentChar() != '\'' || screenCharFound){
 			screenCharFound = (currentChar() == '\\') && !screenCharFound;
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
 		buffer += '\'';
-		data.consume();
+		data->consume();
 
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
 
 
-		return Token(Token::CHAR, buffer, "", data.getPreviousSourcePosition());
+		return Token(Token::CHAR, buffer, "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::tryAndGetString(){
 
 		string buffer = "";
 		buffer += currentChar();
-		data.consume();
+		data->consume();
 
 		bool screenCharFound = false;
 		while(currentChar() != '\"' || screenCharFound){
 			screenCharFound = (currentChar() == '\\') && !screenCharFound;
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
 		buffer += '\"';
-		data.consume();
+		data->consume();
 
 		if(Alphabet::is<Alphabet::LETTER>(currentChar())){
 			buffer += getSuffix();		
 		}
 
-		return Token(Token::STRING, buffer, "", data.getPreviousSourcePosition());
+		return Token(Token::STRING, buffer, "", data->getPreviousSourcePosition());
 	}
 
 	void Lexer::getWhitespaces(){
 		while(Alphabet::is<Alphabet::WHITESPACE>(currentChar()) && !Alphabet::is<Alphabet::NEWLINE>(currentChar())) {
 
-				data.consume();
+				data->consume();
 			}
 	}
 
 	Token Lexer::getNewLine(){
 		while(Alphabet::is<Alphabet::NEWLINE>(currentChar())){
-			data.consume();
+			data->consume();
 		}
-		return Token(Token::NEWLINE, "", "", data.getPreviousSourcePosition());
+		return Token(Token::NEWLINE, "", "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::tryAndGetWord(){
@@ -369,243 +368,243 @@
 
 		while(Alphabet::is<Alphabet::LETTER>(currentChar()) || Alphabet::is<Alphabet::DECIMAL_DIGIT>(currentChar())){
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
 		if(keywords.count(buffer)){
-			return Token(Token::KEYWORD, buffer, "", data.getPreviousSourcePosition());
+			return Token(Token::KEYWORD, buffer, "", data->getPreviousSourcePosition());
 		}
 
 
-		return Token(Token::NAME, buffer, "", data.getPreviousSourcePosition());
+		return Token(Token::NAME, buffer, "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::tryAndGetOneLineComment (){
 		string buffer = "//";
-		data.get("//");
+		data->get("//");
 
 		while(!Alphabet::is<Alphabet::NEWLINE>(currentChar())){
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
 
 
-		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
+		return Token(Token::COMMENT, buffer, "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::tryAndGetMultyLineComment (){
 		string buffer = "/*";
-		data.get("/*");
+		data->get("/*");
 
-		while(!data.find("*/")){
+		while(!data->find("*/")){
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
 
 		buffer += "*/";
-		data.get("*/");
+		data->get("*/");
 
 
-		return Token(Token::COMMENT, buffer, "", data.getPreviousSourcePosition());
+		return Token(Token::COMMENT, buffer, "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::tryAndGetDirective(){
 		std::string buffer = "#";
-		data.consume();
-		while (!Alphabet::is<Alphabet::NEWLINE>(currentChar()) && !data.find("//") && !data.find("/*")){
+		data->consume();
+		while (!Alphabet::is<Alphabet::NEWLINE>(currentChar()) && !data->find("//") && !data->find("/*")){
 			buffer += currentChar();
-			data.consume();
+			data->consume();
 		}
-		return Token(Token::DIRECTIVE, buffer, "", data.getPreviousSourcePosition());
+		return Token(Token::DIRECTIVE, buffer, "", data->getPreviousSourcePosition());
 	}
 
 
 	Token Lexer::getSlashVariants(){
-			data.consume();
+			data->consume();
 			if (currentChar() == '/'){
-				data.consume();
-				return Token(Token::OPERATOR, "//", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "//", "", data->getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "/=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "/=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "/", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "/", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getPlusVariants (){
-		data.consume();
+		data->consume();
 		if ( currentChar() == '+' ){
-				data.consume();
-				return Token(Token::OPERATOR, "++", "", data.getPreviousSourcePosition()); 
+				data->consume();
+				return Token(Token::OPERATOR, "++", "", data->getPreviousSourcePosition()); 
 		}
 		else if ( currentChar() == '=' ){
-				data.consume();
-				return Token(Token::OPERATOR, "+=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "+=", "", data->getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, "+", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, "+", "", data->getPreviousSourcePosition());
 		}
 	}
 
 	Token Lexer::getMinusVariants (){
-		data.consume();
+		data->consume();
 		if ( currentChar() == '-' ){
-				data.consume();
-				return Token(Token::OPERATOR, "--", "", data.getPreviousSourcePosition()); 
+				data->consume();
+				return Token(Token::OPERATOR, "--", "", data->getPreviousSourcePosition()); 
 		}
 		else if ( currentChar() == '=' ){
-				data.consume();
-				return Token(Token::OPERATOR, "-=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "-=", "", data->getPreviousSourcePosition());
 		}
 		else if (currentChar() == '>'){
-			data.consume();
-			return Token(Token::OPERATOR, "->", "", data.getPreviousSourcePosition());
+			data->consume();
+			return Token(Token::OPERATOR, "->", "", data->getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, "-", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, "-", "", data->getPreviousSourcePosition());
 		}
 	}
 
 	Token Lexer::getStarVariants(){
-		data.consume();
+		data->consume();
 		if ( currentChar() == '*' ){
-			data.consume();
-			return Token(Token::OPERATOR, "**", "", data.getPreviousSourcePosition()); 
+			data->consume();
+			return Token(Token::OPERATOR, "**", "", data->getPreviousSourcePosition()); 
 		}
 		else if ( currentChar() == '=' ){
-			data.consume();
-			return Token(Token::OPERATOR, "*=", "", data.getPreviousSourcePosition()); 
+			data->consume();
+			return Token(Token::OPERATOR, "*=", "", data->getPreviousSourcePosition()); 
 		}
 		else {
-			return Token(Token::OPERATOR, "*", "", data.getPreviousSourcePosition()); 
+			return Token(Token::OPERATOR, "*", "", data->getPreviousSourcePosition()); 
 		}
 
 	}
 
 	Token Lexer::getProcentVariants(){
-			data.consume();
+			data->consume();
 			if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "%=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "%=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "%", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "%", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getCircumflexVariants(){
-			data.consume();
+			data->consume();
 			if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "^=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "^=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "^", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "^", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getWaveVariants(){
-			data.consume();
+			data->consume();
 			if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "~=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "~=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "~", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "~", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getBraceLeft(){
-		data.consume();
-		return Token(Token::BRACE_LEFT, data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::BRACE_LEFT, data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getBraceRight(){
-		data.consume();
-		return Token(Token::BRACE_RIGHT, data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::BRACE_RIGHT, data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getBracketLeft(){
-		data.consume();
-		return Token(Token::BRACKET_LEFT, data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::BRACKET_LEFT, data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getBracketRight(){
-		data.consume();
-		return Token(Token::BRACKET_RIGHT, data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::BRACKET_RIGHT, data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getCurlLeft(){
-		data.consume();
-		return Token(Token::CURL_LEFT, data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::CURL_LEFT, data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getCurlRight(){
-		data.consume();
-		return Token(Token::CURL_RIGHT, data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::CURL_RIGHT, data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getDotVariants(){
-		data.consume();
+		data->consume();
 		if (currentChar() == '.'){
-			data.consume();
+			data->consume();
 			if(currentChar() == '.'){
-				data.consume();
-				return Token(Token::OPERATOR, "...", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "...", "", data->getPreviousSourcePosition());
 			}
-			return Token(Token::OPERATOR, "..", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, "..", "", data->getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, ".", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, ".", "", data->getPreviousSourcePosition());
 		}	
 	}
 
 	Token Lexer::getComaVariants(){
-		data.consume();
-		return Token(Token::OPERATOR, ",", "", data.getPreviousSourcePosition());	
+		data->consume();
+		return Token(Token::OPERATOR, ",", "", data->getPreviousSourcePosition());	
 	}
 
 	Token Lexer::getLessVariants(){
-		data.consume();
+		data->consume();
 		if(currentChar() == '='){
-			data.consume();
-			return Token(Token::OPERATOR, "<=", "", data.getPreviousSourcePosition());
+			data->consume();
+			return Token(Token::OPERATOR, "<=", "", data->getPreviousSourcePosition());
 		}
 		else if (currentChar() == '<'){
-			data.consume();
+			data->consume();
 			if(currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "<<=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "<<=", "", data->getPreviousSourcePosition());
 			}
-			return Token(Token::OPERATOR, "<<", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, "<<", "", data->getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, "<", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, "<", "", data->getPreviousSourcePosition());
 		}	
 	}
 
 	Token Lexer::getGreaterVariants(){
-		data.consume();
+		data->consume();
 		if(currentChar() == '='){
-			data.consume();
-			return Token(Token::OPERATOR, ">=", "", data.getPreviousSourcePosition());
+			data->consume();
+			return Token(Token::OPERATOR, ">=", "", data->getPreviousSourcePosition());
 		}
 		else if (currentChar() == '>'){
-			data.consume();
+			data->consume();
 			if(currentChar() == '>'){
-				data.consume();
-				return Token(Token::OPERATOR, ">>>", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, ">>>", "", data->getPreviousSourcePosition());
 			}
 			if(currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, ">>=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, ">>=", "", data->getPreviousSourcePosition());
 			}
-			return Token(Token::OPERATOR, ">>", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, ">>", "", data->getPreviousSourcePosition());
 		}
 		else {
-			return Token(Token::OPERATOR, ">", "", data.getPreviousSourcePosition());
+			return Token(Token::OPERATOR, ">", "", data->getPreviousSourcePosition());
 		}	
 	}
 
@@ -613,110 +612,110 @@
 
 	Token Lexer::getEqualsVariants(){
 
-			data.consume();
+			data->consume();
 			if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "==", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "==", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "=", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "=", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getAmpersandVariants(){
 
-			data.consume();
+			data->consume();
 			if (currentChar() == '&'){
-				data.consume();
+				data->consume();
 				if(currentChar() == '='){
-					data.consume();
-					return Token(Token::OPERATOR, "&&=", "", data.getPreviousSourcePosition());
+					data->consume();
+					return Token(Token::OPERATOR, "&&=", "", data->getPreviousSourcePosition());
 				}
-				return Token(Token::OPERATOR, "&&", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "&&", "", data->getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "&=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "&=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "&", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "&", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getDashVariants(){
 
-			data.consume();
+			data->consume();
 			if (currentChar() == '|'){
-				data.consume();
+				data->consume();
 				if(currentChar() == '='){
 
-					data.consume();
-					return Token(Token::OPERATOR, "||=", "", data.getPreviousSourcePosition());
+					data->consume();
+					return Token(Token::OPERATOR, "||=", "", data->getPreviousSourcePosition());
 				}
-				return Token(Token::OPERATOR, "||", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "||", "", data->getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
-				//cout << data.eof() << " &&\n";
-				data.consume();
-				//cout << data.eof() << " &&\n";
-				return Token(Token::OPERATOR, "|=", "", data.getPreviousSourcePosition());
+				//cout << data->eof() << " &&\n";
+				data->consume();
+				//cout << data->eof() << " &&\n";
+				return Token(Token::OPERATOR, "|=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "|", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "|", "", data->getPreviousSourcePosition());
 			}
 	}
 
 	Token Lexer::getAtVariants(){
-		data.consume();
-		return Token(Token::OPERATOR, "@", "", data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::OPERATOR, "@", "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getDollarVariants(){
-		data.consume();
-		return Token(Token::OPERATOR, "$", "", data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::OPERATOR, "$", "", data->getPreviousSourcePosition());
 	}
 
 
 	Token Lexer::getQuestionVariants(){
-		data.consume();
-		return Token(Token::OPERATOR, "?", "", data.getPreviousSourcePosition());
+		data->consume();
+		return Token(Token::OPERATOR, "?", "", data->getPreviousSourcePosition());
 	}
 
 	Token Lexer::getColonVariants(){
-		data.consume();
+		data->consume();
 			if (currentChar() == ':'){
-				data.consume();
+				data->consume();
 				if(currentChar() == '='){
-					data.consume();
-					return Token(Token::OPERATOR, "::=", "", data.getPreviousSourcePosition());
+					data->consume();
+					return Token(Token::OPERATOR, "::=", "", data->getPreviousSourcePosition());
 				}
-				return Token(Token::OPERATOR, "::", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "::", "", data->getPreviousSourcePosition());
 			}
 			else if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, ":=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, ":=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, ":", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, ":", "", data->getPreviousSourcePosition());
 			}
 		
 	}
 
 	Token Lexer::getExclamationVariants(){
 
-		data.consume();
+		data->consume();
 		if (currentChar() == '='){
-				data.consume();
-				return Token(Token::OPERATOR, "!=", "", data.getPreviousSourcePosition());
+				data->consume();
+				return Token(Token::OPERATOR, "!=", "", data->getPreviousSourcePosition());
 			}
 			else {
-				return Token(Token::OPERATOR, "!", "", data.getPreviousSourcePosition());
+				return Token(Token::OPERATOR, "!", "", data->getPreviousSourcePosition());
 		}
 	}
 
 	Token Lexer::tryAndGetOperator(){
 
-		data.lock();
+		data->lock();
 		switch (currentChar()){
 			case '/': return getSlashVariants(); break;
 			case '%': return getProcentVariants(); break;
@@ -757,7 +756,7 @@
 
 		}
 
-		data.restore();
+		data->restore();
 		throw NoticeException("Nothing found!");
 
 
@@ -768,7 +767,7 @@
 
 			Token result;
 			try{
-				data.isReady();
+				data->isReady();
 			}
 			catch (DataException de){
 				setEof();
@@ -844,7 +843,7 @@
 				}
 			}
 
-			if(data.find("//")){
+			if(data->find("//")){
 				try{
 					result = tryAndGetOneLineComment();
 					return result;
@@ -853,7 +852,7 @@
 				}
 			}
 
-			if(data.find("/*")){
+			if(data->find("/*")){
 				try{
 					result = tryAndGetMultyLineComment();
 					return result;
@@ -863,8 +862,8 @@
 			}
 
 			if(currentChar() == ';'){
-				data.consume();
-				return Token(Token::SEMICOLON, data.sourcePosition);
+				data->consume();
+				return Token(Token::SEMICOLON, data->sourcePosition);
 			}
 
 			try{
@@ -875,10 +874,10 @@
 			catch (NoticeException le){
 			}
 
-			if(data.eof()){
+			if(data->eof()){
 				setEof();
 			}
-			data.restore();
+			data->restore();
 			throw LexerException("Unknown characters ");
 			return Token();
 	}
@@ -893,7 +892,7 @@
 			output[i].setType(Token::NONE);
 		}
 		
-		data.recover();
+		data->recover();
 
 	}
 
@@ -901,7 +900,7 @@
 	void Lexer::addToOutput (const Token &token){
 		this->currentToken = token;
 		this->output.push_back(token);
-		data.lock();
+		data->lock();
 	}
 
 	void Lexer::getNextToken(){
@@ -910,7 +909,7 @@
 				}
 				catch (LexerException le) {
 					recover();
-					addToOutput(Token(Token::ERROR, le.what() + ": " + data.getErrorReport(), "", data.getPreviousSourcePosition()));
+					addToOutput(Token(Token::ERROR, le.what() + ": " + data->getErrorReport(), "", data->getPreviousSourcePosition()));
 					return;
 				}
 				catch (NoticeException ne){
@@ -922,11 +921,11 @@
 	}
 
 	void Lexer::checkForEof(void){
-		this->wasEof = data.eof();
+		this->wasEof = data->eof();
 	}
 
 	void Lexer::reportEof(void){
-		addToOutput(Token (Token::END, data.sourcePosition));
+		addToOutput(Token (Token::END, data->sourcePosition));
 		this->eofReported = true;
 	}
 

@@ -6,7 +6,7 @@ SOURCES=header.cpp alphabet.cpp\
 	\
 	token.cpp\
 	lexer.cpp\
-	data.cpp\
+	data.cpp stringdata.cpp\
 	\
 	basicvisitor.cpp\
 	printvisitor.cpp deletevisitor.cpp scopeprintvisitor.cpp\

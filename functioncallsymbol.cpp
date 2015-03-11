@@ -10,7 +10,7 @@ void FunctionCallSymbol::addArgument(Type *type){
 	this->arguments.push_back(type);
 }
 
-void FunctionCallSymbol::setFunction(BasicSymbol *function){
+void FunctionCallSymbol::setFunction(FunctionSymbol *function){
 	//this->type = function->getType();
 	this->function = function;
 }

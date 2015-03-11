@@ -33,8 +33,8 @@ int main (int argc, char **argv) {
 		err = &cerr;
 	}
 
-
-	 Lexer lexer(*in);
+	Data *data = new Data(*in);
+	 Lexer lexer(data);
 	// int i = 0;
 	// 	try{
 

@@ -13,7 +13,7 @@ class Lexer {
 public:
 		
 	bool wasEof;
-	Data data;
+	Data *data;
 	vector<Token> output;
 	Token currentToken;
 	set<string> keywords;
@@ -22,7 +22,7 @@ public:
 
 	bool EofReported();
 
-	Lexer(istream &in = cin);
+	Lexer(Data *data);
 
 	char currentChar();
 	void setEof();

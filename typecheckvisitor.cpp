@@ -75,8 +75,7 @@ void TypeVisitor::visit(FunctionCallNode *node){
 		functionCall->addArgument(it->getSymbol()->getType());
 	}
 
-	if(dynamic_cast<FunctionCallNode*>(node->getFunctionName())){
-		auto tmp = dynamic_cast<FunctionCallSymbol*>(node->getFunctionName()->getSymbol());
+/*	if(auto tmp = dynamic_cast<FunctionCallNode*>(node->getFunctionName())){
 		functionCall->setFunction(tmp);
 		auto functionType = dynamic_cast<FunctionType*>(tmp->getType());
 		if( !functionCall->exactlyEquals(functionType) && 
@@ -85,8 +84,7 @@ void TypeVisitor::visit(FunctionCallNode *node){
 			throw TypeException("Invalid function call ", node->getPosition());
 		}	
 	}
-	else if(dynamic_cast<DotNode*>(node->getFunctionName())){
-		auto dotNode = dynamic_cast<DotNode*>(node->getFunctionName());
+	else if(auto dotnode = dynamic_cast<DotNode*>(node->getFunctionName())){
 		functionCall->setFullName(dynamic_cast<CompoundNameNode*>(dotNode->getRight()));
 		auto object = dotNode->getLeft();
 		auto structure = currentScope->resolveStructure(object->getSymbol()->getType());
@@ -94,12 +92,13 @@ void TypeVisitor::visit(FunctionCallNode *node){
 		functionCall->setFunction(function);
 		functionCall->setType(function->getReturnType());
 	}
-	else{
+    */
+//	else{
 		functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
 		auto function = currentScope->resolveFunctionCall(functionCall);
 		functionCall->setFunction(function);
 		functionCall->setType(function->getReturnType());
-	}
+//	}
 
 	if(functionCall->getConversions().size() > 0){
 		auto conversions = functionCall->getConversions();
@@ -149,8 +148,8 @@ BasicNode* TypeVisitor::import(AbstractScope *to, string name){
 		throw TypeException("Bad module " + name);
 	}
 
-
-	Lexer lexer(*in);
+	Data *data = new Data(*in);
+	Lexer lexer(data);
 
 	Parser parser(lexer);
 	try{
