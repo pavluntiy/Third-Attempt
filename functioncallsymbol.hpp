@@ -14,15 +14,15 @@
 class FunctionScope;
 class FunctionType;
 class FunctionCallSymbol: public BasicSymbol{
-vector<Type*> arguments;
+vector<Type*> argumentTypes;
 BasicSymbol *function;
 vector<FunctionSymbol*> conversions;
 
 public:
-	void addArgument(Type *type);
+	void addArgumentType(Type *type);
 	void setFunctionScope(AbstractScope *scope);
 	void setFunctionLabel(string str);
-	vector<Type*> getArguments();
+	vector<Type*> getArgumentTypes();
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
@@ -34,8 +34,8 @@ public:
 	string toString(string shift = "");
 	string argumentsToString(string shift = "");
 
-	bool exactlyEquals(FunctionType *);
-	bool conversionExists(FunctionType *);
+//	bool exactlyEquals(FunctionType *);
+//	bool conversionExists(FunctionType *);
 
 	const vector<FunctionSymbol*>& getConversions();
 

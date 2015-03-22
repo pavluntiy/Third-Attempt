@@ -12,8 +12,8 @@ void FunctionSymbol::setReturnType(Type *type){
 	this->returnType = type;
 }
 
-void FunctionSymbol::addArgument(Type *type){
-	this->arguments.push_back(type);
+void FunctionSymbol::addArgumentType(Type *type){
+	this->argumentTypes.push_back(type);
 }
 
 void FunctionSymbol::setFunctionScope(AbstractScope *scope){
@@ -35,8 +35,8 @@ Type* FunctionSymbol::getReturnType(){
 	//return this->functionType->getReturnType();
 }
 
-vector<Type*> FunctionSymbol::getArguments(){
-	return this->arguments;
+vector<Type*> FunctionSymbol::getArgumentTypes(){
+	return this->argumentTypes;
 	//return this->functionType->getArguments();
 }
 
@@ -80,8 +80,8 @@ string FunctionSymbol::argumentsToString(string shift){
 	stringstream result;
 
 
-	result << shift << "'" + this->getName() + "' arguments:";
-	for(auto it: this->arguments){
+	result << shift << "'" + this->getName() + "' arguments types:";
+	for(auto it: this->argumentTypes){
 	 	result << it->toString() << 	"; ";
 	}
 	return result.str();
@@ -105,13 +105,13 @@ void FunctionSymbol::setDefinitionPosition(Position position){
 }
 
 bool FunctionSymbol::exactlyEquals(FunctionSymbol *candidate){
-	auto otherArgs = candidate->getArguments();
-	if(this->arguments.size() != otherArgs.size()){
+	auto candidateArgTypes = candidate->getArgumentTypes();
+	if(this->argumentTypes.size() != candidateArgTypes.size()){
 		return false;
 	}
 
-	for(int i = 0; i < this->arguments.size(); ++i){
-		if(this->arguments[i] != otherArgs[i]){
+	for(int i = 0; i < this->argumentTypes.size(); ++i){
+		if(this->argumentTypes[i] != candidateArgTypes[i]){
 			return false;
 		}
 	}

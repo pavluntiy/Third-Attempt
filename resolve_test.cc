@@ -40,8 +40,8 @@ struct Point{
 };
 
 Point somePoint;
-somePoint.foo(10);
-somePoint->foo();
+//somePoint.foo(10);
+//somePoint->foo();
 
 
 struct Vector{
@@ -78,7 +78,7 @@ printf('10');
 
 using def int fType(int);
 def fType getFunction(){}
-getFunction()(10);
+//getFunction()(10);
 
 
 def int operator = (int, int);
@@ -112,12 +112,12 @@ __Point a, b;
 
 __Vector __v1, __v2;
 
-__v1.a.foo(10);
+//__v1.a.foo(10);
 
-__v1.b.foo();
-__v1.foo()
-__v2.b.foo('a');
-__v2.foo('a');
+//__v1.b.foo();
+//__v1.foo()
+//__v2.b.foo('a');
+//__v2.foo('a');
 
 struct UM{
 int x, y;

@@ -45,7 +45,7 @@ public:
 
 	//void tryToAddConversion(FunctionSymbol *function);
 	void addConversion(Type *type, FunctionSymbol *function);
-	FunctionSymbol* getConversion(Type *type);
+	pair<bool, FunctionSymbol*>  getConversion(Type *type);
 
 	void setActualType(Type* type);
 	Type* getActualType();

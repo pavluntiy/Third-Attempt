@@ -29,7 +29,9 @@ public:
 	virtual Type* resolveType(const Type&) override;
 	virtual Type* resolveType(string) override;
 	virtual FunctionSymbol* resolveFunction(FunctionSymbol* function) override;
-	virtual FunctionSymbol* resolveFunctionCall(FunctionCallSymbol*) override;
+	virtual bool checkFunctionType(FunctionCallSymbol *functionCall, FunctionType *candidate) override;
+	virtual pair<bool, vector<FunctionSymbol*>> getFunctionCallConversions(FunctionCallSymbol *functionCall, FunctionType *candidate) override;
+	virtual pair<FunctionSymbol*, vector<FunctionSymbol*>> resolveFunctionCall(FunctionCallSymbol* functionCall, CompoundNameNode* functionName) override;
 	virtual Type* getUnqualifiedType(string name) override;
 	virtual StructureSymbol* resolveStructure(const string &name) override;
 	virtual StructureSymbol* resolveStructure(Type *) override;

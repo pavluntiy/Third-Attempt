@@ -30,8 +30,8 @@ void FunctionType::setReturnType(Type *type){
 	this->returnType = type;
 }
 
-void FunctionType::addArgument(Type *type){
-	this->arguments.push_back(type);
+void FunctionType::addArgumentType(Type *type){
+	this->argumentTypes.push_back(type);
 }
 
 
@@ -39,8 +39,8 @@ Type* FunctionType::getReturnType(){
 	return this->returnType;
 }
 
-vector<Type*> FunctionType::getArguments(){
-	return this->arguments;
+vector<Type*> FunctionType::getArgumentTypes(){
+	return this->argumentTypes;
 }
 
 void FunctionType::setVarargs(){
@@ -71,7 +71,7 @@ string FunctionType::toString(string shift){
 string FunctionType::argumentsToString(string shift){
 	stringstream result;
 	result << shift << "'" + this->getName() + "' arguments:";
-	for(auto it: this->arguments){
+	for(auto it: this->argumentTypes){
 	 	result << it->toString() << 	"; ";
 	}
 	return result.str();

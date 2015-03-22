@@ -78,6 +78,8 @@ public:
 
 	void dump(ostream *out);
 
+	FunctionCallSymbol* setFunctionName(FunctionCallSymbol*);
+
 	AbstractScope *getGlobalScope();
 	void setGlobalScope(AbstractScope*);
 };

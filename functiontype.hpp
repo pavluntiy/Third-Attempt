@@ -8,7 +8,7 @@
 class FunctionType: public Type {
 protected:
 	Type* returnType;
-	vector<Type*> arguments;
+	vector<Type*> argumentTypes;
 	bool varargs = false;
 public:
 
@@ -19,9 +19,9 @@ public:
 	//FunctionType(SignatureNode*);
 
 	Type* getReturnType();
-	vector<Type*> getArguments();
+	vector<Type*> getArgumentTypes();
 	void setReturnType(Type *type);
-	void addArgument(Type *type);
+	void addArgumentType(Type *type);
 	virtual string toString(string shift = "")override;
 	string argumentsToString(string shift = "");
 	void setVarargs();

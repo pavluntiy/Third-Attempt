@@ -174,21 +174,70 @@ vector<FunctionSymbol*> BasicScope::getOverloadedFunctionList(CompoundNameNode *
 	throw NoticeException("Undeclared overloaded functions '"+ simpleName + "'!");
 }
 
-FunctionSymbol* BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall){
+pair<bool, vector<FunctionSymbol*>> BasicScope::getFunctionCallConversions(FunctionCallSymbol *functionCall, FunctionType *candidate){
+	auto candidateArgTypes = candidate->getArgumentTypes();
+	auto callArgTypes = functionCall->getArgumentTypes();
+
+	vector<FunctionSymbol*> convertingFunctions;
+
+	if(callArgTypes.size() != candidateArgTypes.size() && !candidate->isVarargs()){
+		return make_pair(false, convertingFunctions);
+	}
+
+	int bound = min(callArgTypes.size(), candidateArgTypes.size());
+
+	for(int i = 0; i < bound; ++i){
+		if(callArgTypes[i] == candidateArgTypes[i]){
+			convertingFunctions.push_back(nullptr);
+		}
+		else {
+			auto tmp = candidateArgTypes[i]->getConversion(callArgTypes[i]);
+			if(!tmp.first){
+				return make_pair(false, convertingFunctions);
+			}
+			else{
+				convertingFunctions.push_back(tmp.second);
+			}
+		}
+	}
+
+
+	return make_pair(true, convertingFunctions);
+}
+
+bool BasicScope::checkFunctionType(FunctionCallSymbol *functionCall, FunctionType *candidate){
+	auto candidateArgTypes = candidate->getArgumentTypes();
+	auto callArgTypes = functionCall->getArgumentTypes();
+	if(callArgTypes.size() != candidateArgTypes.size()){
+		return false;
+	}
+
+	for(int i = 0; i < candidateArgTypes.size(); ++i){
+		if(callArgTypes[i] != candidateArgTypes[i]){
+			return false;
+		}
+	}
+
+	return true;
+}
+
+pair<FunctionSymbol*, vector<FunctionSymbol*>> BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall, CompoundNameNode* functionName){
+	vector<FunctionSymbol*> conversions;
 	try{
 			//cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
 			//cout << functionCall->toString() << "\n";
-		auto functionList = getOverloadedFunctionList(functionCall->getFullName());
+		auto functionList = getOverloadedFunctionList(functionName);
 
 		for(auto it: functionList){
-			if(functionCall->exactlyEquals(it->getFunctionType())){
-				return it;
+			if(checkFunctionType(functionCall, it->getFunctionType())){
+				return make_pair(it, conversions);
 			}
 		}
 
 		for(auto it: functionList){
-			if(functionCall->conversionExists(it->getFunctionType())){
-				return it;
+			auto tmp = this->getFunctionCallConversions(functionCall, it->getFunctionType());
+			if(tmp.first){
+				return make_pair(it, conversions);
 			}
 		}
 	}

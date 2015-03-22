@@ -168,13 +168,13 @@ void Type::addConversion(Type *type, FunctionSymbol *function){
 	convertTo[type] = function;
 }
 
-FunctionSymbol* Type::getConversion(Type *type){
+pair<bool, FunctionSymbol*> Type::getConversion(Type *type){
 	//cout << "Getting "  <<"for " << this << " to " << type << "!\n";
 	if(this->convertTo.count(type)){
-		return this->convertTo[type];
+		return make_pair(true, this->convertTo[type]);
 	}
 
-	return nullptr;
+	return make_pair(false, nullptr);
 }
 
 void Type::setActualType(Type* type){

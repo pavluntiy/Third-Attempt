@@ -8,9 +8,11 @@
 
 class FunctionSymbol;
 class VariableSymbol;
+class FunctionType;
 class Type;
 class StructureSymbol;
 class FunctionCallSymbol;
+
 
 
 class AbstractScope {
@@ -44,7 +46,9 @@ public:
 	virtual Type* resolveType(string) = 0;
 	//virtual FunctionSymbol* resolveFunction(CompoundNameNode* function) = 0;
 	virtual FunctionSymbol* resolveFunction(FunctionSymbol* function) = 0;
-	virtual FunctionSymbol* resolveFunctionCall(FunctionCallSymbol*) = 0;
+	virtual bool checkFunctionType(FunctionCallSymbol *functionCall, FunctionType *candidate) = 0;
+	virtual pair<bool, vector<FunctionSymbol*>> getFunctionCallConversions(FunctionCallSymbol *functionCall, FunctionType *candidate) = 0;
+	virtual pair<FunctionSymbol*, vector<FunctionSymbol*>> resolveFunctionCall(FunctionCallSymbol* functionCall, CompoundNameNode* functionName) = 0;
 	virtual Type* getUnqualifiedType(string name) = 0;
 	virtual StructureSymbol* resolveStructure(const string &name) = 0;
 	virtual StructureSymbol* resolveStructure(Type *) = 0;

@@ -62,17 +62,21 @@ void TypeVisitor::visit(CompoundNameNode *node){
 	node->setSymbol(currentScope->resolve(node));
 }
 
+// FunctionCallSymbol* TypeVisitor::setFunctionName(FunctionCallSymbol*){
+
+// }
+
 void TypeVisitor::visit(FunctionCallNode *node){
 
 	//node->setSymbol(currentScope->resolveFunction( dynamic_cast<CompoundNameNode*>(node->getFunctionName())));//Provisional
 
-	auto possibleFuctionArgument = node->getFunctionName();
-	node->getFunctionName()->accept(this);
+	auto callee = node->getFunctionName();
+	callee->accept(this);
 	auto functionCall = new FunctionCallSymbol();
 
 	for(auto it: node->getFunctionArgs()){
 		it->accept(this);
-		functionCall->addArgument(it->getSymbol()->getType());
+		functionCall->addArgumentType(it->getSymbol()->getType());
 	}
 
 /*	if(auto tmp = dynamic_cast<FunctionCallNode*>(node->getFunctionName())){
@@ -81,32 +85,41 @@ void TypeVisitor::visit(FunctionCallNode *node){
 		if( !functionCall->exactlyEquals(functionType) && 
 			!functionCall->conversionExists(functionType)
 		){
-			throw TypeException("Invalid function call ", node->getPosition());
+			throw TypeException("Invalid functionSymbol call ", node->getPosition());
 		}	
 	}
-	else if(auto dotnode = dynamic_cast<DotNode*>(node->getFunctionName())){
-		functionCall->setFullName(dynamic_cast<CompoundNameNode*>(dotNode->getRight()));
+	//if(auto dotnode = dynamic_cast<DotNode*>(node->getFunctionName())){
+		//functionCall->setFullName(dynamic_cast<CompoundNameNode*>(dotNode->getRight()));
 		auto object = dotNode->getLeft();
 		auto structure = currentScope->resolveStructure(object->getSymbol()->getType());
-		auto function = structure->getStructureScope()->resolveFunctionCall(functionCall);
-		functionCall->setFunction(function);
-		functionCall->setType(function->getReturnType());
+		auto functionSymbol = structure->getStructureScope()->resolveFunctionCall(functionCall);
+		functionCall->setFunction(functionSymbol);
+		functionCall->setType(functionSymbol->getReturnType());
 	}
     */
-//	else{
-		functionCall->setFullName(dynamic_cast<CompoundNameNode*>(node->getFunctionName()));
-		auto function = currentScope->resolveFunctionCall(functionCall);
-		functionCall->setFunction(function);
-		functionCall->setType(function->getReturnType());
-//	}
+	//else{
+		auto functionName  = dynamic_cast<CompoundNameNode*>(node->getFunctionName());
+		if(!functionName){
+			throw TypeException("Not supported way of calling functionSymbol", node->getPosition());
+		}
+		functionCall->setFullName(functionName);
+		auto tmp = currentScope->resolveFunctionCall(functionCall, functionName);
+		if(!tmp.first){
+			throw TypeException("No overloaded functionSymbol found for " + functionName->toString(), functionName->getPosition());
+		}
+		auto convertingFunctions = tmp.second;
+		auto functionSymbol = tmp.first;
+		functionCall->setFunction(functionSymbol);
+		functionCall->setType(functionSymbol->getReturnType());
+	//}
 
-	if(functionCall->getConversions().size() > 0){
-		auto conversions = functionCall->getConversions();
+	if(convertingFunctions.size() > 0){
+		//auto conversions = functionCall->getConversions();
 		auto arguments = node->getFunctionArgs();
-		int bound = conversions.size();
+		int bound = convertingFunctions.size();
 		for(int i = 0; i < bound; ++i){
-			if(conversions[i]){
-				node->replaceArgument(i, insertConversion(arguments[i], conversions[i]));
+			if(convertingFunctions[i]){
+				node->replaceArgument(i, insertConversion(arguments[i], convertingFunctions[i]));
 			}
 		}
 	}
@@ -327,29 +340,29 @@ void TypeVisitor::visit(SignatureNode *node){
 
 	//node->setType(functionType);
 
-	FunctionSymbol *function = new FunctionSymbol();
-	function->setFullName(node->getName());
-	//function->setReturnType(returnType);
-	function->setPosition(node->getPosition());
+	FunctionSymbol *functionSymbol = new FunctionSymbol();
+	functionSymbol->setFullName(node->getName());
+	//functionSymbol->setReturnType(returnType);
+	functionSymbol->setPosition(node->getPosition());
 
-	function->setType(functionType);
-	function->setReturnType(returnType);
+	functionSymbol->setType(functionType);
+	functionSymbol->setReturnType(returnType);
 
 	FunctionScope *functionScope = new FunctionScope(currentScope, functionName);
 
 	//functionScope->setReturnType(returnType);
-	function->setFunctionScope(functionScope);
+	functionSymbol->setFunctionScope(functionScope);
 
-	function->setName(functionName);
+	functionSymbol->setName(functionName);
 	functionScope->setName(functionName);
-	node->setFunctionSymbol(function);
-	node->setSymbol(function);
+	node->setFunctionSymbol(functionSymbol);
+	node->setSymbol(functionSymbol);
 
 	for(auto it: node->getArguments()){
 		auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));
 		get<0>(it)->setSymbol(currentType);
-		function->addArgument(currentType);
-		functionType->addArgument(currentType);
+		functionSymbol->addArgumentType(currentType);
+		functionType->addArgumentType(currentType);
 
 		if(get<1>(it)){
 			auto variable = new VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName());
@@ -364,19 +377,19 @@ void TypeVisitor::visit(SignatureNode *node){
 
 	if(node->isVarargs()){
 		functionType->setVarargs();
-		function->setVarargs();
+		functionSymbol->setVarargs();
 	}
 
 
-	currentScope->declareFunction(function);
+	currentScope->declareFunction(functionSymbol);
 	if(node->isConstruct()){
-		if(function->getArguments().size() == 1){
-			returnType->addConversion(function->getArguments()[0], function);
+		if(functionSymbol->getArgumentTypes().size() == 1){
+			returnType->addConversion(functionSymbol->getArgumentTypes()[0], functionSymbol);
 		}
 	}
 
-	//node->setFunctionSymbol(function);
-	node->setSymbol(function);
+	//node->setFunctionSymbol(functionSymbol);
+	node->setSymbol(functionSymbol);
 	restoreCurrentScope();
 }
 
@@ -491,7 +504,7 @@ void TypeVisitor::visit(UsingNode *node){
 		for(auto it: signature->getArguments()){
 			auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));
 			get<0>(it)->setSymbol(currentType);
-			functionType->addArgument(currentType);
+			functionType->addArgumentType(currentType);
 		}	
 
 		if(signature->isVarargs()){
@@ -599,15 +612,15 @@ void TypeVisitor::restoreCurrentScope(){
 	this->scopes.pop();
 }
 
-BasicNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *function){
-	if(!function){
+BasicNode* TypeVisitor::insertConversion(BasicNode* node, FunctionSymbol *functionSymbol){
+	if(!functionSymbol){
 		return node;
 	}
 	auto *result = new FunctionCallNode();
 	result->addArgument(node);
 	auto *functionCall = new FunctionCallSymbol();
 
-	functionCall->setFunction(function);
+	functionCall->setFunction(functionSymbol);
 	result->setSymbol(functionCall);
 	return result;
 }

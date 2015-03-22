@@ -12,7 +12,7 @@ class FunctionScope;
 class FunctionSymbol: public BasicSymbol{
 
 Type* returnType;
-vector<Type*> arguments;
+vector<Type*> argumentTypes;
 FunctionType *functionType;
 AbstractScope *functionScope;
 string functionLabel;
@@ -23,14 +23,14 @@ public:
 
 	void setFunctionType(FunctionType *type);
 
-	void addArgument(Type *type);
+	void addArgumentType(Type *type);
 	void setFunctionScope(AbstractScope *scope);
 	void setFunctionLabel(string str);
 	void setReturnType(Type *type);
 
 	FunctionType* getFunctionType();
 	Type* getReturnType();
-	vector<Type*> getArguments();
+	vector<Type*> getArgumentTypes();
 	AbstractScope* getFunctionScope();
 	string getFunctionLabel();
 
