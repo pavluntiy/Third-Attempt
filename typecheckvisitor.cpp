@@ -66,9 +66,9 @@ void TypeVisitor::visit(CompoundNameNode *node){
 
 // }
 
-FunctionSymbol* getResolvedFunction(FunctionCallSymbol* functionCall, DotNode *){
+// FunctionSymbol* getResolvedFunction(FunctionCallSymbol* functionCall, DotNode *){
 
-}
+// }
 
 void TypeVisitor::visit(FunctionCallNode *node){
 
@@ -371,7 +371,8 @@ void TypeVisitor::visit(SignatureNode *node){
 		functionType->addArgumentType(currentType);
 
 		if(get<1>(it)){
-			auto variable = new VariableSymbol(currentScope->resolveType(get<0>(it)), get<1>(it)->getSimpleName());
+
+			auto variable = new VariableSymbol(currentType, get<1>(it)->getSimpleName());
 			variable->setPosition(get<1>(it)->getPosition());
 			get<1>(it)->setSymbol(variable);
 			functionScope->declareVariable(variable);

@@ -9,7 +9,7 @@ SOURCES=header.cpp alphabet.cpp\
 	data.cpp stringdata.cpp\
 	\
 	basicvisitor.cpp\
-	printvisitor.cpp deletevisitor.cpp scopeprintvisitor.cpp\
+	printvisitor.cpp deletevisitor.cpp scopeprintvisitor.cpp typecheckvisitor.cpp\
 	\
 	basicnode.cpp\
 	operatorsnode.cpp blocknode.cpp functioncallnode.cpp valuenode.cpp programnode.cpp compoundnamenode.cpp \
@@ -18,10 +18,13 @@ SOURCES=header.cpp alphabet.cpp\
 	\
 	parser.cpp\
 	\
-	basicsymbol.cpp functionsymbol.cpp variablesymbol.cpp structuresymbol.cpp\
-	type.cpp functiontype.cpp functioncallsymbol.cpp valuesymbol.cpp importsymbol.cpp\
+	basicsymbol.cpp\
+	functionsymbol.cpp variablesymbol.cpp structuresymbol.cpp\
+	functioncallsymbol.cpp valuesymbol.cpp importsymbol.cpp\
 	\
-	typecheckvisitor.cpp\
+	type.cpp\
+	functiontype.cpp arraytype.cpp\
+	\
 	basicscope.cpp globalscope.cpp functionscope.cpp structurescope.cpp localscope.cpp\
 	main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)

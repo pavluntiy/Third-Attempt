@@ -24,7 +24,7 @@ protected:
 public:
 
 	//string getName() const;
-	int getSize() const;
+	virtual int getSize() const;
 	Type(string name, int size = 0);
 	Type();
 	Type(TypeNode*);

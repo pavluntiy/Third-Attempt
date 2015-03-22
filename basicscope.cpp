@@ -336,20 +336,20 @@ Type* BasicScope::resolveModifiedType(Type *type){
 	return type;
 }
 
-Type* BasicScope::resolveType(const Type &type){
-	string name = type.getName();
-	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
-	while(currentScope != nullptr){
-		if(currentScope->getTypes().count(name)){
-			//auto tmp
-			//return resolveModifiedType(type);
-			return currentScope->getUnqualifiedType(name);
-		}
-		currentScope = currentScope->getParentScope();
-	}
+// Type* BasicScope::resolveType(const Type &type){
+// 	string name = type.getName();
+// 	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
+// 	while(currentScope != nullptr){
+// 		if(currentScope->getTypes().count(name)){
+// 			//auto tmp
+// 			//return resolveModifiedType(type);
+// 			return currentScope->getUnqualifiedType(name);
+// 		}
+// 		currentScope = currentScope->getParentScope();
+// 	}
 	
-	throw NoticeException("Undeclared type'"+ name + "'!");
-}
+// 	throw NoticeException("Undeclared type'"+ name + "'!");
+// }
 
 AbstractScope* BasicScope::resolveNamedScope(const vector<string>& longName){
 

@@ -24,8 +24,12 @@
 
 #include "noticeexception.hpp"
 #include "parserexception.hpp"
+
 #include "type.hpp"
+#include "arraytype.hpp"
 #include "functiontype.hpp"
+
+
 #include "functionsymbol.hpp"
 #include "functioncallsymbol.hpp"
 #include "valuesymbol.hpp"
