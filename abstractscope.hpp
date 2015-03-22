@@ -39,7 +39,7 @@ public:
 	virtual FunctionSymbol* resolveFunction(CompoundNameNode*) = 0;
 	virtual VariableSymbol* resolveVariable(CompoundNameNode*) = 0;
 	virtual bool hasType(Type*) = 0;
-	virtual Type* resolveModifiedType(const Type&) = 0;
+	virtual Type* resolveModifiedType(Type*) = 0;
 	virtual Type* resolveType(CompoundNameNode*) = 0;
 	virtual Type* resolveType(Type*) = 0;
 	virtual Type* resolveType(const Type&) = 0;

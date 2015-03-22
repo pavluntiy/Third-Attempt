@@ -23,7 +23,7 @@ public:
 	virtual FunctionSymbol* resolveFunction(CompoundNameNode *name) override;
 	virtual VariableSymbol* resolveVariable(CompoundNameNode *name) override;
 	virtual bool hasType(Type*) override;
-	virtual Type* resolveModifiedType(const Type&) override;
+	virtual Type* resolveModifiedType(Type*) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
 	virtual Type* resolveType(const Type&) override;

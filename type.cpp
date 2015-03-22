@@ -25,16 +25,16 @@ Type::Type(TypeNode *node){
 		this->dimensions.push_back(stoi(it->getText()));
 	}
 
-	if(
-		this->storageModes.size() || this->modifiers.size() 
-		|| 
-		this->accessModes.size() || this->dimensions.size()
-	){
-		this->unqualified = false;
-	}
-	else {
-		this->unqualified = true;
-	}
+	// if(
+	// 	this->storageModes.size() || this->modifiers.size() 
+	// 	|| 
+	// 	this->accessModes.size() || this->dimensions.size()
+	// ){
+	// 	this->unqualified = false;
+	// }
+	// else {
+	// 	this->unqualified = true;
+	// }
 }
 const vector<string>& Type::getFullName()const {
 	return this->fullName;
@@ -120,7 +120,7 @@ const{
 }
 
 bool Type::isUnqualified(){
-	return this->unqualified;
+	return true;
 }
 
 string Type::toString(string shift){
@@ -162,6 +162,14 @@ string Type::toString(string shift){
 // 	this->convertTo[function->getArguments()[0]] = function;
 
 // }
+
+bool Type::isArray(){
+	return false;
+}
+
+bool Type::isPointer(){
+	return false;
+}
 
 void Type::addConversion(Type *type, FunctionSymbol *function){
 	//cout << "ADDED "  <<"for " << this << " to " << type << " with " << function << "\n";

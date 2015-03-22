@@ -20,7 +20,6 @@ protected:
 	int size;
 
 	map<Type*, FunctionSymbol*> convertTo;
-	bool unqualified;
 
 public:
 
@@ -42,6 +41,9 @@ public:
 	bool operator==(const Type &other) const;
 	bool operator==(Type *other) const;
 	bool modifiersEqual(const Type &other) const;
+
+	virtual bool isArray();
+	virtual bool isPointer();
 
 	//void tryToAddConversion(FunctionSymbol *function);
 	void addConversion(Type *type, FunctionSymbol *function);

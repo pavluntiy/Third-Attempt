@@ -66,6 +66,10 @@ void TypeVisitor::visit(CompoundNameNode *node){
 
 // }
 
+FunctionSymbol* getResolvedFunction(FunctionCallSymbol* functionCall, DotNode *){
+
+}
+
 void TypeVisitor::visit(FunctionCallNode *node){
 
 	//node->setSymbol(currentScope->resolveFunction( dynamic_cast<CompoundNameNode*>(node->getFunctionName())));//Provisional
@@ -88,7 +92,7 @@ void TypeVisitor::visit(FunctionCallNode *node){
 			throw TypeException("Invalid functionSymbol call ", node->getPosition());
 		}	
 	}
-	//if(auto dotnode = dynamic_cast<DotNode*>(node->getFunctionName())){
+	if(auto dotnode = dynamic_cast<DotNode*>(node->getFunctionName())){
 		//functionCall->setFullName(dynamic_cast<CompoundNameNode*>(dotNode->getRight()));
 		auto object = dotNode->getLeft();
 		auto structure = currentScope->resolveStructure(object->getSymbol()->getType());
@@ -298,11 +302,11 @@ void TypeVisitor::visit(ValueNode *node){
 	node->setSymbol(valueSymbol); 
 }
 
+
 void TypeVisitor::visit(VarDeclarationNode *node){
 	
-	Type *type = this->currentScope->resolveModifiedType(Type(node->getType()));
-	//cout <<"Nanana!";
-	node->getType()->setSymbol(type);
+	node->getType()->accept(this);
+	auto declarationType = dynamic_cast<Type*>(node->getType()->getSymbol());
 
 	for(auto it: node->getVariables()){
 		//it.first->accept(this);
@@ -310,7 +314,7 @@ void TypeVisitor::visit(VarDeclarationNode *node){
 		string varName = name->getSimpleName();
 		setCurrentScope(currentScope->resolveNamedScope(name));
 		//cout << currentScope->getName() << '\n';
-		auto variable = new VariableSymbol(type, varName);
+		auto variable = new VariableSymbol(declarationType, varName);
 		variable->setPosition(node->getPosition());
 		currentScope->declareVariable(variable);
 		it.first->setSymbol(variable);
@@ -332,8 +336,9 @@ void TypeVisitor::visit(SignatureNode *node){
 	setCurrentScope(currentScope->resolveNamedScope(name));
 
 
-
-	Type* returnType = currentScope->resolveModifiedType(Type(node->getType()));
+	node->getType()->accept(this);
+	//Type* returnType = currentScope->resolveModifiedType(Type(node->getType()));
+	Type *returnType = dynamic_cast<Type*>(node->getType()->getSymbol());
 	node->getType()->setSymbol(returnType);
 	//node->getType()->setSymbol(functionType->getReturnType());
 	functionType->setReturnType(returnType);
@@ -359,7 +364,8 @@ void TypeVisitor::visit(SignatureNode *node){
 	node->setSymbol(functionSymbol);
 
 	for(auto it: node->getArguments()){
-		auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));
+		get<0>(it)->accept(this);
+		auto currentType = dynamic_cast<Type*>(get<0>(it)->getSymbol());
 		get<0>(it)->setSymbol(currentType);
 		functionSymbol->addArgumentType(currentType);
 		functionType->addArgumentType(currentType);
@@ -496,13 +502,15 @@ void TypeVisitor::visit(UsingNode *node){
 		FunctionType *functionType = new FunctionType;
 		setCurrentScope(currentScope->resolveNamedScope(fullName));
 
-		Type* returnType = currentScope->resolveModifiedType(Type(signature->getType()));
+		signature->getType()->accept(this);
+		Type* returnType = dynamic_cast<Type*>(signature->getType()->getSymbol());
 		signature->getType()->setSymbol(functionType);
 
 		functionType->setReturnType(returnType);
 
 		for(auto it: signature->getArguments()){
-			auto currentType = currentScope->resolveModifiedType(Type(get<0>(it)));
+			get<0>(it)->accept(this);
+			auto currentType = dynamic_cast<Type*>(get<0>(it)->getSymbol());
 			get<0>(it)->setSymbol(currentType);
 			functionType->addArgumentType(currentType);
 		}	
@@ -518,7 +526,8 @@ void TypeVisitor::visit(UsingNode *node){
 		restoreCurrentScope();
  	}
  	else{
- 		auto type = dynamic_cast<TypeNode*>(node->getType());
+ 		//auto type = dynamic_cast<TypeNode*>(node->getType());
+ 		node->getType()->accept(this);
  		auto fullName = dynamic_cast<CompoundNameNode*>(node->getName());
  		string typeName = fullName->getSimpleName();
 
@@ -528,7 +537,7 @@ void TypeVisitor::visit(UsingNode *node){
  		//typeToDeclare->setName(typeName);
  		//currentScope->declareType(typeToDeclare);
 
- 		auto typeToDeclare = currentScope->resolveModifiedType(type);
+ 		auto typeToDeclare = dynamic_cast<Type*>(node->getType()->getSymbol());
  		//cout << "Going to declare " << typeToDeclare->toString() << " as " << typeName << "\n";
  		currentScope->declareType(typeName, typeToDeclare);
  		node->setSymbol(typeToDeclare);

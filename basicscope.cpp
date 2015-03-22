@@ -201,7 +201,6 @@ pair<bool, vector<FunctionSymbol*>> BasicScope::getFunctionCallConversions(Funct
 		}
 	}
 
-
 	return make_pair(true, convertingFunctions);
 }
 
@@ -222,7 +221,6 @@ bool BasicScope::checkFunctionType(FunctionCallSymbol *functionCall, FunctionTyp
 }
 
 pair<FunctionSymbol*, vector<FunctionSymbol*>> BasicScope::resolveFunctionCall(FunctionCallSymbol* functionCall, CompoundNameNode* functionName){
-	vector<FunctionSymbol*> conversions;
 	try{
 			//cout << "!" << functionCall->getFullName()->getSimpleName() << "!\n";
 			//cout << functionCall->toString() << "\n";
@@ -230,14 +228,14 @@ pair<FunctionSymbol*, vector<FunctionSymbol*>> BasicScope::resolveFunctionCall(F
 
 		for(auto it: functionList){
 			if(checkFunctionType(functionCall, it->getFunctionType())){
-				return make_pair(it, conversions);
+				return make_pair(it, vector<FunctionSymbol*>());
 			}
 		}
 
 		for(auto it: functionList){
 			auto tmp = this->getFunctionCallConversions(functionCall, it->getFunctionType());
 			if(tmp.first){
-				return make_pair(it, conversions);
+				return make_pair(it, tmp.second);
 			}
 		}
 	}
@@ -296,11 +294,11 @@ bool BasicScope::hasType(Type *type){
 
 
 
-Type* BasicScope::resolveModifiedType(const Type &type){
+Type* BasicScope::resolveModifiedType(Type *type){
 	//cout << "ololo" << endl;
 	//cout << "resolving type " << (new Type(type))->toString() << "\n";
-	string name = type.getName();
-	AbstractScope *currentScope = this->resolveNamedScope(type.getFullName());
+	string name = type->getName();
+	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
 
 
 
@@ -324,7 +322,7 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 //		cout << "Trying... " << it->toString() << "\n";
 
 //	cout << "Comparing " << (new Type(type))->toString() << " && " << it->toString() << "...\n";
-		if(type.modifiersEqual(*it)){
+		if(type->modifiersEqual(*it)){
 			return it;
 		}
 	}
@@ -332,10 +330,10 @@ Type* BasicScope::resolveModifiedType(const Type &type){
 //	cout << "...Fail!...\b";
 
 
-	auto result = new Type(type);
+	//auto result = new Type(type);
 	//cout << "Now new type " << result->toString() << "\n";
-	currentScope->addType(result->getName(), result);
-	return result;
+	currentScope->addType(type->getName(), type);
+	return type;
 }
 
 Type* BasicScope::resolveType(const Type &type){
