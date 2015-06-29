@@ -13,6 +13,7 @@
 #include "functionsymbol.hpp"
 #include "variablesymbol.hpp"
 #include "type.hpp"
+#include "arraytype.hpp"
 #include "structuresymbol.hpp"
 #include "functioncallsymbol.hpp"
 
@@ -26,7 +27,8 @@ public:
 	virtual Type* resolveModifiedType(Type*) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
-	virtual Type* getType(Type*, AbstractScope*) override;
+	virtual Type* getType(Type*) override;
+	virtual Type* getType(ArrayType*) override;
 //	virtual Type* resolveType(const Type&) override;
 	virtual Type* resolveType(string) override;
 	virtual FunctionSymbol* resolveFunction(FunctionSymbol* function) override;

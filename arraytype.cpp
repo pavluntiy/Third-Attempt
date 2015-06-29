@@ -98,3 +98,32 @@ bool ArrayType::isArray(){
 	return true;
 }
 
+Type* ArrayType::getBasicType(){
+	return this->basicType;
+}
+
+void ArrayType::setBasicType(Type *type){
+	this->basicType = type;
+}
+
+ArrayType* ArrayType::getTrimmedVersion(){
+	
+	auto tmp = this->getDimensions();
+	tmp.pop_back();
+
+	auto result = new ArrayType(this);
+	result->setDimensions(tmp);
+
+	return result;
+}
+
+ArrayType::ArrayType(ArrayType *other){
+	this->size = other->size;
+	this->dimensions = other->dimensions;
+	this->storageModes = other->storageModes;
+	this->fullName = other->fullName;
+	this->actualType = other->actualType;
+	this->convertTo = other->convertTo;
+	this->basicType = other->basicType;
+}
+

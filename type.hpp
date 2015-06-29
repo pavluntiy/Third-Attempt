@@ -28,11 +28,17 @@ public:
 	Type(string name, int size = 0);
 	Type();
 	Type(TypeNode*);
+	Type(Type*);
 
 	const vector<string>& getStorageModes() const;
 	const vector<string>& getModifiers() const;
 	const vector<string>& getAccessModes() const;
 	const vector<int>& getDimensions() const;
+
+	void setStorageModes(vector<string>);
+	void setModifiers(vector<string>);
+	void setAccesssModes(vector<string>);
+	void setDimensions(vector<int>);
 	bool isUnqualified();
 
 	const vector<string>& getFullName() const;

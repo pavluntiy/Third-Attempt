@@ -82,13 +82,34 @@ Type* BasicScope::getUnqualifiedType(string name){
 	return this->types[name][0];
 }
 
-Type* BasicScope::getType(Type* type, AbstractScope* scope){
-	if(type->isArray()){
-		
-	}
-	else {
-		return scope->getUnqualifiedType(type->getName());
-	}
+Type* BasicScope::getType(Type* type){
+
+		return this->getUnqualifiedType(type->getName());
+
+}
+
+Type* BasicScope::getType(ArrayType *type){
+	auto dim = type->getDimensions();
+		auto basicType = resolveType(type->getBasicType());
+		type->setBasicType(basicType);
+		//for(int i = 0; i < )
+
+		AbstractScope *currentScope = resolveNamedScope(type->getName());
+		string simpleName = type->getName()->getSimpleName();
+		while(currentScope != nullptr){
+			if(currentScope->getTypes().count(simpleName)){
+				break;
+			}
+			currentScope = currentScope->getParentScope();
+		}
+
+		auto currentTypes = currentScope->getTypes();
+		if(currentTypes.find(make_pair<simpleName, type>)){
+
+		}
+		auto tmp = type->getTrimmedVersion();
+
+		return type;
 }
 
 Type* BasicScope::resolveType(CompoundNameNode *name){
@@ -112,7 +133,7 @@ Type* BasicScope::resolveType(Type *type){
 		if(currentScope->getTypes().count(name)){
 			//return currentScope->getTypes()[name];
 			//return currentScope->getUnqualifiedType(name);
-			return currentScope->getType(type, currentScope);
+			return currentScope->getType(type);
 		}
 		currentScope = currentScope->getParentScope();
 	}

@@ -22,6 +22,7 @@ protected:
 
 public:
 
+	ArrayType(ArrayType*);
 	ArrayType(Type*);
 	ArrayType(TypeNode*);
 
@@ -36,8 +37,13 @@ public:
 //	bool modifiersEqual(const Type &other) const;
 
 	virtual bool isArray() override;
+
+	Type* getBasicType();
+	void setBasicType(Type *type);
 //	void addConversion(Type *type, FunctionSymbol *function);
 //	pair<bool, FunctionSymbol*>  getConversion(Type *type);
+
+	ArrayType* getTrimmedVersion();
 
 };
 

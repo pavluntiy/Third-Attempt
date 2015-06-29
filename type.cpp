@@ -36,6 +36,15 @@ Type::Type(TypeNode *node){
 	// 	this->unqualified = true;
 	// }
 }
+
+Type::Type(Type *other){
+	this->size = other->size;
+	this->dimensions = other->dimensions;
+	this->storageModes = other->storageModes;
+	this->fullName = other->fullName;
+	this->actualType = other->actualType;
+	this->convertTo = other->convertTo;
+}
 const vector<string>& Type::getFullName()const {
 	return this->fullName;
 }
@@ -54,6 +63,19 @@ const vector<string>& Type::getAccessModes()const{
 
 const vector<int>& Type::getDimensions()const{
 	return this->dimensions;
+}
+
+void Type::setStorageModes(vector<string> v){
+	this->storageModes = v;
+}
+void Type::setModifiers(vector<string> v){
+	this->modifiers = v;
+}
+void Type::setAccesssModes(vector<string> v){
+	this->accessModes = v;
+}
+void Type::setDimensions(vector<int> v){
+	this->dimensions = v;
 }
 
 bool Type::modifiersEqual(const Type &other) 
