@@ -42,6 +42,7 @@ public:
 	virtual Type* resolveModifiedType(Type*) = 0;
 	virtual Type* resolveType(CompoundNameNode*) = 0;
 	virtual Type* resolveType(Type*) = 0;
+	virtual Type* getType(Type*, AbstractScope*) = 0;
 //	virtual Type* resolveType(const Type&) = 0;
 	virtual Type* resolveType(string) = 0;
 	//virtual FunctionSymbol* resolveFunction(CompoundNameNode* function) = 0;

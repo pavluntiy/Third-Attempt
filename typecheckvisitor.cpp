@@ -267,9 +267,23 @@ void TypeVisitor::visit(ImportNode *node){
 }
 
 void TypeVisitor::visit(TypeNode *node){
+
+	Type *type = nullptr;
 	for(auto it: node->getDimensions()){
 		it->accept(this);
 	}
+
+	if(node->getDimensions().size() > 0){
+		type = new ArrayType(node);
+
+	}
+	else {
+		type = new Type(node);
+	}
+
+
+	type = currentScope->resolveType(type);
+	node->setSymbol(type);
 }
 
 void TypeVisitor::visit(ValueNode *node){

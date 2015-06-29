@@ -54,8 +54,8 @@ def const ref Vector.Point(Vector.Point);
 def Vector create(const ref Vector.Point p1, const ref Vector.Point p2){
 }
 
-def Vector create(Vector.Point p1, Vector.Point p2){
-}
+//def Vector create(Vector.Point p1, Vector.Point p2){
+//}
 
 Vector.Point p1, p2;
 

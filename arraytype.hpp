@@ -22,7 +22,8 @@ protected:
 
 public:
 
-	ArrayType(Type*, vector<int> dimensions);
+	ArrayType(Type*);
+	ArrayType(TypeNode*);
 
 	//virtual int getSize() override const;
 

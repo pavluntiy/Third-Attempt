@@ -26,6 +26,7 @@ public:
 	virtual Type* resolveModifiedType(Type*) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
 	virtual Type* resolveType(Type*) override;
+	virtual Type* getType(Type*, AbstractScope*) override;
 //	virtual Type* resolveType(const Type&) override;
 	virtual Type* resolveType(string) override;
 	virtual FunctionSymbol* resolveFunction(FunctionSymbol* function) override;

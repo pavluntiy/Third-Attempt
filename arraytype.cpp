@@ -52,6 +52,15 @@
 // 	return true;
 // }
 
+ArrayType::ArrayType(TypeNode *node){
+	this->basicType = new Type (node->getName()->getSimpleName());
+	this->setName(this->basicType->getName());
+	
+	for(auto it: node->getDimensions()){
+		this->dimensions.push_back(stoi(it->getText()));
+	}
+}
+
 bool ArrayType::operator==(const Type &other)
 const{
 
@@ -74,7 +83,7 @@ string ArrayType::toString(string shift){
 	result << "Array ";
 
 	for(auto it: this->getDimensions()){
-		result <<" [" << it + "] ";
+		result <<" [" << it << "] ";
 	}
 
 	result << "of " << this->basicType->toString();

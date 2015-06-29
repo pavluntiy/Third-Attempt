@@ -82,6 +82,15 @@ Type* BasicScope::getUnqualifiedType(string name){
 	return this->types[name][0];
 }
 
+Type* BasicScope::getType(Type* type, AbstractScope* scope){
+	if(type->isArray()){
+		
+	}
+	else {
+		return scope->getUnqualifiedType(type->getName());
+	}
+}
+
 Type* BasicScope::resolveType(CompoundNameNode *name){
 	AbstractScope *currentScope = resolveNamedScope(name);
 	string simpleName = name->getSimpleName();
@@ -95,13 +104,15 @@ Type* BasicScope::resolveType(CompoundNameNode *name){
 	throw NoticeException("Undeclared type '"+ simpleName + "'!");
 }
 
+
 Type* BasicScope::resolveType(Type *type){
 	string name = type->getName();
 	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
 			//return currentScope->getTypes()[name];
-			return currentScope->getUnqualifiedType(name);
+			//return currentScope->getUnqualifiedType(name);
+			return currentScope->getType(type, currentScope);
 		}
 		currentScope = currentScope->getParentScope();
 	}
@@ -355,7 +366,8 @@ AbstractScope* BasicScope::resolveNamedScope(const vector<string>& longName){
 
 	AbstractScope *currentScope = this;
 
-	if(longName.size() == 1){
+
+	if(longName.size() <= 1){
 		return currentScope;
 	}
 
