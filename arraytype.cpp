@@ -61,21 +61,21 @@ ArrayType::ArrayType(TypeNode *node){
 	}
 }
 
-bool ArrayType::operator==(const Type &other)
-const{
+// bool ArrayType::operator==(const Type &other)
+// const{
 
-	return this->name == other.getName() && this->modifiersEqual(other);
+// 	return this->name == other.getName() && this->modifiersEqual(other);
 
-}
+// }
 
 const vector<int>& ArrayType::getDimensions()const{
 	return this->dimensions;
 }
 
-bool ArrayType::operator==(Type *other)
-const{
-	return *this == *other;
-}
+// bool ArrayType::operator==(Type *other)
+// const{
+// 	return *this == *other;
+// }
 
 string ArrayType::toString(string shift){
 	stringstream result;

@@ -88,26 +88,46 @@ Type* BasicScope::getType(Type* type){
 
 }
 
+
 Type* BasicScope::getType(ArrayType *type){
-	auto dim = type->getDimensions();
-		auto basicType = resolveType(type->getBasicType());
-		type->setBasicType(basicType);
-		//for(int i = 0; i < )
+		auto dim = type->getDimensions();
+		auto rootType = resolveType(type->getBasicType());
+		//type->setBasicType(rootType);
 
-		AbstractScope *currentScope = resolveNamedScope(type->getName());
-		string simpleName = type->getName()->getSimpleName();
-		while(currentScope != nullptr){
-			if(currentScope->getTypes().count(simpleName)){
-				break;
+		//AbstractScope *currentScope = resolveNamedScope(type->getName());
+		//Disabled 
+		string name = type->getName();
+		//while(currentScope != nullptr){
+			if(!this->getTypes().count(name)){
+				//break;
+				throw NoticeException ("Unsupported feature: complex array types!");
 			}
-			currentScope = currentScope->getParentScope();
-		}
+		//	currentScope = currentScope->getParentScope();
+		//}
 
-		auto currentTypes = currentScope->getTypes();
-		if(currentTypes.find(make_pair<simpleName, type>)){
+		cout << "asdfasdfawefasdfasdfasdf\n\n";
 
+		auto currentTypes = this->getTypes()[type->getName()];
+		Type *basicType = nullptr;
+		if(type->getDimensions().size() > 0){
+			for(auto it: currentTypes){
+				if(*type == *it){
+					cout << type->getDimensions().size() << " !! " << it->getDimensions().size() << "\n";
+					cout << type->toString() << "\n" << it->toString() << "\n\n";
+					delete type;
+					return it;
+				}
+			}
+
+			basicType = getType(type->getTrimmedVersion());
+    		type->setBasicType(basicType);
+    		this->addType(name, type);
+    		cout << "yay!\n\n";
 		}
-		auto tmp = type->getTrimmedVersion();
+		else {
+			cout << "wow!\n\n";
+			return this->getType(type);
+		}
 
 		return type;
 }
@@ -125,14 +145,32 @@ Type* BasicScope::resolveType(CompoundNameNode *name){
 	throw NoticeException("Undeclared type '"+ simpleName + "'!");
 }
 
-
-Type* BasicScope::resolveType(Type *type){
+Type* BasicScope::resolveType(ArrayType *type){
 	string name = type->getName();
 	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
 	while(currentScope != nullptr){
 		if(currentScope->getTypes().count(name)){
 			//return currentScope->getTypes()[name];
 			//return currentScope->getUnqualifiedType(name);
+			cout << "@@@@@@@@@@@@\n\n";
+			return currentScope->getType(type);
+		}
+		currentScope = currentScope->getParentScope();
+	}
+	
+	throw NoticeException("Undeclared type'"+ name + "'!");
+}
+
+
+
+Type* BasicScope::resolveType(Type *type){
+	string name = type->getName();
+	AbstractScope *currentScope = this->resolveNamedScope(type->getFullName());
+	while(currentScope != nullptr){
+		if(currentScope->getTypes().count(name)){
+			if(type->isArray()){
+				return currentScope->getType(dynamic_cast<ArrayType*>(type));
+			}
 			return currentScope->getType(type);
 		}
 		currentScope = currentScope->getParentScope();

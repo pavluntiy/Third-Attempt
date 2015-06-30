@@ -32,8 +32,8 @@ public:
 
 	virtual string toString(string shift = "")override;
 
-	bool operator==(const Type &other) const;
-	bool operator==(Type *other) const;
+//	bool operator==(const Type &other) const;
+//	bool operator==(Type *other) const;
 //	bool modifiersEqual(const Type &other) const;
 
 	virtual bool isArray() override;

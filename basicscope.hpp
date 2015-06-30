@@ -26,6 +26,7 @@ public:
 	virtual bool hasType(Type*) override;
 	virtual Type* resolveModifiedType(Type*) override;
 	virtual Type* resolveType(CompoundNameNode *name) override;
+	virtual Type* resolveType(ArrayType*) override;
 	virtual Type* resolveType(Type*) override;
 	virtual Type* getType(Type*) override;
 	virtual Type* getType(ArrayType*) override;

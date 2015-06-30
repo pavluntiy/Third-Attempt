@@ -274,6 +274,7 @@ void TypeVisitor::visit(TypeNode *node){
 	}
 
 	if(node->getDimensions().size() > 0){
+		cout << "ololo!\n\n\n";
 		type = new ArrayType(node);
 
 	}
@@ -281,6 +282,9 @@ void TypeVisitor::visit(TypeNode *node){
 		type = new Type(node);
 	}
 
+	if(type->isArray()){
+		cout << "It's an array!\n";
+	}
 
 	type = currentScope->resolveType(type);
 	node->setSymbol(type);

@@ -42,6 +42,7 @@ public:
 	virtual bool hasType(Type*) = 0;
 	virtual Type* resolveModifiedType(Type*) = 0;
 	virtual Type* resolveType(CompoundNameNode*) = 0;
+	virtual Type* resolveType(ArrayType*) = 0;
 	virtual Type* resolveType(Type*) = 0;
 	virtual Type* getType(Type*) = 0;
 	virtual Type* getType(ArrayType*) = 0;
